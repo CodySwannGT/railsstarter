@@ -1,0 +1,15 @@
+# Lisa manifest - DO NOT EDIT
+# Generated: 2026-03-05T17:27:41.468Z
+# Lisa version: 1.56.1
+# Lisa directory: /Users/cody/workspace/lisa
+
+copy-overwrite:.safety-net.json
+copy-contents:.gitignore
+merge:.claude/settings.json
+copy-overwrite:.rubocop.yml
+copy-overwrite:.versionrc
+copy-overwrite:Gemfile.lisa
+copy-overwrite:config/initializers/version.rb
+copy-overwrite:lefthook.yml
+copy-contents:Gemfile
+merge:.claude/settings.json

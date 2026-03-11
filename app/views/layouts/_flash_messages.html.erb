@@ -1,0 +1,14 @@
+<%# locals: (flash_messages:) %>
+
+<div id="flash-messages" class="row">
+  <div class="col-md-9 col-sm-12">
+    <% flash_messages.each do |name, message| %>
+      <% next unless message.is_a?(String) %>
+
+      <div class="alert alert-<%= flash_alert_class(name) %> alert-dismissible fade show" role="alert">
+        <div class="flash-content" id="flash_<%= name %>"><%= message %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+  </div>
+</div>

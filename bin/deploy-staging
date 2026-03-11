@@ -1,0 +1,462 @@
+#!/usr/bin/env bash
+#
+# Deploy Staging Images
+#
+# Build Docker images locally and push them to ECR, then update ECS services.
+# Mirrors .github/workflows/deploy.yml but adapted for local workstation use
+# with AWS SSO authentication.
+#
+# All AWS configuration is fetched dynamically from CloudFormation exports
+# and STS — no dependency on the infrastructure repo.
+#
+# Usage:
+#   bin/deploy-staging [OPTIONS]
+#
+# Options:
+#   --profile PROFILE   AWS CLI profile (default: railsstarter-staging)
+#   --service SERVICE   web, worker, or all (default: all)
+#   --no-deploy         Build and push images only — skip ECS service update
+#   --dry-run           Print commands without executing
+#   -h, --help          Show this help message
+#
+# Examples:
+#   bin/deploy-staging                          # Build, push, and deploy all
+#   bin/deploy-staging --service web            # Only the web (Rails) image
+#   bin/deploy-staging --no-deploy              # Build and push without updating ECS
+#   bin/deploy-staging --dry-run                # Preview what would happen
+#
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Colors
+# ---------------------------------------------------------------------------
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+print_step()    { echo -e "${BLUE}==>${NC} $1"; }
+print_success() { echo -e "${GREEN}✓${NC} $1"; }
+print_warning() { echo -e "${YELLOW}!${NC} $1"; }
+print_error()   { echo -e "${RED}✗${NC} $1"; }
+print_header()  { echo -e "\n${BOLD}$1${NC}\n"; }
+
+run_cmd() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo -e "${YELLOW}[dry-run]${NC} $*"
+  else
+    "$@"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Defaults
+# ---------------------------------------------------------------------------
+PROFILE="railsstarter-staging"
+SERVICE="all"
+NO_DEPLOY="false"
+DRY_RUN="false"
+AWS_REGION="us-east-1"
+
+# ---------------------------------------------------------------------------
+# Usage
+# ---------------------------------------------------------------------------
+usage() {
+  cat <<'USAGE'
+Usage:
+  bin/deploy-staging [OPTIONS]
+
+Options:
+  --profile PROFILE   AWS CLI profile (default: railsstarter-staging)
+  --service SERVICE   web, worker, or all (default: all)
+  --no-deploy         Build and push images only — skip ECS service update
+  --dry-run           Print commands without executing
+  -h, --help          Show this help message
+
+Examples:
+  bin/deploy-staging                          # Build, push, and deploy all
+  bin/deploy-staging --service web            # Only the web (Rails) image
+  bin/deploy-staging --no-deploy              # Build and push without updating ECS
+  bin/deploy-staging --dry-run                # Preview what would happen
+USAGE
+  exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Parse arguments
+# ---------------------------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --profile)
+      [[ $# -lt 2 ]] && print_error "--profile requires an argument" && exit 1
+      PROFILE="$2"
+      shift 2
+      ;;
+    --service)
+      [[ $# -lt 2 ]] && print_error "--service requires an argument" && exit 1
+      SERVICE="$2"
+      if [[ "$SERVICE" != "web" && "$SERVICE" != "worker" && "$SERVICE" != "all" ]]; then
+        print_error "Invalid service: $SERVICE (must be web, worker, or all)"
+        exit 1
+      fi
+      shift 2
+      ;;
+    --no-deploy)
+      NO_DEPLOY="true"
+      shift
+      ;;
+    --dry-run)
+      DRY_RUN="true"
+      shift
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      print_error "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# Prerequisite checks
+# ---------------------------------------------------------------------------
+print_header "Checking prerequisites"
+
+for cmd in docker aws jq git; do
+  if ! command -v "$cmd" &>/dev/null; then
+    print_error "$cmd is required but not installed."
+    exit 1
+  fi
+  print_success "$cmd found"
+done
+
+if ! docker info &>/dev/null; then
+  print_error "Docker daemon is not running. Please start Docker Desktop."
+  exit 1
+fi
+print_success "Docker daemon running"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [[ ! -f "$SCRIPT_DIR/Dockerfile" ]]; then
+  print_error "Dockerfile not found in $SCRIPT_DIR"
+  exit 1
+fi
+print_success "Dockerfile found"
+
+if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+  if [[ ! -f "$SCRIPT_DIR/worker.Dockerfile" ]]; then
+    print_error "worker.Dockerfile not found in $SCRIPT_DIR"
+    exit 1
+  fi
+  print_success "worker.Dockerfile found"
+fi
+
+# ---------------------------------------------------------------------------
+# AWS SSO check / login
+# ---------------------------------------------------------------------------
+print_header "Authenticating with AWS"
+
+if ! aws sts get-caller-identity --profile "$PROFILE" &>/dev/null; then
+  print_warning "AWS session expired or not logged in. Starting SSO login..."
+  aws sso login --profile "$PROFILE"
+fi
+print_success "AWS session active (profile: $PROFILE)"
+
+# ---------------------------------------------------------------------------
+# Discover AWS configuration
+# ---------------------------------------------------------------------------
+print_header "Discovering AWS configuration"
+
+ACCOUNT_ID=$(aws sts get-caller-identity --profile "$PROFILE" --query Account --output text)
+print_success "Account ID: $ACCOUNT_ID"
+
+ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+print_success "ECR Registry: $ECR_REGISTRY"
+
+# Fetch all CloudFormation exports in one call
+CF_EXPORTS=$(aws cloudformation list-exports --profile "$PROFILE" --region "$AWS_REGION" --output json)
+
+cf_export_value() {
+  local name="$1"
+  local default="${2:-}"
+  local value
+  value=$(echo "$CF_EXPORTS" | jq -r --arg n "$name" '.Exports[] | select(.Name == $n) | .Value // empty')
+  if [[ -z "$value" ]]; then
+    if [[ -n "$default" ]]; then
+      print_warning "Export '$name' not found — using default: $default" >&2
+      echo "$default"
+    else
+      print_error "Required CloudFormation export '$name' not found." >&2
+      exit 1
+    fi
+  else
+    echo "$value"
+  fi
+}
+
+cf_export_value_starts_with() {
+  local prefix="$1"
+  local value
+  value=$(echo "$CF_EXPORTS" | jq -r --arg p "$prefix" '[.Exports[] | select(.Name | startswith($p))] | .[0].Value // empty')
+  if [[ -z "$value" ]]; then
+    print_error "No CloudFormation export starting with '$prefix' found." >&2
+    exit 1
+  fi
+  echo "$value"
+}
+
+CLUSTER_NAME=$(cf_export_value "webClusterName")
+print_success "Cluster: $CLUSTER_NAME"
+
+RAILS_ECR_REPO=$(cf_export_value "webEcrRepositoryName")
+print_success "Rails ECR repo: $RAILS_ECR_REPO"
+
+if [[ "$SERVICE" == "all" || "$SERVICE" == "worker" ]]; then
+  WORKER_ECR_REPO=$(cf_export_value "workerEcrRepositoryName")
+  print_success "Worker ECR repo: $WORKER_ECR_REPO"
+fi
+
+S3_BUCKET_NAME=$(cf_export_value_starts_with "ClientUploadBucket")
+print_success "S3 bucket: $S3_BUCKET_NAME"
+
+RAILS_SERVICE_NAME=$(cf_export_value "RailsServiceName" "web-rails-service")
+print_success "Rails service: $RAILS_SERVICE_NAME"
+
+if [[ "$SERVICE" == "all" || "$SERVICE" == "worker" ]]; then
+  WORKER_SERVICE_NAME=$(cf_export_value "WorkerServiceName" "worker-service")
+  print_success "Worker service: $WORKER_SERVICE_NAME"
+fi
+
+RAILS_TASK_FAMILY=$(cf_export_value "RailsTaskFamily" "web-rails-task")
+print_success "Rails task family: $RAILS_TASK_FAMILY"
+
+if [[ "$SERVICE" == "all" || "$SERVICE" == "worker" ]]; then
+  WORKER_TASK_FAMILY=$(cf_export_value "WorkerTaskFamily" "worker-task")
+  print_success "Worker task family: $WORKER_TASK_FAMILY"
+fi
+
+# ---------------------------------------------------------------------------
+# ECR login
+# ---------------------------------------------------------------------------
+print_header "Logging in to ECR"
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo -e "${YELLOW}[dry-run]${NC} aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY"
+else
+  aws ecr get-login-password --profile "$PROFILE" --region "$AWS_REGION" \
+    | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+  print_success "ECR login successful"
+fi
+
+# ---------------------------------------------------------------------------
+# Image tag
+# ---------------------------------------------------------------------------
+IMAGE_TAG=$(git -C "$SCRIPT_DIR" rev-parse HEAD)
+print_success "Image tag (git SHA): $IMAGE_TAG"
+
+if ! git -C "$SCRIPT_DIR" diff --quiet HEAD 2>/dev/null; then
+  print_warning "Working tree has uncommitted changes — image tag will not match built content"
+fi
+
+# ---------------------------------------------------------------------------
+# Credentials file for BuildKit
+# ---------------------------------------------------------------------------
+print_header "Preparing BuildKit credentials"
+
+CREDS_FILE=$(mktemp)
+chmod 600 "$CREDS_FILE"
+cleanup() {
+  rm -f "$CREDS_FILE"
+}
+trap cleanup EXIT INT TERM HUP
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo -e "${YELLOW}[dry-run]${NC} Writing temp credentials to $CREDS_FILE"
+else
+  CREDS_JSON=$(aws configure export-credentials --profile "$PROFILE" --format process)
+  cat > "$CREDS_FILE" <<CREDS
+AWS_ACCESS_KEY_ID=$(echo "$CREDS_JSON" | jq -r '.AccessKeyId')
+AWS_SECRET_ACCESS_KEY=$(echo "$CREDS_JSON" | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(echo "$CREDS_JSON" | jq -r '.SessionToken')
+AWS_REGION=$AWS_REGION
+CREDS
+  print_success "Credentials written to temp file"
+fi
+
+# ---------------------------------------------------------------------------
+# Build images
+# ---------------------------------------------------------------------------
+print_header "Building images"
+
+if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+  print_step "Building web (Rails) image..."
+  run_cmd env DOCKER_BUILDKIT=1 docker build \
+    --platform linux/amd64 \
+    --build-arg RAILS_ENV=staging \
+    --build-arg S3_BUCKET_NAME="$S3_BUCKET_NAME" \
+    --secret id=aws_credentials,src="$CREDS_FILE" \
+    -t "$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG" \
+    -t "$ECR_REGISTRY/$RAILS_ECR_REPO:latest" \
+    "$SCRIPT_DIR"
+  print_success "Web image built"
+fi
+
+if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+  print_step "Building worker image..."
+  run_cmd docker build \
+    --platform linux/amd64 \
+    -f "$SCRIPT_DIR/worker.Dockerfile" \
+    --build-arg RAILS_ENV=staging \
+    -t "$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG" \
+    -t "$ECR_REGISTRY/$WORKER_ECR_REPO:latest" \
+    "$SCRIPT_DIR"
+  print_success "Worker image built"
+fi
+
+# ---------------------------------------------------------------------------
+# Push images
+# ---------------------------------------------------------------------------
+print_header "Pushing images to ECR"
+
+if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+  print_step "Pushing web image..."
+  run_cmd docker push "$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG"
+  run_cmd docker push "$ECR_REGISTRY/$RAILS_ECR_REPO:latest"
+  print_success "Web image pushed ($IMAGE_TAG + latest)"
+fi
+
+if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+  print_step "Pushing worker image..."
+  run_cmd docker push "$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG"
+  run_cmd docker push "$ECR_REGISTRY/$WORKER_ECR_REPO:latest"
+  print_success "Worker image pushed ($IMAGE_TAG + latest)"
+fi
+
+# ---------------------------------------------------------------------------
+# ECS deploy
+# ---------------------------------------------------------------------------
+if [[ "$NO_DEPLOY" == "true" ]]; then
+  print_warning "Skipping ECS deployment (--no-deploy)"
+else
+  print_header "Updating ECS services"
+
+  declare -a SERVICES_TO_UPDATE=()
+
+  if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+    SERVICES_TO_UPDATE+=("$RAILS_TASK_FAMILY:$RAILS_ECR_REPO:$RAILS_SERVICE_NAME")
+  fi
+
+  if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+    SERVICES_TO_UPDATE+=("$WORKER_TASK_FAMILY:$WORKER_ECR_REPO:$WORKER_SERVICE_NAME")
+  fi
+
+  for FAMILY_SERVICE in "${SERVICES_TO_UPDATE[@]}"; do
+    IFS=: read -r FAMILY ECR_REPO SERVICE_NAME <<< "$FAMILY_SERVICE"
+
+    print_step "Updating $SERVICE_NAME (task family: $FAMILY)..."
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+      echo -e "${YELLOW}[dry-run]${NC} aws ecs describe-task-definition --task-definition $FAMILY"
+      echo -e "${YELLOW}[dry-run]${NC} jq: update image to $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
+      echo -e "${YELLOW}[dry-run]${NC} aws ecs register-task-definition --cli-input-json ..."
+      echo -e "${YELLOW}[dry-run]${NC} aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment"
+    else
+      TASK_DEF=$(aws ecs describe-task-definition \
+        --task-definition "$FAMILY" \
+        --profile "$PROFILE" \
+        --region "$AWS_REGION" \
+        --query 'taskDefinition')
+
+      NEW_IMAGE="$ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
+
+      UPDATED_DEF=$(echo "$TASK_DEF" | jq --arg IMG "$NEW_IMAGE" \
+        '.containerDefinitions |= map(if .essential == true then .image = $IMG else . end) |
+         del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+      TASK_DEF_FILE=$(mktemp)
+      echo "$UPDATED_DEF" > "$TASK_DEF_FILE"
+
+      NEW_ARN=$(aws ecs register-task-definition \
+        --cli-input-json "file://$TASK_DEF_FILE" \
+        --profile "$PROFILE" \
+        --region "$AWS_REGION" \
+        --query 'taskDefinition.taskDefinitionArn' \
+        --output text)
+
+      rm -f "$TASK_DEF_FILE"
+
+      aws ecs update-service \
+        --cluster "$CLUSTER_NAME" \
+        --service "$SERVICE_NAME" \
+        --task-definition "$NEW_ARN" \
+        --force-new-deployment \
+        --profile "$PROFILE" \
+        --region "$AWS_REGION" \
+        --no-cli-pager
+
+      print_success "$SERVICE_NAME updated with $NEW_IMAGE"
+    fi
+  done
+
+  # Wait for stabilization
+  if [[ "$DRY_RUN" != "true" ]]; then
+    print_header "Waiting for services to stabilize"
+
+    declare -a WAIT_SERVICES=()
+    if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+      WAIT_SERVICES+=("$RAILS_SERVICE_NAME")
+    fi
+    if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+      WAIT_SERVICES+=("$WORKER_SERVICE_NAME")
+    fi
+
+    print_step "This may take several minutes..."
+    if aws ecs wait services-stable \
+      --cluster "$CLUSTER_NAME" \
+      --services "${WAIT_SERVICES[@]}" \
+      --profile "$PROFILE" \
+      --region "$AWS_REGION"; then
+      print_success "All services stable"
+    else
+      print_error "Services did not stabilize within the timeout."
+      echo "  Check status manually:"
+      echo "    aws ecs describe-services --cluster $CLUSTER_NAME --services ${WAIT_SERVICES[*]} --query 'services[].{name:serviceName,status:status,running:runningCount,desired:desiredCount}' --profile $PROFILE --region $AWS_REGION"
+      exit 1
+    fi
+  else
+    echo -e "${YELLOW}[dry-run]${NC} aws ecs wait services-stable --cluster $CLUSTER_NAME"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+SUMMARY_TITLE=$([[ "$NO_DEPLOY" == "true" ]] && echo "Build and push complete" || echo "Deploy complete")
+print_header "$SUMMARY_TITLE"
+
+echo -e "  Profile:  ${BOLD}$PROFILE${NC}"
+echo -e "  Region:   ${BOLD}$AWS_REGION${NC}"
+echo -e "  Cluster:  ${BOLD}$CLUSTER_NAME${NC}"
+echo -e "  Image tag: ${BOLD}$IMAGE_TAG${NC}"
+
+if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+  echo -e "  Web:      ${BOLD}$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG${NC}"
+fi
+if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+  echo -e "  Worker:   ${BOLD}$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG${NC}"
+fi
+
+if [[ "$NO_DEPLOY" == "true" ]]; then
+  echo ""
+  print_warning "Images pushed but ECS services were NOT updated (--no-deploy)."
+  echo "  To deploy manually:"
+  echo "    bin/deploy-staging --profile $PROFILE --service $SERVICE"
+fi
+
+echo ""

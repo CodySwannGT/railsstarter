@@ -1,0 +1,129 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch("DATABASE_USER", "root") %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>
+  port: <%= ENV.fetch("DATABASE_PORT", "3306") %>
+  <% if ENV.fetch("DATABASE_SSL", "false") == "true" %>
+  sslca: /etc/ssl/certs/ca-certificates.crt
+  ssl_mode: required
+  <% end %>
+  <% if ENV.fetch("DATABASE_IAM_AUTH", "false") == "true" %>
+  aws_rds_iam_auth: true
+  <% end %>
+
+development:
+  primary:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+
+  primary_replica:
+    <<: *default
+    host: <%= ENV.fetch("DATABASE_REPLICA_HOST", ENV.fetch("PRIMARY_DB_HOST", "localhost")) %>
+    replica: true
+
+  queue:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/queue_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_queue
+
+  cable:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cable_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cable
+
+  cache:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cache_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cache
+
+test:
+  primary:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_test
+
+  primary_replica:
+    <<: *default
+    host: <%= ENV.fetch("DATABASE_REPLICA_HOST", ENV.fetch("PRIMARY_DB_HOST", "localhost")) %>
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_test
+    replica: true
+
+  queue:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/queue_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_queue_test
+
+  cable:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cable_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cable_test
+
+  cache:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cache_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cache_test
+
+staging:
+  primary:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+
+  primary_replica:
+    <<: *default
+    host: <%= ENV.fetch("DATABASE_REPLICA_HOST", ENV.fetch("PRIMARY_DB_HOST", "localhost")) %>
+    replica: true
+
+  queue:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/queue_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_queue
+
+  cable:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cable_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cable
+
+  cache:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cache_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cache
+
+production:
+  primary:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+
+  primary_replica:
+    <<: *default
+    host: <%= ENV.fetch("DATABASE_REPLICA_HOST", ENV.fetch("PRIMARY_DB_HOST", "localhost")) %>
+    replica: true
+
+  queue:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/queue_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_queue
+
+  cable:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cable_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cable
+
+  cache:
+    <<: *default
+    host: <%= ENV.fetch("PRIMARY_DB_HOST", "localhost") %>
+    migrations_paths: db/cache_migrate
+    database: <%= ENV.fetch("DATABASE_NAME", "railsdb") %>_cache

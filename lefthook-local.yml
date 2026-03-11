@@ -1,0 +1,13 @@
+pre-push:
+  commands:
+    rspec:
+      env:
+        PRIMARY_DB_HOST: 127.0.0.1
+    reek:
+      run: bundle exec reek app/ lib/
+    flog:
+      run: bundle exec flog --all --group app/ lib/
+    flay:
+      run: bundle exec flay app/ lib/
+    yard-stats:
+      run: "bundle exec yard stats app/**/*.rb lib/**/*.rb | grep -q '100.00% documented' || (echo 'YARD documentation is not 100%' && exit 1)"

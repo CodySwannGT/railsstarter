@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CLUSTER_NAME="webCluster"
+SERVICE_NAME="web-rails-service"
+DEFAULT_PROFILE_NAME="qualis-staging"
+COMMAND="bin/rails db:verify_schema"
+
+PROFILE_NAME=${1:-$DEFAULT_PROFILE_NAME}
+
+echo "Verifying schema on ${PROFILE_NAME}..."
+
+# Fetch the first task ARN for the specified service
+TASK_ARN=$(aws ecs list-tasks \
+  --cluster "$CLUSTER_NAME" \
+  --service-name "$SERVICE_NAME" \
+  --profile "$PROFILE_NAME" \
+  --query 'taskArns[0]' \
+  --output text)
+
+if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
+  echo "No tasks found for service ${SERVICE_NAME} in cluster ${CLUSTER_NAME}"
+  exit 1
+fi
+
+TASK_ID=$(echo "$TASK_ARN" | awk -F/ '{print $NF}')
+
+# Find the app container (not ecs-service-connect)
+CONTAINER_NAME=$(aws ecs describe-tasks \
+  --cluster "$CLUSTER_NAME" \
+  --tasks "$TASK_ID" \
+  --profile "$PROFILE_NAME" \
+  --query 'tasks[0].containers[?starts_with(name, `ecs-service-connect`) == `false`].name' \
+  --output text | awk '{print $1}')
+
+if [ -z "$CONTAINER_NAME" ]; then
+  echo "No suitable containers found in task ${TASK_ID}"
+  exit 1
+fi
+
+echo "Running db:verify_schema on task ${TASK_ID} (container: ${CONTAINER_NAME})..."
+
+OUTPUT=$(aws ecs execute-command \
+  --cluster "$CLUSTER_NAME" \
+  --task "$TASK_ID" \
+  --container "$CONTAINER_NAME" \
+  --interactive \
+  --command "$COMMAND" \
+  --profile "$PROFILE_NAME" 2>/dev/null)
+
+echo "$OUTPUT"
+
+# Parse status from JSON output
+STATUS=$(echo "$OUTPUT" | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4)
+
+if [ "$STATUS" = "pass" ]; then
+  echo ""
+  echo "Schema verification PASSED"
+  exit 0
+else
+  echo ""
+  echo "Schema verification FAILED"
+  exit 1
+fi

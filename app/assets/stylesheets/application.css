@@ -1,0 +1,150 @@
+/*
+ * Qualis Application Styles
+ *
+ * Design tokens, layout structure, and component overrides for the
+ * multi-tenant DME management application. Built on Bootstrap 5
+ * with CSS custom properties for tenant-specific theming.
+ *
+ * Bootstrap 5 is loaded via CDN in the application layout.
+ * Google Fonts (Rubik) is loaded via CDN preconnect.
+ */
+
+/* ==========================================================================
+   Design Tokens (CSS Custom Properties)
+   ========================================================================== */
+
+:root {
+  /* Brand Colors */
+  --q-color-primary: #0d6efd;
+  --q-color-primary-dark: #0a58ca;
+  --q-color-success: #198754;
+  --q-color-danger: #dc3545;
+  --q-color-warning: #ffc107;
+  --q-color-info: #0dcaf0;
+
+  /* Environment Indicators */
+  --q-color-staging-bg: rgba(214, 184, 222, 0.75);
+
+  /* Typography */
+  --q-font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --q-font-size-base: 14px;
+  --q-font-size-sm: 12px;
+  --q-font-size-xs: 10px;
+
+  /* Layout */
+  --q-navbar-height: 56px;
+  --q-footer-height: 50px;
+  --q-logo-height: 50px;
+  --q-content-padding-top: calc(var(--q-navbar-height) + 1rem);
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+
+body {
+  font-family: var(--q-font-family);
+  font-size: var(--q-font-size-base);
+  padding-top: var(--q-content-padding-top);
+}
+
+/* ==========================================================================
+   Environment Indicators
+   ========================================================================== */
+
+body.environment-staging {
+  background-color: var(--q-color-staging-bg);
+}
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+
+.navbar .navbar-brand-logo {
+  height: var(--q-logo-height);
+  width: auto;
+}
+
+.navbar .environment-label {
+  display: block;
+  font-size: var(--q-font-size-xs);
+  text-align: center;
+}
+
+.dashboards-dropdown {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   Main Content
+   ========================================================================== */
+
+#main {
+  min-height: calc(100vh - var(--q-content-padding-top) - var(--q-footer-height));
+}
+
+.scroll-pane {
+  overflow-x: auto;
+}
+
+/* ==========================================================================
+   Flash Messages
+   ========================================================================== */
+
+#flash-messages .flash-content {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Announcements
+   ========================================================================== */
+
+.announcement-banner {
+  font-weight: 500;
+}
+
+.popup-announcement .modal-dialog {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.popup-announcement .modal-content {
+  height: 100%;
+  border-radius: 0;
+}
+
+.popup-announcement .modal-body {
+  text-align: center;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.footer {
+  font-size: var(--q-font-size-sm);
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+body.print {
+  padding-top: 0;
+}
+
+body.print .navbar,
+body.print .footer {
+  display: none;
+}
+
+/* ==========================================================================
+   Layout Spacing
+   ========================================================================== */
+
+.push {
+  height: var(--q-footer-height);
+}

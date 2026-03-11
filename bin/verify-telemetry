@@ -1,0 +1,214 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DEFAULT_PROFILE="qualis-staging"
+REGION="us-east-1"
+
+usage() {
+  echo "Usage: bin/verify-telemetry <command> [profile]"
+  echo ""
+  echo "Commands:"
+  echo "  health         Trace count and sample traces from last 5 minutes"
+  echo "  slow           Slowest requests from last hour (response time > 1s)"
+  echo "  errors         5xx faults from last hour"
+  echo "  services       Dependency map via service graph"
+  echo "  trace <id>     Full trace detail for a specific trace ID"
+  echo ""
+  echo "Profile defaults to: $DEFAULT_PROFILE"
+  exit 1
+}
+
+require_tools() {
+  for tool in aws jq; do
+    if ! command -v "$tool" &>/dev/null; then
+      echo "Error: '$tool' is required but not installed."
+      exit 1
+    fi
+  done
+}
+
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+require_tools
+
+COMMAND="$1"
+PROFILE="${2:-$DEFAULT_PROFILE}"
+
+now_epoch=$(date +%s)
+
+case "$COMMAND" in
+  health)
+    start_epoch=$((now_epoch - 300))
+    start_time=$(date -r "$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+    end_time=$(date -r "$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "Fetching traces from last 5 minutes ($start_time to $end_time)..."
+    echo ""
+
+    RESULT=$(aws xray get-trace-summaries \
+      --start-time "$start_time" \
+      --end-time "$end_time" \
+      --no-sampling \
+      --profile "$PROFILE" \
+      --region "$REGION" \
+      --output json)
+
+    TRACE_COUNT=$(echo "$RESULT" | jq '.TraceSummaries | length')
+    echo "Total traces: $TRACE_COUNT"
+    echo ""
+
+    if [ "$TRACE_COUNT" -gt 0 ]; then
+      echo "Sample traces (up to 5):"
+      echo "$RESULT" | jq -r '
+        .TraceSummaries[:5][] |
+        "  ID: \(.Id)  Duration: \(.Duration)s  Status: \(.Http.HttpStatus // "N/A")  Method: \(.Http.HttpMethod // "N/A")  URL: \(.Http.HttpURL // "N/A")"
+      '
+    else
+      echo "No traces found in the last 5 minutes."
+    fi
+    ;;
+
+  slow)
+    start_epoch=$((now_epoch - 3600))
+    start_time=$(date -r "$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+    end_time=$(date -r "$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "Fetching slow requests (> 1s) from last hour..."
+    echo ""
+
+    RESULT=$(aws xray get-trace-summaries \
+      --start-time "$start_time" \
+      --end-time "$end_time" \
+      --filter-expression 'responsetime > 1' \
+      --profile "$PROFILE" \
+      --region "$REGION" \
+      --output json)
+
+    TRACE_COUNT=$(echo "$RESULT" | jq '.TraceSummaries | length')
+    echo "Slow requests found: $TRACE_COUNT"
+    echo ""
+
+    if [ "$TRACE_COUNT" -gt 0 ]; then
+      echo "Slowest requests (up to 10):"
+      echo "$RESULT" | jq -r '
+        [.TraceSummaries[] | {Id, Duration, Status: (.Http.HttpStatus // "N/A"), Method: (.Http.HttpMethod // "N/A"), URL: (.Http.HttpURL // "N/A")}]
+        | sort_by(-.Duration)[:10][]
+        | "  ID: \(.Id)  Duration: \(.Duration)s  Status: \(.Status)  Method: \(.Method)  URL: \(.URL)"
+      '
+    fi
+    ;;
+
+  errors)
+    start_epoch=$((now_epoch - 3600))
+    start_time=$(date -r "$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+    end_time=$(date -r "$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "Fetching 5xx faults from last hour..."
+    echo ""
+
+    RESULT=$(aws xray get-trace-summaries \
+      --start-time "$start_time" \
+      --end-time "$end_time" \
+      --filter-expression 'fault' \
+      --profile "$PROFILE" \
+      --region "$REGION" \
+      --output json)
+
+    TRACE_COUNT=$(echo "$RESULT" | jq '.TraceSummaries | length')
+    echo "Faulted traces found: $TRACE_COUNT"
+    echo ""
+
+    if [ "$TRACE_COUNT" -gt 0 ]; then
+      echo "Faulted requests (up to 10):"
+      echo "$RESULT" | jq -r '
+        .TraceSummaries[:10][] |
+        "  ID: \(.Id)  Duration: \(.Duration)s  Status: \(.Http.HttpStatus // "N/A")  Method: \(.Http.HttpMethod // "N/A")  URL: \(.Http.HttpURL // "N/A")  HasFault: \(.HasFault)"
+      '
+    else
+      echo "No 5xx faults in the last hour."
+    fi
+    ;;
+
+  services)
+    start_epoch=$((now_epoch - 3600))
+    start_time=$(date -r "$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$start_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+    end_time=$(date -r "$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -d "@$now_epoch" -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "Fetching service graph from last hour..."
+    echo ""
+
+    RESULT=$(aws xray get-service-graph \
+      --start-time "$start_time" \
+      --end-time "$end_time" \
+      --profile "$PROFILE" \
+      --region "$REGION" \
+      --output json)
+
+    SERVICE_COUNT=$(echo "$RESULT" | jq '.Services | length')
+    echo "Services found: $SERVICE_COUNT"
+    echo ""
+
+    if [ "$SERVICE_COUNT" -gt 0 ]; then
+      echo "Service dependency map:"
+      echo "$RESULT" | jq -r '
+        .Services[] |
+        "  [\(.Name) (\(.Type // "unknown"))]" +
+        if (.Edges | length) > 0
+          then " -> " + ([.Edges[].ReferenceId] | map(tostring) | join(", "))
+          else " (leaf)"
+        end
+      '
+      echo ""
+      echo "Service details:"
+      echo "$RESULT" | jq -r '
+        .Services[] |
+        "  \(.Name): OK=\(.SummaryStatistics.OkCount // 0) Errors=\(.SummaryStatistics.ErrorStatistics.TotalCount // 0) Faults=\(.SummaryStatistics.FaultStatistics.TotalCount // 0) Avg=\(.SummaryStatistics.TotalResponseTime // 0)s"
+      '
+    else
+      echo "No services found in the service graph."
+    fi
+    ;;
+
+  trace)
+    if [ $# -lt 2 ]; then
+      echo "Usage: bin/verify-telemetry trace <trace-id> [profile]"
+      exit 1
+    fi
+    TRACE_ID="$2"
+    PROFILE="${3:-$DEFAULT_PROFILE}"
+
+    echo "Fetching trace: $TRACE_ID"
+    echo ""
+
+    RESULT=$(aws xray batch-get-traces \
+      --trace-ids "$TRACE_ID" \
+      --profile "$PROFILE" \
+      --region "$REGION" \
+      --output json)
+
+    SEGMENT_COUNT=$(echo "$RESULT" | jq '[.Traces[].Segments[]] | length')
+    echo "Segments in trace: $SEGMENT_COUNT"
+    echo ""
+
+    if [ "$SEGMENT_COUNT" -gt 0 ]; then
+      echo "Trace segments:"
+      echo "$RESULT" | jq -r '
+        .Traces[].Segments[] |
+        .Document | fromjson |
+        "  [\(.name)] start=\(.start_time) end=\(.end_time) duration=\(.end_time - .start_time)s" +
+        if .http then " method=\(.http.request.method // "N/A") url=\(.http.request.url // "N/A") status=\(.http.response.status // "N/A")" else "" end +
+        if .fault then " FAULT" else "" end +
+        if .error then " ERROR" else "" end
+      '
+    else
+      echo "Trace not found or has no segments."
+    fi
+    ;;
+
+  *)
+    usage
+    ;;
+esac

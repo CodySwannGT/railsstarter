@@ -1,0 +1,55 @@
+# Project-specific RuboCop overrides.
+# This file is NOT managed by Lisa — edit freely.
+# Add or override any RuboCop cops below.
+
+require:
+  - ./lib/rubocop/cop/custom/inline_disable_annotation
+
+Custom/InlineDisableAnnotation:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/rubocop/**/*'
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - staging
+    - production
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
+
+Metrics/BlockLength:
+  AllowedMethods:
+    - class_methods
+    - included
+    - concern
+  Exclude:
+    - 'config/routes.rb'
+    - 'db/queue_schema.rb'
+    - 'db/cable_schema.rb'
+    - 'db/cache_schema.rb'
+    - 'db/schema.rb'
+    - 'lib/tasks/**/*'
+
+Rails/ThreeStateBooleanColumn:
+  Exclude:
+    - 'db/schema.rb'
+
+Rails/CreateTableWithTimestamps:
+  Exclude:
+    - 'db/schema.rb'
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 5

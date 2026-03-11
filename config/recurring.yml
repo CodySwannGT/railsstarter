@@ -1,0 +1,23 @@
+development:
+  heartbeat:
+    command: "puts 'I am alive'"
+    schedule: every 30s
+  periodic_cloudwatch_metrics:
+    class: PublishCloudWatchMetricsJob
+    schedule: every minute
+
+staging:
+  heartbeat:
+    command: "puts 'I am alive'"
+    schedule: every 30s
+  periodic_cloudwatch_metrics:
+    class: PublishCloudWatchMetricsJob
+    schedule: every minute
+
+production:
+  heartbeat:
+    command: "puts 'I am alive'"
+    schedule: every 30s
+  periodic_cloudwatch_metrics:
+    class: PublishCloudWatchMetricsJob
+    schedule: every minute

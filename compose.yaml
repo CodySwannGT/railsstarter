@@ -1,0 +1,62 @@
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile.local
+    command: >
+      bash -c "rm -f tmp/pids/server.pid && ./bin/thrust ./bin/rails server -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/rails
+      # - bundle:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - HISTFILE=/usr/src/app/log/.bash_history
+    depends_on:
+      db:
+        condition: service_healthy
+      # redis:
+      #   condition: service_started
+  worker:
+    build:
+      context: ./
+      dockerfile: worker.Dockerfile.local
+    volumes:
+      - .:/rails
+      # - bundle:/usr/local/bundle
+    # ports:
+    #   - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - HISTFILE=/usr/src/app/log/.bash_history
+    depends_on:
+      db:
+        condition: service_healthy
+      # redis:
+      #   condition: service_started
+  db:
+    image: mysql:latest
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
+    healthcheck:
+      test: '/usr/bin/mysql --user=root --execute "SHOW DATABASES;"'
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_HOST: "%"
+  # redis:
+  #   image: redis
+  #   volumes:
+  #     - redis_data:/data
+volumes:
+  mysql_data:
+  # redis_data:
+  bundle:

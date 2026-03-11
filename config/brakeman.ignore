@@ -1,0 +1,14 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "d62ec228228307e14c7c1d6f91ea1ff40a373776a0ff34a6ebee487b922c75d8",
+      "code": "Net::HTTP.new(URI.parse(\"https://12.204.129.203/WSHIT/WSHITLayer.WebService.svc/web/wHITWorkOrders_CommitAdd\").host, URI.parse(\"https://12.204.129.203/WSHIT/WSHITLayer.WebService.svc/web/wHITWorkOrders_CommitAdd\").port).verify_mode = OpenSSL::SSL::VERIFY_NONE",
+      "message": "SSL certificate verification was bypassed",
+      "file": "app/jobs/universal_api_job.rb",
+      "line": 98,
+      "note": "Legacy pattern migrated from dmeapp"
+    }
+  ],
+  "updated": "2026-02-15 16:00:00 -0500",
+  "brakeman_version": "7.1.2"
+}
