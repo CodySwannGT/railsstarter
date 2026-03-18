@@ -4,7 +4,6 @@
     "pr": "🤖 Generated with Claude Code"
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
     "safety-net@cc-marketplace": true,
     "code-simplifier@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
@@ -15,7 +14,8 @@
     "atlassian@claude-plugins-official": true,
     "rails@lisa": true,
     "lisa@lisa": true,
-    "lisa-rails@lisa": true
+    "lisa-rails@lisa": true,
+    "ruby-lsp@claude-plugins-official": true
   },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "1800000",
@@ -26,24 +26,6 @@
   },
   "hooks": {
     "PostToolUse": [
-      {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-task || true"
-          }
-        ]
-      },
-      {
-        "matcher": "TodoWrite",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-todo || true"
-          }
-        ]
-      },
       {
         "matcher": "Task",
         "hooks": [
@@ -72,25 +54,12 @@
             "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code pre-task || true"
           }
         ]
-      },
-      {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code pre-task || true"
-          }
-        ]
       }
     ],
     "SessionEnd": [
       {
         "matcher": "",
         "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-end || true"
-          },
           {
             "type": "command",
             "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-end || true"
@@ -107,25 +76,12 @@
             "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-start || true"
           }
         ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-start || true"
-          }
-        ]
       }
     ],
     "Stop": [
       {
         "matcher": "",
         "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code stop || true"
-          },
           {
             "type": "command",
             "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code stop || true"
