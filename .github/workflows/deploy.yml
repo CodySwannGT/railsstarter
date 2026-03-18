@@ -1,17 +1,35 @@
-name: Deploy Rails Fargate
+# This file is created by Lisa (create-only — edit freely, Lisa won't overwrite).
+# Release + Deploy workflow for Rails on AWS ECS Fargate.
+#
+# Step 1: Call the reusable release workflow for version bumping and tagging.
+# Step 2: Build Docker images, push to ECR, run migrations, update ECS services.
+#
+# Customize the env vars and steps below to match your infrastructure.
+
+name: Release and Deploy
 
 on:
   push:
     branches:
       - staging
       # - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
+  release:
+    name: Release
+    uses: CodySwannGT/lisa/.github/workflows/release-rails.yml@main
+    secrets:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+
   deploy_rails:
+    name: Deploy
+    needs: [release]
+    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore(release):') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -32,6 +50,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
 
       - uses: noliran/branch-based-secrets@v1
         with:
