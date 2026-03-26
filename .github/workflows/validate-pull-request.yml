@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -45,7 +45,7 @@ jobs:
     if: needs.check-sonar-secret.outputs.has_sonar_token == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v4
         env:
