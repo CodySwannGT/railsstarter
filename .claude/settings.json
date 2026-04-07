@@ -1,28 +1,19 @@
 {
-  "attribution": {
-    "commit": "🤖 Generated with Claude Code\n\nCo-Authored-By: Claude",
-    "pr": "🤖 Generated with Claude Code"
-  },
-  "enabledPlugins": {
-    "safety-net@cc-marketplace": true,
-    "code-simplifier@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "coderabbit@claude-plugins-official": true,
-    "sentry@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "atlassian@claude-plugins-official": true,
-    "rails@lisa": true,
-    "lisa@lisa": true,
-    "lisa-rails@lisa": true,
-    "ruby-lsp@claude-plugins-official": true
-  },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "1800000",
     "BASH_MAX_TIMEOUT_MS": "7200000",
     "CLAUDE_DEBUG": "0",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "ENABLE_LSP_TOOL": "1"
+  },
+  "attribution": {
+    "commit": "🤖 Generated with Claude Code\n\nCo-Authored-By: Claude",
+    "pr": "🤖 Generated with Claude Code"
+  },
+  "permissions": {
+    "deny": [
+      "Read(./.entire/metadata/**)"
+    ]
   },
   "hooks": {
     "PostToolUse": [
@@ -105,12 +96,22 @@
       }
     ]
   },
-  "permissions": {
-    "deny": [
-      "Read(./.entire/metadata/**)"
-    ]
+  "enabledPlugins": {
+    "safety-net@cc-marketplace": true,
+    "code-simplifier@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "coderabbit@claude-plugins-official": true,
+    "sentry@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "atlassian@claude-plugins-official": true,
+    "rails@lisa": true,
+    "lisa@lisa": true,
+    "lisa-rails@lisa": true,
+    "ruby-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "impeccable@impeccable": true
   },
-  "plansDirectory": "./plans",
   "extraKnownMarketplaces": {
     "CodySwannGT/lisa": {
       "source": {
@@ -123,6 +124,13 @@
         "source": "github",
         "repo": "kenryu42/cc-marketplace"
       }
+    },
+    "pbakaus/impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable"
+      }
     }
-  }
+  },
+  "plansDirectory": "./plans"
 }

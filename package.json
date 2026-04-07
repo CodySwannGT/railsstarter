@@ -1,0 +1,14 @@
+{
+  "name": "railsstarter",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "node node_modules/@codyswann/lisa/dist/index.js --yes --skip-git-check . 2>/dev/null || true"
+  },
+  "devDependencies": {
+    "@codyswann/lisa": "^1.80.0"
+  },
+  "trustedDependencies": [
+    "@codyswann/lisa"
+  ]
+}
