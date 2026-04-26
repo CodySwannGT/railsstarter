@@ -6,7 +6,7 @@
     "postinstall": "[ -n \"$CI\" ] || node node_modules/@codyswann/lisa/dist/index.js --yes --skip-git-check . 2>/dev/null || true"
   },
   "devDependencies": {
-    "@codyswann/lisa": "^1.92.0"
+    "@codyswann/lisa": "^1.95.0"
   },
   "trustedDependencies": [
     "@codyswann/lisa"
