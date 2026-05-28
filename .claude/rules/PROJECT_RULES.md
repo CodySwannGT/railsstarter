@@ -107,11 +107,11 @@ bundle exec lefthook run pre-commit
 
 ```bash
 # Connect to remote console (staging)
-aws sso login --profile railsstarter-staging
-bin/remote-console railsstarter-staging
+aws sso login --profile your-project-staging
+bin/remote-console your-project-staging
 
 # Tail CloudWatch logs
-aws logs tail <log-group> --follow --profile railsstarter-staging
+aws logs tail <log-group> --follow --profile your-project-staging
 ```
 
 ## Architecture
@@ -168,7 +168,7 @@ Build Docker images locally and push to ECR, then update ECS services:
 
 ```bash
 # Full deploy (build, push, update ECS)
-bin/deploy-staging --profile railsstarter-staging
+bin/deploy-staging --profile your-project-staging
 
 # Build and push only the web image
 bin/deploy-staging --service web --no-deploy
@@ -188,7 +188,7 @@ Configure recurring jobs in `config/recurring.yml`. Current jobs:
 Add sensitive variables via AWS SSM:
 
 ```bash
-aws ssm put-parameter --name "/app/my_variable" --value "secret" --type "SecureString" --region "us-east-1" --profile railsstarter-staging
+aws ssm put-parameter --name "/app/my_variable" --value "secret" --type "SecureString" --region "us-east-1" --profile your-project-staging
 ```
 
 Access in app as: `ENV['_MY_VARIABLE']`

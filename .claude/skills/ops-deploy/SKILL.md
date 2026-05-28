@@ -1,12 +1,12 @@
 ---
 name: ops-deploy
-description: "Deploy the Railsstarter Rails application to staging or production. Supports local builds via bin/deploy-staging and CI/CD via branch pushes."
+description: "Deploy the Your Project Rails application to staging or production. Supports local builds via bin/deploy-staging and CI/CD via branch pushes."
 allowed-tools: ["Bash", "Read"]
 ---
 
 # Deploy Application
 
-Deploy the Railsstarter Rails application to the specified environment.
+Deploy the Your Project Rails application to the specified environment.
 
 **Target environment**: `$ARGUMENTS` (expected: `staging` or `production`)
 
@@ -20,11 +20,11 @@ Deploy the Railsstarter Rails application to the specified environment.
 
 2. **For local deploy**:
    - Verify prerequisites: Docker running, AWS CLI, jq, git installed
-   - Check AWS session: `aws sts get-caller-identity --profile railsstarter-staging`
-   - If expired: `aws sso login --profile railsstarter-staging`
+   - Check AWS session: `aws sts get-caller-identity --profile your-project-staging`
+   - If expired: `aws sso login --profile your-project-staging`
    - Run the deploy:
      ```bash
-     bin/deploy-staging --profile railsstarter-staging
+     bin/deploy-staging --profile your-project-staging
      ```
    - Options: `--service web|worker` (default: all), `--no-deploy` (build/push only), `--dry-run` (preview)
 
@@ -33,7 +33,7 @@ Deploy the Railsstarter Rails application to the specified environment.
    aws ecs describe-services \
      --cluster webCluster \
      --services web-rails-service worker-service \
-     --profile railsstarter-staging \
+     --profile your-project-staging \
      --region us-east-1 \
      --query 'services[].{name:serviceName,running:runningCount,desired:desiredCount,rollout:deployments[0].rolloutState}' \
      --output table
@@ -42,7 +42,7 @@ Deploy the Railsstarter Rails application to the specified environment.
 4. **Check logs for errors** after services stabilize:
    ```bash
    aws logs describe-log-groups \
-     --profile railsstarter-staging \
+     --profile your-project-staging \
      --region us-east-1 \
      --query 'logGroups[].logGroupName' \
      --output table
@@ -57,7 +57,7 @@ Deploy the Railsstarter Rails application to the specified environment.
 
 3. **CI/CD deploy**: merge/push to `main` branch (if the trigger is re-enabled)
 
-4. **Post-deploy verification** (same as staging but with `--profile railsstarter-production`)
+4. **Post-deploy verification** (same as staging but with `--profile your-project-production`)
 
 ## Execution
 

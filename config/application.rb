@@ -9,7 +9,7 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module App
-  # Main application configuration for the Railsstarter Rails app.
+  # Main application configuration for the Your Project Rails app.
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
