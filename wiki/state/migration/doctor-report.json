@@ -4,7 +4,7 @@
   "wikiRoot": "wiki",
   "mode": "embedded",
   "migration": false,
-  "generatedAt": "2026-05-28T00:50:28.053Z",
+  "generatedAt": "2026-05-28T00:55:12.007Z",
   "verdict": "READY",
   "subset": "deterministic",
   "note": "Deterministic subset only. Groups C (no-loss/parity), D (runtime surfaces), E (functional smoke), and G (git/CI/distribution) are completed by the lisa-wiki-doctor skill, which merges its results into this report.",
