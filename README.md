@@ -75,3 +75,7 @@ Or use utility commands:
 ## Troubleshooting
 
 > Ask Claude: "I'm having an issue with [describe problem]. Help me debug it."
+
+## Project Wiki
+
+Durable project knowledge lives in a git-native LLM Wiki under [`wiki/`](wiki/). Start at [`wiki/start-here.md`](wiki/start-here.md), or run `/onboard-me` for a guided tour. Use `/query "<question>"` to get cited answers and `/ingest <url|file|prompt>` to add knowledge.

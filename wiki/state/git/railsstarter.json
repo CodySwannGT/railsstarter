@@ -1,0 +1,17 @@
+{
+  "connector": "git",
+  "profile": "railsstarter",
+  "lastSuccessfulRunAt": "2026-05-28T00:50:21.143Z",
+  "cursor": {
+    "lastCommit": "03eb89c83a4f25cf06769b37b62ca8971a976dc0",
+    "lastPr": 47
+  },
+  "sourceNotes": [
+    "wiki/sources/git/2026-05-28-railsstarter-git.md"
+  ],
+  "synthesisPages": [
+    "wiki/projects/railsstarter.md",
+    "wiki/architecture/rails-8-modern-stack.md"
+  ],
+  "schemaVersion": "1.0.0"
+}

@@ -1,0 +1,19 @@
+{
+  "connector": "docs",
+  "profile": "project-rules",
+  "lastSuccessfulRunAt": "2026-05-28T00:50:21.143Z",
+  "cursor": {
+    "originalFile": ".claude/rules/PROJECT_RULES.md"
+  },
+  "sourceNotes": [
+    "wiki/sources/docs/2026-05-28-project-rules.md"
+  ],
+  "synthesisPages": [
+    "wiki/architecture/rails-8-modern-stack.md",
+    "wiki/architecture/multi-database-mysql.md",
+    "wiki/architecture/aws-infrastructure.md",
+    "wiki/playbooks/local-development.md",
+    "wiki/playbooks/deployment.md"
+  ],
+  "schemaVersion": "1.0.0"
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0.0",
+  "org": "railsstarter",
+  "displayName": "Railsstarter Engineering Wiki",
+  "purpose": "Engineering knowledge base for the railsstarter Rails 8 application: architecture decisions, runbooks and deploy/ops playbooks, the infrastructure model (multi-database MySQL, Solid Queue/Cache/Cable, AWS ECS Fargate, CloudWatch, OpenTelemetry), and onboarding. It is the durable, git-native home for how this system is built and operated, queryable by both the team and agents.",
+  "mode": "embedded",
+  "wikiRoot": "wiki",
+  "frontmatter": true,
+  "categories": [
+    "concepts",
+    "entities",
+    "decisions",
+    "architecture",
+    "requirements",
+    "playbooks",
+    "open-questions",
+    "projects",
+    "sales",
+    "marketing",
+    "finance",
+    "customers",
+    "people",
+    "legal"
+  ],
+  "sources": {
+    "layout": "by-system"
+  },
+  "sensitivity": {
+    "enabled": true,
+    "default": "internal"
+  },
+  "sourceRetention": "sanitized-note-only",
+  "readme": {
+    "mode": "rich"
+  },
+  "git": {
+    "prPerIngestion": false,
+    "targetBranch": "main"
+  },
+  "connectors": {
+    "git": {
+      "enabled": true,
+      "sideEffects": "read-only-ingest"
+    },
+    "docs": {
+      "enabled": true,
+      "sideEffects": "read-only-ingest"
+    },
+    "roles": {
+      "enabled": true,
+      "sideEffects": "read-only-ingest"
+    }
+  },
+  "staff": [
+    {
+      "id": "chief",
+      "role": "Chief of Staff",
+      "expertise": "Cross-functional coordination, project status, decisions, playbooks, and open questions; routes work to the other roles.",
+      "owns": {
+        "categories": ["projects", "decisions", "playbooks", "open-questions"]
+      },
+      "sensitivity": "confidential"
+    },
+    {
+      "id": "sally",
+      "role": "Sales",
+      "expertise": "Pipeline, deals, prospects, and sales process knowledge.",
+      "owns": {
+        "categories": ["sales"]
+      },
+      "sensitivity": "internal"
+    },
+    {
+      "id": "mark",
+      "role": "Marketing",
+      "expertise": "Positioning, campaigns, content, and marketing channels.",
+      "owns": {
+        "categories": ["marketing"]
+      },
+      "sensitivity": "internal"
+    },
+    {
+      "id": "felix",
+      "role": "Finance",
+      "expertise": "Budgets, costs, forecasts, and financial reporting.",
+      "owns": {
+        "categories": ["finance"]
+      },
+      "sensitivity": "confidential"
+    },
+    {
+      "id": "casey",
+      "role": "Customer Success",
+      "expertise": "Customer accounts, onboarding, support history, and retention.",
+      "owns": {
+        "categories": ["customers"]
+      },
+      "sensitivity": "internal"
+    },
+    {
+      "id": "parker",
+      "role": "People",
+      "expertise": "Team, roles, hiring, and people operations.",
+      "owns": {
+        "categories": ["people"]
+      },
+      "sensitivity": "confidential"
+    },
+    {
+      "id": "lex",
+      "role": "Legal & Compliance",
+      "expertise": "Contracts, compliance, policies, and legal review.",
+      "owns": {
+        "categories": ["legal"]
+      },
+      "sensitivity": "confidential"
+    }
+  ]
+}
