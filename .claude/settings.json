@@ -108,6 +108,7 @@
     "rails@lisa": true,
     "lisa@lisa": true,
     "lisa-rails@lisa": true,
+    "lisa-wiki@lisa": true,
     "ruby-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "impeccable@impeccable": true
