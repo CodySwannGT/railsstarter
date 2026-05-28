@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "org": "railsstarter",
+  "org": "your-org",
   "displayName": "Railsstarter Engineering Wiki",
   "purpose": "Engineering knowledge base for the railsstarter Rails 8 application: architecture decisions, runbooks and deploy/ops playbooks, the infrastructure model (multi-database MySQL, Solid Queue/Cache/Cable, AWS ECS Fargate, CloudWatch, OpenTelemetry), and onboarding. It is the durable, git-native home for how this system is built and operated, queryable by both the team and agents.",
   "mode": "embedded",

@@ -9,7 +9,7 @@
 Engineering knowledge base for the railsstarter Rails 8 application: architecture decisions, runbooks and deploy/ops playbooks, the infrastructure model (multi-database MySQL, Solid Queue/Cache/Cable, AWS ECS Fargate, CloudWatch, OpenTelemetry), and onboarding. It is the durable, git-native home for how this system is built and operated, queryable by both the team and agents.
 
 ## What this is
-A git-native markdown knowledge base under `wiki/`, owned by **railsstarter**, maintained by the
+A git-native markdown knowledge base under `wiki/`, owned by **`<your-org>`** (placeholder — set `org` in `wiki/lisa-wiki.config.json` after templating), maintained by the
 lisa-wiki kernel. Three layers: immutable **raw sources** (`wiki/sources/`), the LLM-owned
 **synthesis** layer (the category directories), and this **schema** layer (config + this contract).
 Repository mode: **embedded**.
