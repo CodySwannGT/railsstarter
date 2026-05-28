@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="turbo-refresh-method" content="morph">
     <meta name="turbo-refresh-scroll" content="preserve">
-    <title><%= content_for?(:title) ? yield(:title) : "Railsstarter" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "Your Project" %></title>
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -35,7 +35,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">Railsstarter</a>
+        <a class="navbar-brand" href="/">Your Project</a>
         <% unless Rails.env.production? %>
           <small class="text-muted">(<%= Rails.env.capitalize %>)</small>
         <% end %>
@@ -52,7 +52,7 @@
 
     <footer class="footer py-3 bg-body-tertiary mt-5">
       <div class="container text-end">
-        &copy; Railsstarter <%= Date.today.year %> - Version <%= APP_VERSION %>
+        &copy; Your Project <%= Date.today.year %> - Version <%= APP_VERSION %>
         <%= "(#{Rails.env})" unless Rails.env.production? %>
       </div>
     </footer>

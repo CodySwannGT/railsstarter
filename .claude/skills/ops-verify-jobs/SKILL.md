@@ -17,8 +17,8 @@ Verify that Solid Queue background jobs are running and processing correctly in 
 | Environment | Profile | Cluster | Worker Service | Worker Log Group |
 |---|---|---|---|---|
 | local | — | — | `worker` (Docker) | Docker Compose logs |
-| staging | `railsstarter-staging` | `webCluster` | `worker-service` | Discover via `aws logs describe-log-groups` |
-| production | `railsstarter-production` | `webCluster` | `worker-service` | Discover via `aws logs describe-log-groups` |
+| staging | `your-project-staging` | `webCluster` | `worker-service` | Discover via `aws logs describe-log-groups` |
+| production | `your-project-production` | `webCluster` | `worker-service` | Discover via `aws logs describe-log-groups` |
 
 ### Step 2: Check Worker Service Health
 

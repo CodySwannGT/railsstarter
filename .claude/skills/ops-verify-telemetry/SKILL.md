@@ -16,8 +16,8 @@ Verify that OpenTelemetry traces are being collected and exported to AWS X-Ray i
 
 | Environment | Profile |
 |---|---|
-| staging | `railsstarter-staging` |
-| production | `railsstarter-production` |
+| staging | `your-project-staging` |
+| production | `your-project-production` |
 
 ### Step 2: Check AWS Session
 
@@ -45,7 +45,7 @@ Run the `services` subcommand to view the dependency map:
 bin/verify-telemetry services <profile>
 ```
 
-Verify that the `railsstarter-<env>` service appears in the graph and its downstream dependencies (MySQL, external APIs) are visible.
+Verify that the `your-project-<env>` service appears in the graph and its downstream dependencies (MySQL, external APIs) are visible.
 
 ### Step 5: Investigate Issues (Optional)
 

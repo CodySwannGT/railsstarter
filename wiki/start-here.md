@@ -1,7 +1,7 @@
-# Start here — Railsstarter Engineering Wiki
+# Start here — Your Project Engineering Wiki
 
 ## Purpose
-Engineering knowledge base for the railsstarter Rails 8 application: architecture decisions, runbooks and deploy/ops playbooks, the infrastructure model (multi-database MySQL, Solid Queue/Cache/Cable, AWS ECS Fargate, CloudWatch, OpenTelemetry), and onboarding. It is the durable, git-native home for how this system is built and operated, queryable by both the team and agents.
+Engineering knowledge base for the your-project Rails 8 application: architecture decisions, runbooks and deploy/ops playbooks, the infrastructure model (multi-database MySQL, Solid Queue/Cache/Cable, AWS ECS Fargate, CloudWatch, OpenTelemetry), and onboarding. It is the durable, git-native home for how this system is built and operated, queryable by both the team and agents.
 
 ## What this is
 A git-native LLM Wiki owned by **`<your-org>`** (set `org` in [wiki/lisa-wiki.config.json](lisa-wiki.config.json) after templating) and maintained by the `lisa-wiki` kernel. It is the

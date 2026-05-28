@@ -6,7 +6,7 @@ allowed-tools: ["Bash", "Read"]
 
 # Check Application Logs
 
-Check logs for the Railsstarter Rails application in the specified environment.
+Check logs for the Your Project Rails application in the specified environment.
 
 **Target environment**: `$ARGUMENTS` (expected: `local`, `staging`, or `production`)
 
@@ -32,8 +32,8 @@ Check logs for the Railsstarter Rails application in the specified environment.
 ### If target is `staging` or `production`
 
 1. **Set the AWS profile**:
-   - Staging: `railsstarter-staging`
-   - Production: `railsstarter-production`
+   - Staging: `your-project-staging`
+   - Production: `your-project-production`
 
 2. **Check AWS session**:
    ```bash

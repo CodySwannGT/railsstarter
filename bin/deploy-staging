@@ -13,7 +13,7 @@
 #   bin/deploy-staging [OPTIONS]
 #
 # Options:
-#   --profile PROFILE   AWS CLI profile (default: railsstarter-staging)
+#   --profile PROFILE   AWS CLI profile (default: your-project-staging)
 #   --service SERVICE   web, worker, or all (default: all)
 #   --no-deploy         Build and push images only — skip ECS service update
 #   --dry-run           Print commands without executing
@@ -55,7 +55,7 @@ run_cmd() {
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
-PROFILE="railsstarter-staging"
+PROFILE="your-project-staging"
 SERVICE="all"
 NO_DEPLOY="false"
 DRY_RUN="false"
@@ -70,7 +70,7 @@ Usage:
   bin/deploy-staging [OPTIONS]
 
 Options:
-  --profile PROFILE   AWS CLI profile (default: railsstarter-staging)
+  --profile PROFILE   AWS CLI profile (default: your-project-staging)
   --service SERVICE   web, worker, or all (default: all)
   --no-deploy         Build and push images only — skip ECS service update
   --dry-run           Print commands without executing

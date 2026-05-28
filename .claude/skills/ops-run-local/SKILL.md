@@ -6,7 +6,7 @@ allowed-tools: ["Bash", "Read"]
 
 # Manage Local Development Environment
 
-Manage the local Docker Compose stack for the Railsstarter Rails application.
+Manage the local Docker Compose stack for the Your Project Rails application.
 
 **Action**: `$ARGUMENTS` (expected: `start`, `stop`, `restart`, or `status`; default: `start`)
 
