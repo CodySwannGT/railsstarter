@@ -24,6 +24,11 @@
 | [Local Development](playbooks/local-development.md) | Docker, mise, pre-push hooks, and host vs Docker DB connectivity | 2026-05-28 |
 | [Deployment](playbooks/deployment.md) | Environment strategy, local staging deploy, scheduled jobs, env vars | 2026-05-28 |
 
+## People
+| Page | Summary | Updated |
+|---|---|---|
+| [Digital Staff Roster](people/staff-roster.md) | The seven-role digital staff team and category ownership | 2026-05-28 |
+
 ## Projects
 | Page | Summary | Updated |
 |---|---|---|
@@ -34,3 +39,4 @@
 |---|---|
 | `sources/docs/` | [2026-05-28-project-rules.md](sources/docs/2026-05-28-project-rules.md) |
 | `sources/git/` | [2026-05-28-railsstarter-git.md](sources/git/2026-05-28-railsstarter-git.md) |
+| `sources/roles/` | [2026-05-28-roles.md](sources/roles/2026-05-28-roles.md) |
