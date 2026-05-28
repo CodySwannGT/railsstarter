@@ -10,13 +10,15 @@ project: railsstarter
 
 # git history — railsstarter (2026-05-28)
 
-- Repo: `/Users/cody/workspace/railsstarter/.claude/worktrees/add-lisa`
-- HEAD: `03eb89c83a4f25cf06769b37b62ca8971a976dc0`
-- Total commits on HEAD: 40
-- New commits since last ingest (first run): 40
-- Merged PRs: 20 recent merged PR(s) in CodySwannGT/railsstarter; latest #47 "chore: update @codyswann/lisa to 2.62.1"
+- Repo: `/Users/cody/workspace/railsstarter`
+- HEAD: `869e8dddde9fcc61b9826dde10320e0fa45bd91f`
+- Total commits on HEAD: 42
+- New commits since last ingest (first run): 42
+- Merged PRs: 20 recent merged PR(s) in CodySwannGT/railsstarter; latest #48 "chore: update Lisa to 2.116.0 and bootstrap lisa-wiki"
 
 ## New commits
+- 869e8dd · 2026-05-27 · Merge pull request #48 from CodySwannGT/worktree-add-lisa
+- 4f35a83 · 2026-05-27 · chore: update Lisa to 2.116.0 and bootstrap lisa-wiki
 - 03eb89c · 2026-05-25 · Merge pull request #47 from CodySwannGT/chore/lisa-update-latest
 - 99b946c · 2026-05-25 · chore: update @codyswann/lisa to 2.62.1
 - 1b783cd · 2026-05-24 · Merge pull request #46 from CodySwannGT/chore/lisa-update-2026-05-24
