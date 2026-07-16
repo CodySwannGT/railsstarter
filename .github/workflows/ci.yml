@@ -20,6 +20,12 @@ jobs:
   quality:
     name: Quality Checks
     uses: CodySwannGT/lisa/.github/workflows/quality-rails.yml@main
+    # railsstarter runs on MySQL (config/database.yml uses the mysql2 adapter).
+    # Without this the reusable defaults to PostgreSQL and `bin/rails db:prepare`
+    # fails. database_name matches the app's DATABASE_NAME default.
+    with:
+      database_type: mysql
+      database_name: railsdb
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
       FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
