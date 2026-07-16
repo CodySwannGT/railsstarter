@@ -7,6 +7,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+# The reusable quality-rails.yml declares checks:write and pull-requests:write.
+# A caller must grant at least those, otherwise GitHub fails the run at startup
+# ("requesting X, only allowed none") whenever the repo default token is
+# read-only. Mirror the reusable's permissions here so CI can start.
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   quality:
     name: Quality Checks
