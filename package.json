@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "[ -n \"$CI\" ] || node node_modules/@codyswann/lisa/dist/index.js --yes --skip-git-check . 2>/dev/null || true"
+    "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/dist/index.js --yes --skip-git-check . 2>/dev/null || true"
   },
   "devDependencies": {
-    "@codyswann/lisa": "^2.191.4"
+    "@codyswann/lisa": "^2.217.1"
   },
   "trustedDependencies": [
     "@codyswann/lisa"

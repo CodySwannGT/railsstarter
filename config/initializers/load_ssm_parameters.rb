@@ -13,10 +13,10 @@ def fetch_ssm_parameters(prefix)
 
   parameters = begin
     client.get_parameters_by_path({
-                                    path: prefix,
-                                    with_decryption: true,
-                                    recursive: true
-                                  }).parameters
+      path: prefix,
+      with_decryption: true,
+      recursive: true
+    }).parameters
   rescue StandardError
     nil
   end
