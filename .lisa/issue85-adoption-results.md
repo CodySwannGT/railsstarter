@@ -1,5 +1,21 @@
 # Issue85 adoption evidence and remaining delivery
 
+## Current delivery checkout — 2026-10-06
+
+The delivery branch now carries published Lisa 4.70.3. Its native version command reports both local and registry latest as 4.70.3. The frozen Bun 1.3.8 install under Node 22.23.3 completed successfully; installation alone is not template-apply proof.
+
+The actual full apply and reapply used `LISA_BOOTSTRAP=1` with `apply . --yes --full-apply`. Both exited zero, reported zero copied/overwritten/out-of-date templates, and left the committed source unchanged. Without the bootstrap declaration, this non-interactive invocation reports a skip; that earlier skip is not credited as full apply. The three explicitly retired workflow paths remain ignored by `.lisaignore` and absent. The apply reports a legacy `rails@lisa` registration warning while registering `lisa-rails@lisa`; this does not establish universal plugin readiness.
+
+Native offline doctor exited zero: 37 checks are `ok`, with two retained warnings for the absent unattended-worker qualification record and existing worktrees holding preserved work. Reusable workflow refs, applied-template freshness and hook-copy consistency passed. The current delivery worktree is clean; unrelated original work and the prior audit branch remain preserved.
+
+Fresh npm 10.9.9 audit against the committed lock reports 34 development-tooling entries (11 high, 23 moderate), representing the same five underlying advisories: braces, deepmerge-ts, postcss-selector-parser, smol-toml and sprintf-js. Their bounded dispositions and review date are in `docs/tooling-advisories.md`; the audit remains nonzero. Ordinary delivery commit hooks also refreshed the Ruby advisory database and reported no Ruby vulnerabilities.
+
+The published version initializer passed its explicit RuboCop command with zero offenses. Native Ruby 3.4.11 loading with the project path supplied to Rails returned the stripped, frozen committed VERSION value. This initializer check is distinct from full application boot.
+
+Fresh delivery-head aggregate runtime, consumer smoke, scanner adoption, hosted CI/review and merge remain pending. The npm updater under #82 is delivered separately; it is not a prerequisite for the other starter leaves. All observations below belong to the earlier donor checkout and are retained as historical evidence, not current-head qualification.
+
+## Historical donor observations
+
 Genuine Lisa4.70.1/git04c57b040ecc65b9682e84875606f4843a437266 is installed. Official npm11.21.0 installation used ordinary default engine policy and disabled lifecycle scripts, followed by explicit full apply, three named template refreshes and explicit reapply. Published Lisa declares npm please-use-bun, so this existing npm carrier is not claimed to satisfy that declared engine. No force, engine override, Bun lock conversion or Claude inference was used.
 
 Eight Ruby tool majors are installed through ordinary conservative Bundler resolution. Host SimpleCov configuration uses its actual1.3 API and retains80/70 floors, all previous groups/filter boundaries and zero-example failure. All126 Ruby files lint clean; Brakeman, Reek and original Flog/Flay invocations exit0. Flog/Flay zero exits alone do not prove every separate numeric quality budget. Current Bundler audit checked1254 advisories at94dccfdbd4154b44d8a1c7ff7d13cc76727f87d6 and exits0.
