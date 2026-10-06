@@ -1,0 +1,17 @@
+# Tooling dependency dispositions
+
+Observed on 2026-10-06 with Node 22.23.3 and the genuine published Lisa 4.70.3 package. The starter is a private Rails application. Its only direct npm dependency is development tooling; these packages are absent from the production Docker dependency installation.
+
+`npm audit --ignore-scripts` reports 34 affected entries: 11 high and 23 moderate. These propagate five underlying advisories through the tooling graph. A normal `npm audit fix --ignore-scripts` refreshed compatible resolutions, but the same advisories remain. The audit exits nonzero and must remain visible. Its proposed forced change downgrades Lisa to 4.55.0 and is not an acceptable repair.
+
+| Advisory | Installed exposure | Disposition and replacement trigger |
+| --- | --- | --- |
+| [braces stack exhaustion](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) | Tailwind/glob/micromatch tooling parses deeply nested patterns. The audit marks all available braces selections vulnerable. | Retain the published tooling dependency until Lisa adopts a patched release or replaces the affected glob chain. Do not run tooling against untrusted repositories or patterns. |
+| [deepmerge-ts recursive graph exhaustion](https://github.com/advisories/GHSA-ggr8-5vv4-36mx) | ESLint functional plugin depends on the affected merge implementation. | Lisa owns the plugin upgrade or compatible integration of deepmerge-ts 8+. Consumer overrides would change a managed plugin's contract without upstream tests. |
+| [PostCSS selector parsing CPU exhaustion](https://github.com/advisories/GHSA-rj75-hqrm-r3gf) | Tailwind/PostCSS tooling includes the older parser. | Lisa owns a compatible dependency-chain upgrade to parser 7.1.6+ or replacement of that integration. Avoid processing untrusted styles through the affected tooling. |
+| [smol-toml quadratic parsing](https://github.com/advisories/GHSA-r4xh-jqrq-34v2) | Lisa's tooling TOML parser is affected. | Adopt Lisa's patched parser release when available. Keep project TOML inputs reviewed and bounded. |
+| [sprintf-js unbounded precision](https://github.com/advisories/GHSA-hp3w-g68c-fv3c) | Jest's NYC configuration loader reaches argparse/js-yaml and sprintf-js. The compatible fix did not eliminate this chain. | Lisa owns removal or a supported replacement of the old loader chain. A clean production npm audit does not discharge this development-tooling advisory. |
+
+Owner: starter maintainers for consumer adoption, Lisa maintainers for managed dependency repairs. Recheck these dispositions weekly and on every Lisa update. Next review is due 2026-10-13; after that date this document is stale until a new audit refreshes each row. Any new advisory, runtime inclusion, externally supplied input path or available upstream fix requires an immediate reassessment. This is a bounded residual exposure record, not a clean-audit claim or an audit suppression.
+
+The Ruby lock selects Brakeman 8.1.0, database_consistency 3.0.14, rack-mini-profiler 5.0.0, rspec-rails 8.0.4, rubocop-capybara 3.0.0, rubocop-yard 1.3.0, shoulda-matchers 8.0.1 and SimpleCov 1.3.2 through published Lisa constraints. `bundler-audit check --update` found no Ruby advisories against ruby-advisory-db revision `0af3fe207c318a8a99ce522c8538103a13eb6c0b` during the normal 4.70.3 adoption commit hook on 2026-10-06. Combined runtime and hosted validation remain separate evidence.

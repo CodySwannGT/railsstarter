@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/dist/index.js --yes --skip-git-check . 2>/dev/null || true"
+    "check:work-item": "node scripts/lisa-work-item.mjs validate-pr",
+    "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/all/copy-overwrite/scripts/lisa-postinstall.mjs || true"
   },
   "devDependencies": {
-    "@codyswann/lisa": "^2.217.1"
+    "@codyswann/lisa": "^4.70.3"
   },
   "trustedDependencies": [
     "@codyswann/lisa"

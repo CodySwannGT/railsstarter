@@ -1,6 +1,6 @@
 ---
 name: ops-check-logs
-description: Check application logs from local Docker Compose or remote AWS CloudWatch for Rails applications. Supports log tailing, filtering, and error searching.
+description: "Check application logs from…"
 allowed-tools:
   - Bash
   - Read

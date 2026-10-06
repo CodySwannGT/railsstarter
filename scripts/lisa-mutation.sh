@@ -26,6 +26,14 @@
 #   since: main
 #
 # Overridable via env: MUTATION_ENABLED=true|false, MUTATION_SINCE=<ref>.
+#
+# SCRATCH SUPERVISION LIVES OUTSIDE THIS FILE.
+#   Both routes that run this gate — the lefthook pre-push command and the
+#   `mutation` job in Lisa's reusable Rails quality workflow — wrap THIS script
+#   in `scripts/lisa-scratch-run.sh`. Do not add a supervisor call here: a route
+#   must cross exactly one supervisor boundary, and a second one would nest a
+#   run inside itself. The supervisor refuses that outright, so the mistake
+#   surfaces as a refusal rather than as a silent double boundary.
 # -----------------------------------------------------------------------------
 set -euo pipefail
 
@@ -62,11 +70,18 @@ if [ -z "$BASE" ]; then
   exit 0
 fi
 
-CHANGED="$(git diff --name-only --diff-filter=ACMR "${BASE}...HEAD" -- 'app/**/*.rb' 'lib/**/*.rb' || true)"
+# Working tree, not "${BASE}...HEAD": mutant reads the files on disk, so a
+# subject whose only change is uncommitted is invisible to committed state and
+# this pre-check would report "nothing to mutate" while a changed subject sat
+# right there. Parity with the TypeScript gate's selectChangedTargets.
+CHANGED="$(git diff --name-only --diff-filter=ACMR "${BASE}" -- 'app/**/*.rb' 'lib/**/*.rb' || true)"
 if [ -z "$CHANGED" ]; then
   echo "⚪ Mutation gate: no changed Ruby files under app/ or lib/ vs ${SINCE}. Nothing to mutate."
   exit 0
 fi
 
+# Known gap, deliberately not papered over: mutant's own --since scoping is
+# committed-based, so the working-tree correction above reaches the pre-check
+# but not mutant's subject selection. There is no mutant flag for it.
 echo "🧬 Mutation gate: running mutant (--since ${SINCE}) on changed subjects..."
 exec bundle exec mutant run --since "$SINCE"
