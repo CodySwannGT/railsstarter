@@ -1,0 +1,24 @@
+{
+  "captured_at": "2026-10-04T15:02:44.838040+00:00",
+  "head_sha": "35acfcfd6ee6cd8ff27b1605a38cf59ed12656d1",
+  "scope": "Current Ruby declarations, narrow version docs and codified proof; dirty worktree identity, not a new commit",
+  "source_hashes": {
+    "Gemfile": "9a09f7d5c9e8008ff18db9c4191fe1a6cf0517876966c52da07d5625ba5d6059",
+    "Gemfile.lock": "94480126b8bbec360cf1d830a7a58224daa1e993eba2aafe46e6a61c703cf74c",
+    ".ruby-version": "f02a81f28ef1401e3cd199fc021643de3350812c53c8a00003b70124fb243e43",
+    ".mise.toml": "8e0e7219f1f345456c933c28a0a080bd2a6d2c303d2f7560993377f729d439e6",
+    "Dockerfile": "7432fe1e5bd3186ff4b2193c38eb88fc31f2a6f65737910605fa312c577ff447",
+    "worker.Dockerfile": "1ab20ccd4d1433fd90593e42e1f34aed2d68d90aa7ad6d300af1d1ad49577694",
+    "Dockerfile.local": "65561c79335b7c85c35e5c3b324f4df72f04ee361f86cdbdcf1917a30a1297bd",
+    "worker.Dockerfile.local": "a44c5f779b1b6c8f1e7b3b4d86609ca4e7dcc539c1db5ef6a964ecdf0e9897e3",
+    ".rubocop.yml": "5da977f7ac17634ae6658edd273a4ab0f1b7641e9958d23147e493593964186a",
+    ".claude/rules/PROJECT_RULES.md": "7ca82bd0a23d358b1f4762a54d0c92141c922577219ebfd436aae5877c8c862b",
+    "spec/fixtures/runtime/acceptance.json": "d8e202a97964be13c50d9ad47944af7c10ce63d5cc0ccecc3f22b998622af1ae",
+    "spec/fixtures/runtime/smoke.rb": "d108e087c7d1ee8ab160c100c05e99e351a09b07394efe2701a21b56bfa4efc9",
+    "spec/runtime/dependency_smoke_spec.rb": "616734495eb6d8efe354b0e83c9148f18e745310c5c0a2f20f122aaf1304e60c",
+    "spec/runtime/dependency_smoke_ruby_spec.rb": "b441809794ea3a52acf18af4078f217653d930bfd3bedccc717c56b63ac24032"
+  },
+  "source_manifest_sha256": "742d8f1428d0924a7314ccc5936dd4146cec03fc88c978eb4f469981afd86728",
+  "tracked_diff_sha256": "91ac899591d5d25b1c3669853fb99fa55390b9e4a84b8decdaef348094cf4a2f",
+  "tracked_diff_excludes_untracked_spec": "spec/runtime/dependency_smoke_ruby_spec.rb is included in source_hashes"
+}
