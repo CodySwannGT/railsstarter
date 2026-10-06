@@ -1,0 +1,227 @@
+{
+  "operation": "record_and_rollup",
+  "artifactRef": "github:CodySwannGT/railsstarter#81",
+  "artifactKind": "github-issue",
+  "attachmentPreference": "comment-only",
+  "scope": "Cumulative measured snapshots at authorized normal local donor stage, not complete billing or delivery totals",
+  "sumDistinctSessionSnapshots": 58642962,
+  "snapshots": [
+    {
+      "sessionId": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+      "role": "root",
+      "model": "gpt-6.1-sol",
+      "sessionPath": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T11-47-15-01a10799-1620-79d0-a738-482cbbbc3cbb.jsonl",
+      "latestCumulativeSnapshot": {
+        "timestamp": "2026-10-04T18:11:21.607Z",
+        "line": 1346,
+        "usage": {
+          "input_tokens": 20138981,
+          "cached_input_tokens": 19568128,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 68905,
+          "reasoning_output_tokens": 25140,
+          "total_tokens": 20207886
+        }
+      }
+    },
+    {
+      "sessionId": "01a1079a-1893-7142-94c8-1c560545d8d1",
+      "role": "input-resolver then bounded builder",
+      "model": "gpt-6.1-sol",
+      "sessionPath": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T11-48-21-01a1079a-1893-7142-94c8-1c560545d8d1.jsonl",
+      "latestCumulativeSnapshot": {
+        "timestamp": "2026-10-04T17:50:57.199Z",
+        "line": 717,
+        "usage": {
+          "input_tokens": 12501376,
+          "cached_input_tokens": 12132992,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 51585,
+          "reasoning_output_tokens": 12443,
+          "total_tokens": 12552961
+        }
+      }
+    },
+    {
+      "sessionId": "01a107a4-f7d3-7fd1-a77f-f380a0d3db63",
+      "role": "researcher",
+      "model": "gpt-6.1-sol",
+      "sessionPath": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T12-00-14-01a107a4-f7d3-7fd1-a77f-f380a0d3db63.jsonl",
+      "latestCumulativeSnapshot": {
+        "timestamp": "2026-10-04T17:29:55.083Z",
+        "line": 202,
+        "usage": {
+          "input_tokens": 3438931,
+          "cached_input_tokens": 3153280,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 11436,
+          "reasoning_output_tokens": 1236,
+          "total_tokens": 3450367
+        }
+      }
+    },
+    {
+      "sessionId": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "role": "independent verifier",
+      "model": "gpt-6.1-sol",
+      "sessionPath": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T12-02-39-01a107a7-2f40-7fb1-afde-1f1ce3f3b616.jsonl",
+      "latestCumulativeSnapshot": {
+        "timestamp": "2026-10-04T18:08:22.512Z",
+        "line": 1101,
+        "usage": {
+          "input_tokens": 22383622,
+          "cached_input_tokens": 21919488,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 48126,
+          "reasoning_output_tokens": 12422,
+          "total_tokens": 22431748
+        }
+      }
+    }
+  ],
+  "entries": [
+    {
+      "entryId": "lisa-implement:81:01a10799-1620-79d0-a738-482cbbbc3cbb",
+      "runId": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+      "flow": "lisa-implement",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "source": "measured-subset",
+      "inputTokens": 20138981,
+      "cachedInputTokens": 19568128,
+      "outputTokens": 68905,
+      "reasoningTokens": 25140,
+      "totalTokens": null,
+      "measuredSubsetTokens": 20207886,
+      "cost": null,
+      "currency": null,
+      "pricingStatus": "missing",
+      "pricingSource": null,
+      "artifactRef": "github:CodySwannGT/railsstarter#81",
+      "parentArtifactRef": "github:CodySwannGT/railsstarter#60",
+      "effectiveness": {
+        "schema": 1,
+        "lisaVersion": "4.67.0",
+        "workerConfigRevision": null,
+        "workerWallMs": null,
+        "feedbackMs": null,
+        "workerSource": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T11-47-15-01a10799-1620-79d0-a738-482cbbbc3cbb.jsonl:1346",
+        "attention": null,
+        "readyAt": null,
+        "acceptedAt": null,
+        "lifecycleSources": [],
+        "reworkSources": []
+      }
+    },
+    {
+      "entryId": "lisa-implement:81:01a1079a-1893-7142-94c8-1c560545d8d1",
+      "runId": "01a1079a-1893-7142-94c8-1c560545d8d1",
+      "flow": "lisa-implement",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "source": "measured-subset",
+      "inputTokens": 12501376,
+      "cachedInputTokens": 12132992,
+      "outputTokens": 51585,
+      "reasoningTokens": 12443,
+      "totalTokens": null,
+      "measuredSubsetTokens": 12552961,
+      "cost": null,
+      "currency": null,
+      "pricingStatus": "missing",
+      "pricingSource": null,
+      "artifactRef": "github:CodySwannGT/railsstarter#81",
+      "parentArtifactRef": "github:CodySwannGT/railsstarter#60",
+      "effectiveness": {
+        "schema": 1,
+        "lisaVersion": "4.67.0",
+        "workerConfigRevision": null,
+        "workerWallMs": null,
+        "feedbackMs": null,
+        "workerSource": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T11-48-21-01a1079a-1893-7142-94c8-1c560545d8d1.jsonl:717",
+        "attention": null,
+        "readyAt": null,
+        "acceptedAt": null,
+        "lifecycleSources": [],
+        "reworkSources": []
+      }
+    },
+    {
+      "entryId": "lisa-implement:81:01a107a4-f7d3-7fd1-a77f-f380a0d3db63",
+      "runId": "01a107a4-f7d3-7fd1-a77f-f380a0d3db63",
+      "flow": "lisa-implement",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "source": "measured-subset",
+      "inputTokens": 3438931,
+      "cachedInputTokens": 3153280,
+      "outputTokens": 11436,
+      "reasoningTokens": 1236,
+      "totalTokens": null,
+      "measuredSubsetTokens": 3450367,
+      "cost": null,
+      "currency": null,
+      "pricingStatus": "missing",
+      "pricingSource": null,
+      "artifactRef": "github:CodySwannGT/railsstarter#81",
+      "parentArtifactRef": "github:CodySwannGT/railsstarter#60",
+      "effectiveness": {
+        "schema": 1,
+        "lisaVersion": "4.67.0",
+        "workerConfigRevision": null,
+        "workerWallMs": null,
+        "feedbackMs": null,
+        "workerSource": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T12-00-14-01a107a4-f7d3-7fd1-a77f-f380a0d3db63.jsonl:202",
+        "attention": null,
+        "readyAt": null,
+        "acceptedAt": null,
+        "lifecycleSources": [],
+        "reworkSources": []
+      }
+    },
+    {
+      "entryId": "lisa-implement:81:01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "runId": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "flow": "lisa-implement",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "source": "measured-subset",
+      "inputTokens": 22383622,
+      "cachedInputTokens": 21919488,
+      "outputTokens": 48126,
+      "reasoningTokens": 12422,
+      "totalTokens": null,
+      "measuredSubsetTokens": 22431748,
+      "cost": null,
+      "currency": null,
+      "pricingStatus": "missing",
+      "pricingSource": null,
+      "artifactRef": "github:CodySwannGT/railsstarter#81",
+      "parentArtifactRef": "github:CodySwannGT/railsstarter#60",
+      "effectiveness": {
+        "schema": 1,
+        "lisaVersion": "4.67.0",
+        "workerConfigRevision": null,
+        "workerWallMs": null,
+        "feedbackMs": null,
+        "workerSource": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T12-02-39-01a107a7-2f40-7fb1-afde-1f1ce3f3b616.jsonl:1101",
+        "attention": null,
+        "readyAt": null,
+        "acceptedAt": null,
+        "lifecycleSources": [],
+        "reworkSources": []
+      }
+    }
+  ],
+  "trackerReadback": {
+    "commentId": 5982772512,
+    "url": "https://github.com/CodySwannGT/railsstarter/issues/81#issuecomment-5982772512",
+    "integrity": {
+      "ok": true,
+      "issues": []
+    },
+    "directEntries": 4,
+    "parentRollup": "not refreshed to preserve concurrent parent/sibling accounting",
+    "optionalTimingMirror": "previous non-ignored-path refusal retained, no weakening or retry"
+  }
+}

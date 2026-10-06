@@ -1,0 +1,3 @@
+Total messages: 1 (Errors: 1, Warnings: 0)
+
+[ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js' with computed SHA-384 integrity 'FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI'. The resource has been blocked. @ http://127.0.0.1:63736/__bootstrap_acceptance?control=js:98

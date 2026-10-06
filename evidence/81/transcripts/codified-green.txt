@@ -1,0 +1,16 @@
+
+Randomized with seed 51401
+
+BootstrapAssets
+  blocks corrupt script integrity and cannot expand navigation or dismiss flash
+  blocks a corrupt stylesheet integrity while unrelated importmap initializes
+  loads source CDN assets and expands navigation, dismisses flash and initializes importmap
+
+Finished in 12.55 seconds (files took 0.73302 seconds to load)
+3 examples, 0 failures
+
+Randomized with seed 51401
+
+Coverage report generated for RSpec to /Users/cody/.codex/worktrees/769f/railsstarter/coverage.
+Line Coverage: 0.0% (0 / 120)
+Branch Coverage: 100.0% (0 / 0)

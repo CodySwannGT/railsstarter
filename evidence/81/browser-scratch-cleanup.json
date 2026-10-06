@@ -1,0 +1,114 @@
+{
+  "captured_at": "2026-10-04T17:27:00.621776+00:00",
+  "session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "removed": [
+    {
+      "path": ".playwright-mcp/console-2026-10-04T16-10-25-496Z.log",
+      "sha256": "e75ca1e071a17570d04e2e101d992f7ef617f4ab9cbe3d94ea6352b66a61c618",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/console-2026-10-04T17-22-25-798Z.log",
+      "sha256": "05cbf5ca6cbfb4a15ee4188030167f000fc8aa59bbb0a10bfb3f3a7588e68389",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/console-2026-10-04T17-22-26-811Z.log",
+      "sha256": "a899fc8cc6aa909b52c62e875e0071d5bde9bb6213978cbfdd505951c797a7ac",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T16-03-41-750Z.yml",
+      "sha256": "27a94f1e714be975d502118e84745ae3874c37dce85abf00be3e9e27208746cc",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T16-10-30-321Z.yml",
+      "sha256": "f271a2950f93017772e05bff95118de564bd3deec40bfd36ae0319148c863fd6",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "durable_copy": "evidence/81/baseline-snapshot.yml",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T16-12-00-566Z.yml",
+      "sha256": "4873e6d09a82816caf98a2a051204b65c77d667cc260eace9ea639f7fb00ce68",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-21-42-348Z.yml",
+      "sha256": "1a5188c71deb0df739211687f71ff9c1eb1e285b3a71159f51e376c0978711c4",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "durable_copy": "evidence/81/success-expanded-snapshot.yml",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-03-999Z.yml",
+      "sha256": "1130d0efc85fac6c0acd56c01c345f85fa5f33128ea768e39256dc3df1b44a45",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-06-111Z.yml",
+      "sha256": "40d7a40eabe52ff895677fd54fa0ba3082fb20a67777a46864ec76c6d9b80ebf",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-25-830Z.yml",
+      "sha256": "1c042c34e321731ad34d63f5d130ced014cfaa4f599750984ad6533af9f39641",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-26-839Z.yml",
+      "sha256": "0b84771af33f2a4c554a99d3d1c7d73bfd96cef705a7dc3a41a15ac951efbf65",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-45-074Z.yml",
+      "sha256": "dc5ff315a167a36c1651f3811e9558f71713d74baef40e31e773237bb2e4127a",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-22-45-770Z.yml",
+      "sha256": "9ee71bb2d84e2166ec609a903049b3d66c524e56bbf29a2ffeffc6aa62bca184",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "durable_copy": "evidence/81/negative-js-snapshot.yml",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-23-02-637Z.yml",
+      "sha256": "a0e6a2b47379b64dc96c553e1982ced7ef207f3c1acaa851da9529d69d7d278a",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-23-03-281Z.yml",
+      "sha256": "1047a6cd852cdca526dd22764e3736d5ff83561362611ae3b91ef63d91d666e5",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "removed": true
+    },
+    {
+      "path": ".playwright-mcp/page-2026-10-04T17-23-03-902Z.yml",
+      "sha256": "d7cf6544f248b3bdf59f524dbf5a9664d160fdf581f5b1851b369a4822667cf1",
+      "ownership": "exact filename emitted by this verifier interactive tool calls",
+      "durable_copy": "evidence/81/restored-snapshot.yml",
+      "removed": true
+    }
+  ],
+  "remaining_preserved": [],
+  "empty_owned_directory_removed": true,
+  "browser_page_cleanup": {
+    "captured_at": "2026-10-04T17:36:20.344528+00:00",
+    "positive_identity": "Playwright browser_tabs listed single tab0 at owned http://127.0.0.1:63736/__bootstrap_acceptance, last restored success",
+    "closed_owned_tab_index": 0,
+    "sibling_tabs": 0
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "status": "pass",
+  "captured_at": "2026-10-04T17:47:36.701540+00:00",
+  "native_verifier_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "checks": [
+    "Final source bytes independently match codification source manifest",
+    "Counterfactual exact two-input mutation digest independently recomputed without writing source",
+    "Original/restored spec digest matches",
+    "GREEN 3/0 and RED CSS 1/1, JS 1/1, checker 2/2 have zero pending/outside errors",
+    "All seven owned test processes reaped and token-proved scratch paths absent"
+  ],
+  "source_manifest": "evidence/81/independent-final-source-manifest.json",
+  "build_id": "uncommitted-81-703000135175cf6eb214b8b87ffc0db81788d41b06bdca762efed5383ec9d3f8",
+  "test_cleanup_count": 7
+}

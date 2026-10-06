@@ -1,0 +1,133 @@
+{
+  "runs": [
+    {
+      "kind": "red-css",
+      "argv": [
+        "bundle",
+        "exec",
+        "rspec",
+        "spec/browser/bootstrap_assets_spec.rb",
+        "-e",
+        "loads source CDN assets",
+        "--format",
+        "documentation",
+        "--format",
+        "json",
+        "--out",
+        "evidence/81/codified-red-css.json"
+      ],
+      "control": "css",
+      "exit_code": 1,
+      "source_manifest": "codification-source-manifest.json",
+      "executed_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    {
+      "kind": "red-js",
+      "argv": [
+        "bundle",
+        "exec",
+        "rspec",
+        "spec/browser/bootstrap_assets_spec.rb",
+        "-e",
+        "loads source CDN assets",
+        "--format",
+        "documentation",
+        "--format",
+        "json",
+        "--out",
+        "evidence/81/codified-red-js.json"
+      ],
+      "control": "js",
+      "exit_code": 1,
+      "source_manifest": "codification-source-manifest.json",
+      "executed_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    {
+      "kind": "red-boundary-checkers",
+      "argv": [
+        "bundle",
+        "exec",
+        "rspec",
+        "spec/browser/bootstrap_assets_spec.rb",
+        "-e",
+        "blocks",
+        "--format",
+        "documentation",
+        "--format",
+        "json",
+        "--out",
+        "evidence/81/codified-red-boundary-checkers.json"
+      ],
+      "control": null,
+      "exit_code": 1,
+      "source_manifest": "Final source manifest applies to app/helper/server; spec executed with ONLY two counterfactual inputs below, not restored spec bytes",
+      "executed_spec_sha256": "b560a4bcb854e23858f24e0ea0ccf096cbb8df1077a6206987b2d1433497e9c8",
+      "mutated_spec_inputs": [
+        {
+          "from": "visit_fixture('css')",
+          "to": "visit_fixture"
+        },
+        {
+          "from": "visit_fixture('js')",
+          "to": "visit_fixture"
+        }
+      ],
+      "restored_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    {
+      "kind": "green",
+      "argv": [
+        "bundle",
+        "exec",
+        "rspec",
+        "spec/browser/bootstrap_assets_spec.rb",
+        "--format",
+        "documentation",
+        "--format",
+        "json",
+        "--out",
+        "evidence/81/codified-green.json"
+      ],
+      "control": null,
+      "exit_code": 0,
+      "source_manifest": "codification-source-manifest.json",
+      "executed_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    }
+  ],
+  "source_manifest": {
+    "app/views/layouts/application.html.erb": {
+      "bytes": 2558,
+      "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    "spec/browser/bootstrap_assets_spec.rb": {
+      "bytes": 4180,
+      "sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    "spec/fixtures/browser/bootstrap_server.rb": {
+      "bytes": 2842,
+      "sha256": "bed7cea4343144a9bf1a9d07161f5f54325b230243142d0fbf71d9a8b17bd446"
+    },
+    "spec/fixtures/browser/bootstrap_harness.rb": {
+      "bytes": 4902,
+      "sha256": "cad89380186df863c1fac5a962babab42feaf1b191f9bb53d8ab61d6fbb8460d"
+    }
+  },
+  "owned_cleanup_observations": 7,
+  "current_source_restored": true,
+  "negative_checker_falsification": {
+    "operation": "Temporarily replace exactly visit_fixture('css') and visit_fixture('js') with normal visit_fixture in owned spec; run only blocks examples; restore original exact bytes in finally after concurrent-change check",
+    "counterfactual_spec_sha256": "b560a4bcb854e23858f24e0ea0ccf096cbb8df1077a6206987b2d1433497e9c8",
+    "final_restored_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32",
+    "original_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32",
+    "replacements": [
+      {
+        "from": "visit_fixture('css')",
+        "to": "visit_fixture"
+      },
+      {
+        "from": "visit_fixture('js')",
+        "to": "visit_fixture"
+      }
+    ]
+  }
+}

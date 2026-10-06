@@ -1,0 +1,24 @@
+{
+  "runner": "rspec-capybara-selenium",
+  "runId": "bootstrap-81-local-final",
+  "capturedAt": "2026-10-04T17:42:13.598183+00:00",
+  "native_report": "evidence/81/codified-green.json",
+  "native_report_sha256": "44cf09862a917dcc9f5f11c6154268ae47a870fd8c899f6dcc1672c492962ac9",
+  "results": [
+    {
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "status": "passed"
+    },
+    {
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "status": "passed"
+    },
+    {
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
+      "status": "passed"
+    }
+  ]
+}

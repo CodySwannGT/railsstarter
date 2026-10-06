@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-04T17:53:28.880+00:00",
+  "operation": "Lisa usage-accounting optional local effectiveness mirror",
+  "canonical_usage_comment_readback": "passed four stable native session entries",
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Error: Command failed: git check-ignore -q -- .lisa/effectiveness/98b0f07f60303f055433e48527796940e33b4ad1a3b9a25e96d62b499031dd9d.json\n",
+  "guard_or_ignore_edits": false,
+  "scope": "Attempted one sourced unknown-clock mirror after canonical host readback. Non-ignored destination is a reported local mirror gap; canonical native usage remains retained."
+}

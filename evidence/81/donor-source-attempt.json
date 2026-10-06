@@ -1,0 +1,19 @@
+{
+  "base_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "normal_commit_exit": 0,
+  "head_after": "ab4ca2c35b5de2c98a3b602f1fd9d2fc6dd47720",
+  "files": [
+    "app/views/layouts/application.html.erb",
+    "bdd/coverage-map.json",
+    "bdd/coverage-report.json",
+    "bdd/features/bootstrap-assets.feature",
+    "docs/bdd-scenario-matrix.md",
+    "docs/e2e-bdd-coverage.md",
+    "spec/browser/bootstrap_assets_spec.rb",
+    "spec/fixtures/browser/bootstrap_harness.rb",
+    "spec/fixtures/browser/bootstrap_server.rb"
+  ],
+  "hook_log": "evidence/81/donor-source-normal-hook.log",
+  "work_item_validation_exit": 0,
+  "force_or_skip_flags": false
+}

@@ -1,0 +1,900 @@
+{
+  "schema_version": 2,
+  "plan": "bootstrap-cdn-sri-81-local-handoff",
+  "status": "in_progress",
+  "local_scope_status": "pass",
+  "local_stage_conformance": "CONFORMS",
+  "full_delivery_status": "in_progress",
+  "updated_at": "2026-10-04T17:52:09.714045+00:00",
+  "artifact": {
+    "repository": "CodySwannGT/railsstarter",
+    "base_sha": "31517fd9aa0c4baf3e5eaecc3d9f7b4c5f271a44",
+    "head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+    "head_excludes_81_edits": true,
+    "build_id": "uncommitted-81-703000135175cf6eb214b8b87ffc0db81788d41b06bdca762efed5383ec9d3f8",
+    "environment": "Owned local Rails/Puma SDK fixture, Chromium 800x900",
+    "observed_at": "2026-10-04T17:48:46.639662+00:00",
+    "source_manifest": "evidence/81/independent-final-source-manifest.json",
+    "source_manifest_sha256": "b921cfbb9720619e563503f9bcb76074ebd45df03e746dfed6d3c4e0d40d8d56",
+    "source_files": [
+      {
+        "path": "app/views/layouts/application.html.erb",
+        "bytes": 2558,
+        "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+      },
+      {
+        "path": "spec/browser/bootstrap_assets_spec.rb",
+        "bytes": 4180,
+        "sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+      },
+      {
+        "path": "spec/fixtures/browser/bootstrap_server.rb",
+        "bytes": 2842,
+        "sha256": "bed7cea4343144a9bf1a9d07161f5f54325b230243142d0fbf71d9a8b17bd446"
+      },
+      {
+        "path": "spec/fixtures/browser/bootstrap_harness.rb",
+        "bytes": 4902,
+        "sha256": "cad89380186df863c1fac5a962babab42feaf1b191f9bb53d8ab61d6fbb8460d"
+      },
+      {
+        "path": "bdd/features/bootstrap-assets.feature",
+        "bytes": 1410,
+        "sha256": "f85373f4aba8f321e10cc6fa24781970a5f847cc89b68bb07c81869b5eb8d92a"
+      },
+      {
+        "path": "bdd/coverage-map.json",
+        "bytes": 1740,
+        "sha256": "e3fa6b805c62675f5765c7e31a39029a631af0eb396bfed958474fd4051cabbf"
+      },
+      {
+        "path": "bdd/coverage-report.json",
+        "bytes": 2518,
+        "sha256": "2b20c54008efcc537d1776311122b5d85384db0391f4da18b4177bacf60102be"
+      },
+      {
+        "path": "docs/e2e-bdd-coverage.md",
+        "bytes": 3593,
+        "sha256": "ba9358f586834a0664f701b7d8dd35f0a69abbe38be7914f3162e2db2507fa2a"
+      },
+      {
+        "path": "docs/bdd-scenario-matrix.md",
+        "bytes": 1541,
+        "sha256": "c06eaf6b8499c5ddd92c69d7a6d661b2db322e6e659ccd694b401987e053267b"
+      }
+    ]
+  },
+  "native_identity": {
+    "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+    "verifier_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+    "cwd": "/Users/cody/.codex/worktrees/769f/railsstarter",
+    "branch": "codex/81-bootstrap-cdn-sri",
+    "provider": "github",
+    "ref": "CodySwannGT/railsstarter#81"
+  },
+  "claims": [
+    {
+      "claim_id": "C-assets",
+      "statement": "Actual source Bootstrap 5.3.8 CSS and JavaScript load with correct integrity, anonymous crossorigin and no console errors",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-success-initial",
+        "E-restored"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/success-network.json",
+        "evidence/81/success-initial-state.txt",
+        "evidence/81/success-console.txt",
+        "evidence/81/restored-console.txt"
+      ]
+    },
+    {
+      "claim_id": "C-interactions",
+      "statement": "Actual navbar expands, real flash dismisses, unrelated importmap modules initialize and real Home navigation works",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-success-expanded",
+        "E-success-dismissed",
+        "E-success-home"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/success-expanded-state.txt",
+        "evidence/81/success-dismissed-state.txt",
+        "evidence/81/success-importmap-navigation.txt"
+      ]
+    },
+    {
+      "claim_id": "C-css-control",
+      "statement": "Single-character corrupt CSS SRI at the real browser boundary blocks stylesheet and removes Bootstrap styles while importmap remains initialized",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-negative-css"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/negative-css-console.txt",
+        "evidence/81/negative-css-state.txt",
+        "evidence/81/control-identity.json"
+      ]
+    },
+    {
+      "claim_id": "C-js-control",
+      "statement": "Single-character corrupt JavaScript SRI blocks bundle; real navbar and flash controls remain inert while CSS and importmap initialize",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-negative-js"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/negative-js-console.txt",
+        "evidence/81/negative-js-after-clicks.txt",
+        "evidence/81/control-identity.json"
+      ]
+    },
+    {
+      "claim_id": "C-restoration",
+      "statement": "Normal source restored after both owned-copy controls and the complete success interactions pass again without errors",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-restored"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/restored-state.txt",
+        "evidence/81/restored-console.txt"
+      ]
+    },
+    {
+      "claim_id": "C-baseline",
+      "statement": "Before implementation actual baseline CSS SRI is blocked; asset bytes and final network hashes are captured and compared",
+      "boundary": "browser",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "screenshot"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-baseline",
+        "E-success-initial"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/baseline-console.txt",
+        "evidence/81/baseline-state.txt",
+        "evidence/81/baseline-and-success.txt",
+        "evidence/81/success-network.json"
+      ]
+    },
+    {
+      "claim_id": "C-local-review",
+      "statement": "Independent source hash/control digest checks and scoped BDD gate complete with 3/3 mapped, executed and passed, zero findings",
+      "boundary": "cli",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "cli-output"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-final-review",
+        "E-bdd-gate"
+      ],
+      "not_established": [
+        "No hosted CI, commit, PR, merge, production delivery or non-Chromium device proof"
+      ],
+      "source_manifest": "evidence/81/independent-final-source-manifest.json",
+      "supplemental_evidence": [
+        "evidence/81/codified-green.json",
+        "evidence/81/codified-red-css.json",
+        "evidence/81/codified-red-js.json",
+        "evidence/81/codified-red-boundary-checkers.json",
+        "evidence/81/codification-runs.json"
+      ]
+    },
+    {
+      "claim_id": "C-input",
+      "statement": "Final actual branch/head, current #81 official binding and complete ignored mode0600 private context remain correct; historical hold/current direct-session claim identity preserved",
+      "boundary": "cli",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "cli-output"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-input-scope"
+      ],
+      "not_established": [
+        "Root live tracker readback is cited for historical issue-body equality",
+        "No delivery/hosted CI claim"
+      ],
+      "supplemental_evidence": [
+        "evidence/81/input-identity-readback.json",
+        "evidence/81/final-source-diff.patch",
+        "evidence/81/independent-final-source-manifest.json"
+      ]
+    },
+    {
+      "claim_id": "C-scope",
+      "statement": "Final nine-file source-bound lane changes only required Bootstrap application markup, meaningful regression and scoped BDD reports; authored exclusions remain respected",
+      "boundary": "cli",
+      "required_for_gate": true,
+      "required_evidence_kinds": [
+        "cli-output"
+      ],
+      "status": "established",
+      "evidence_refs": [
+        "E-input-scope"
+      ],
+      "not_established": [
+        "Root live tracker readback is cited for historical issue-body equality",
+        "No delivery/hosted CI claim"
+      ],
+      "supplemental_evidence": [
+        "evidence/81/input-identity-readback.json",
+        "evidence/81/final-source-diff.patch",
+        "evidence/81/independent-final-source-manifest.json"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E-baseline",
+      "kind": "screenshot",
+      "locator": "evidence/81/baseline.png",
+      "sha256": "05c9258dfe150350b7e839001a8a9c6eb6c528b352214e570ef7e0d661627f1d",
+      "captured_at": "2026-10-04T16:10:47.697629+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2065,
+          "sha256": "fbf0f0db2be8ee561cafe6289ef579da95dd62f1e4973208242bc1c9e3f4dfad"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": false,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-negative-css",
+      "kind": "screenshot",
+      "locator": "evidence/81/negative-css.png",
+      "sha256": "fc15d2539b2507bc8695be1cbd0c842426b3fb42b6fd972a27b1a5daebd1f6af",
+      "captured_at": "2026-10-04T17:22:26.722190+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea"
+    },
+    {
+      "evidence_id": "E-negative-js",
+      "kind": "screenshot",
+      "locator": "evidence/81/negative-js.png",
+      "sha256": "2156062af19c9d5533914ddfb02560d1acc106f737f0be642cbe7d36ad220a33",
+      "captured_at": "2026-10-04T17:22:46.587449+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684"
+    },
+    {
+      "evidence_id": "E-restored",
+      "kind": "screenshot",
+      "locator": "evidence/81/restored.png",
+      "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+      "captured_at": "2026-10-04T17:23:04.767462+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-success-dismissed",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-dismissed.png",
+      "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+      "captured_at": "2026-10-04T17:22:04.751375+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-success-expanded",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-expanded.png",
+      "sha256": "cd257101bf894405314242a6b4bd6ca5f240fa5bb55dae2c5f5619fc9ba3f241",
+      "captured_at": "2026-10-04T17:22:03.390987+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-success-home",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-home.png",
+      "sha256": "eccb895547df9fd52ed27b71fc0c6316878f52f008bb3c96595415109b3b8ce5",
+      "captured_at": "2026-10-04T17:22:06.799480+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-success-initial",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-initial.png",
+      "sha256": "730ecae5bc3ed43777d798443572b0076db1ecd986f722c180c93dc541b14ac7",
+      "captured_at": "2026-10-04T17:21:41.765522+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "E-baseline-cli",
+      "kind": "cli-output",
+      "locator": "evidence/81/baseline-and-success.txt",
+      "sha256": "a36b79a43a6c5de91661d30fece53495b415d328e65fda82ac8320c1a9e65e0e",
+      "captured_at": "2026-10-04T17:37:19.389513+00:00",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": "evidence/81/independent-final-source-manifest.json"
+    },
+    {
+      "evidence_id": "E-final-review",
+      "kind": "cli-output",
+      "locator": "evidence/81/independent-final-review.txt",
+      "sha256": "90693fb82fca4cd7519733e1c258ad6e4f46d5f8836b6b729f0df09860f5c885",
+      "captured_at": "2026-10-04T17:47:36.719129+00:00",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": "evidence/81/independent-final-source-manifest.json"
+    },
+    {
+      "evidence_id": "E-bdd-gate",
+      "kind": "cli-output",
+      "locator": "evidence/81/independent-bdd-gate.json",
+      "sha256": "0dcac5f7a979c2761d0114634dbfa188ee1634ce1bde2ce78a0379503b37dc3f",
+      "captured_at": "2026-10-04T17:46:13.536216+00:00",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": "evidence/81/independent-final-source-manifest.json"
+    },
+    {
+      "evidence_id": "E-run-log",
+      "kind": "test-run-log",
+      "locator": "evidence/81/codified-green.log",
+      "sha256": "fafc81deb9e60e475cfb5f8f71b024e366fb0ba7f0df2751ac54e85c4e3d6fa5",
+      "captured_at": "2026-10-04T17:42:13.654552+00:00",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": "evidence/81/independent-final-source-manifest.json"
+    },
+    {
+      "evidence_id": "E-input-scope",
+      "kind": "cli-output",
+      "locator": "evidence/81/independent-input-scope-readback.txt",
+      "sha256": "d1ff49046bf2b15dcea663eff0ff5c042a6bc9ae1502ea0f6f53d001b4197ef6",
+      "captured_at": "2026-10-04T17:52:09.714045+00:00",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": "evidence/81/independent-final-source-manifest.json"
+    }
+  ],
+  "not_established_reviewed": true,
+  "not_established": [
+    "Full delivery intentionally in progress at operator local stop",
+    "No #81 commit/push/PR/merge or hosted CI",
+    "Evidence is local, not uploaded/posted; issue remains open and binding/context retained",
+    "BDD package-script/CI wiring excluded from scoped lane",
+    "Current reusable CI scratch supervisor prerequisite absent; no broad adoption authorized",
+    "Exact immutable CDN browser tests require network/Chrome availability",
+    "No Safari/Firefox/device/production/remote AWS/database coverage",
+    "SimpleCov in RSpec parent does not measure Rails child: 0/120 lines, no app coverage claim"
+  ],
+  "parent_review": "pending root review, no delivery actions",
+  "cleanup": {
+    "manual_runtime": "evidence/81/runtime-cleanup.json",
+    "seven_test_runtimes": "evidence/81/test-cleanup.jsonl",
+    "controller": "evidence/81/browser-scratch-cleanup.json",
+    "observed_scope": "Only positively proved owned resources removed; binding/private context retained"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:63736/__bootstrap_acceptance?control=css",
+  "css": [
+    {
+      "href": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
+      "integrity": "sha384-ARIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
+      "sheet": false
+    }
+  ],
+  "navDisplay": "block",
+  "collapseDisplay": "block",
+  "flashBackground": "rgba(0, 0, 0, 0)",
+  "bootstrap": "5.3.8",
+  "stimulus": true,
+  "turbo": true
+}

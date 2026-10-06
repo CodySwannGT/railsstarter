@@ -1,0 +1,29 @@
+Run options: include {full_description: /loads\ source\ CDN\ assets/}
+
+Randomized with seed 56796
+
+BootstrapAssets
+  loads source CDN assets and expands navigation, dismisses flash and initializes importmap (FAILED - 1)
+
+Failures:
+
+  1) BootstrapAssets loads source CDN assets and expands navigation, dismisses flash and initializes importmap
+     Failure/Error: expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet')).to be(true), 'Source Bootstrap stylesheet was blocked'
+       Source Bootstrap stylesheet was blocked
+     # ./spec/browser/bootstrap_assets_spec.rb:39:in 'RSpec::ExampleGroups::BootstrapAssets#expect_loaded_styles'
+     # ./spec/browser/bootstrap_assets_spec.rb:68:in 'block (2 levels) in <top (required)>'
+     # ./spec/browser/bootstrap_assets_spec.rb:15:in 'block (2 levels) in <top (required)>'
+
+Finished in 4.3 seconds (files took 0.97232 seconds to load)
+1 example, 1 failure
+
+Failed examples:
+
+rspec ./spec/browser/bootstrap_assets_spec.rb:66 # BootstrapAssets loads source CDN assets and expands navigation, dismisses flash and initializes importmap
+
+Randomized with seed 56796
+
+Coverage report generated for RSpec to /Users/cody/.codex/worktrees/769f/railsstarter/coverage.
+Line Coverage: 0.0% (0 / 120)
+Branch Coverage: 100.0% (0 / 0)
+Stopped processing SimpleCov as a previous error not related to SimpleCov has been detected

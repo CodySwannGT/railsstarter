@@ -1,0 +1,82 @@
+{
+  "reason": "Existing *.log ignore excludes originals from normal staging. Portable .txt transcripts preserve exact recorded evidence/hooks without force flags or rule edits. Original capture locators/hashes and ignored originals remain retained.",
+  "entries": [
+    {
+      "captured_original": "evidence/81/bdd-gate.log",
+      "portable_archive": "evidence/81/transcripts/bdd-gate.txt",
+      "bytes": 168,
+      "sha256": "363f4e27b9c68141dca8d9ad3490a1d3a5fafbaccfd54fdf5eb429a06b0faacf",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/codified-green.log",
+      "portable_archive": "evidence/81/transcripts/codified-green.txt",
+      "bytes": 569,
+      "sha256": "fafc81deb9e60e475cfb5f8f71b024e366fb0ba7f0df2751ac54e85c4e3d6fa5",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/codified-red-boundary-checkers.log",
+      "portable_archive": "evidence/81/transcripts/codified-red-boundary-checkers.txt",
+      "bytes": 1872,
+      "sha256": "9c68265ff0951546fb1d34d6c9710c3c37106dc96b68c95c10f63e5b1e52c2b5",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/codified-red-css.log",
+      "portable_archive": "evidence/81/transcripts/codified-red-css.txt",
+      "bytes": 1389,
+      "sha256": "474637ae335846f4889297b1ae95589f092099a0658aa66208d0a0664a7623f3",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/codified-red-js.log",
+      "portable_archive": "evidence/81/transcripts/codified-red-js.txt",
+      "bytes": 1353,
+      "sha256": "0badcf6130ebc68db4946876953743e2a75dd3ef8555b4bc8c0bf2d18ab6c503",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/donor-evidence-normal-hook.log",
+      "portable_archive": "evidence/81/transcripts/donor-evidence-normal-hook.txt",
+      "bytes": 6115,
+      "sha256": "28211d155d77cf0431df19d056fd3c950a5268bde34a18a852047822c4157286",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/donor-evidence-work-item-validation.log",
+      "portable_archive": "evidence/81/transcripts/donor-evidence-work-item-validation.txt",
+      "bytes": 50,
+      "sha256": "4b14791a4a7ffbdc11741c0bac9fab92fc94272c82ca29ad853b8e1588cd58f6",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/donor-receipt-work-item-validation.log",
+      "portable_archive": "evidence/81/transcripts/donor-receipt-work-item-validation.txt",
+      "bytes": 50,
+      "sha256": "4b14791a4a7ffbdc11741c0bac9fab92fc94272c82ca29ad853b8e1588cd58f6",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/donor-source-normal-hook.log",
+      "portable_archive": "evidence/81/transcripts/donor-source-normal-hook.txt",
+      "bytes": 2481,
+      "sha256": "9e2c5f3d7d8c0e42443ff0e2ca17ad6580166649ef27fb967d1810dbc2403359",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/donor-source-work-item-validation.log",
+      "portable_archive": "evidence/81/transcripts/donor-source-work-item-validation.txt",
+      "bytes": 50,
+      "sha256": "4b14791a4a7ffbdc11741c0bac9fab92fc94272c82ca29ad853b8e1588cd58f6",
+      "identity": "exact byte copy of captured output, not a rerun"
+    },
+    {
+      "captured_original": "evidence/81/scoped-lint.log",
+      "portable_archive": "evidence/81/transcripts/scoped-lint.txt",
+      "bytes": 41,
+      "sha256": "d5e5254090aaf8ed365bcfe2f556341af25b614cfa2b0454552dc653eadf1784",
+      "identity": "exact byte copy of captured output, not a rerun"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "app/views/layouts/application.html.erb": {
+    "bytes": 2558,
+    "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+  },
+  "spec/browser/bootstrap_assets_spec.rb": {
+    "bytes": 4180,
+    "sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+  },
+  "spec/fixtures/browser/bootstrap_server.rb": {
+    "bytes": 2842,
+    "sha256": "bed7cea4343144a9bf1a9d07161f5f54325b230243142d0fbf71d9a8b17bd446"
+  },
+  "spec/fixtures/browser/bootstrap_harness.rb": {
+    "bytes": 4902,
+    "sha256": "cad89380186df863c1fac5a962babab42feaf1b191f9bb53d8ab61d6fbb8460d"
+  },
+  "bdd/features/bootstrap-assets.feature": {
+    "bytes": 1410,
+    "sha256": "f85373f4aba8f321e10cc6fa24781970a5f847cc89b68bb07c81869b5eb8d92a"
+  },
+  "bdd/coverage-map.json": {
+    "bytes": 1740,
+    "sha256": "e3fa6b805c62675f5765c7e31a39029a631af0eb396bfed958474fd4051cabbf"
+  },
+  "bdd/coverage-report.json": {
+    "bytes": 2518,
+    "sha256": "2b20c54008efcc537d1776311122b5d85384db0391f4da18b4177bacf60102be"
+  },
+  "docs/e2e-bdd-coverage.md": {
+    "bytes": 3593,
+    "sha256": "ba9358f586834a0664f701b7d8dd35f0a69abbe38be7914f3162e2db2507fa2a"
+  },
+  "docs/bdd-scenario-matrix.md": {
+    "bytes": 1541,
+    "sha256": "c06eaf6b8499c5ddd92c69d7a6d661b2db322e6e659ccd694b401987e053267b"
+  }
+}

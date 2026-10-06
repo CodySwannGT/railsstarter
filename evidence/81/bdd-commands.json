@@ -1,0 +1,44 @@
+{
+  "runs": [
+    {
+      "operation": "check",
+      "argv": [
+        "/Users/cody/.local/share/mise/installs/node/22.22.0/bin/node",
+        "/Users/cody/workspace/railsstarter/node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/check-bdd-coverage.mjs",
+        "--json",
+        "--write",
+        "--results",
+        "evidence/81/bdd-execution.json"
+      ],
+      "environment": {
+        "BDD_COVERAGE_ROOT": "/Users/cody/.codex/worktrees/769f/railsstarter",
+        "BDD_BASE_SHA": "2b7af50617a8e3758ac1523e7e29b8d369db347d"
+      },
+      "exit_code": 0,
+      "result": "evidence/81/bdd-gate.json",
+      "stderr": "evidence/81/bdd-gate.log"
+    },
+    {
+      "operation": "matrix",
+      "argv": [
+        "/Users/cody/.local/share/mise/installs/node/22.22.0/bin/node",
+        "/Users/cody/workspace/railsstarter/node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/bdd-matrix.mjs",
+        "--write",
+        "--results",
+        "evidence/81/bdd-execution.json"
+      ],
+      "environment": {
+        "BDD_COVERAGE_ROOT": "/Users/cody/.codex/worktrees/769f/railsstarter",
+        "BDD_BASE_SHA": "2b7af50617a8e3758ac1523e7e29b8d369db347d"
+      },
+      "exit_code": 0,
+      "stdout": "[bdd-matrix] wrote docs/bdd-scenario-matrix.md",
+      "result": "docs/bdd-scenario-matrix.md"
+    }
+  ],
+  "execution_input": "Named actual final RSpec JSON green results adapted without changing titles/statuses",
+  "traceability_scope": "Only three #81 browser obligations; no whole-app coverage claim",
+  "native_execution_source": "evidence/81/codified-green.json",
+  "ci_wiring": "Not added; package script/hosted CI wiring remains delivery gap under operator narrow-scope stop",
+  "generated_footer": "Shipped matrix renderer prints generic bun run command; recorded actual absolute Node argv above is the executed local invocation"
+}

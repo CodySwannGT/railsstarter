@@ -1,0 +1,16 @@
+- generic [ref=f4e1]:
+  - navigation [ref=f4e2]:
+    - generic [ref=f4e3]:
+      - link "Your Project" [ref=f4e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f4e5]: (Test)
+      - button "Toggle navigation" [ref=f4e6] [cursor=pointer]
+  - generic [ref=f4e8]:
+    - alert [ref=f4e11]:
+      - generic [ref=f4e12]: Bootstrap acceptance flash
+      - button "Close" [active] [ref=f4e13] [cursor=pointer]
+    - generic [ref=f4e14]:
+      - heading "Welcome to Your Project" [level=1] [ref=f4e15]
+      - paragraph [ref=f4e16]: Your Rails 8.1 application is running.
+  - contentinfo [ref=f4e17]:
+    - generic [ref=f4e18]: © Your Project 2026 - Version 0.0.1 (test)

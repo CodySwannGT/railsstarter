@@ -1,0 +1,10 @@
+{
+  "before_excluding_only_new_browser_spec": 61,
+  "standard_native_rspec_discovery": 64,
+  "added_examples": 3,
+  "named_new_examples": [
+    "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+    "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
+    "blocks a corrupt stylesheet integrity while unrelated importmap initializes"
+  ]
+}

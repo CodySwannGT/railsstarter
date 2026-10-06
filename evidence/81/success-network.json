@@ -1,0 +1,39 @@
+{
+  "captured_at": "2026-10-04T17:21:17.428Z",
+  "resources": [
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
+      "status": 200,
+      "bytes": 232111,
+      "sha256": "d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede",
+      "sri": "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
+      "headers": {
+        "content-type": "text/css; charset=utf-8",
+        "content-encoding": "br",
+        "access-control-allow-origin": "*",
+        "cross-origin-resource-policy": "cross-origin",
+        "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable",
+        "x-jsd-version": "5.3.8",
+        "x-jsd-version-type": "version",
+        "content-length": "33048"
+      }
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
+      "status": 200,
+      "bytes": 80496,
+      "sha256": "e4fd49181388c48ec5040bd3fe66f57c29c8e67fcd8502b3354b96ec7ab47cc7",
+      "sri": "sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "content-encoding": "br",
+        "access-control-allow-origin": "*",
+        "cross-origin-resource-policy": "cross-origin",
+        "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable",
+        "x-jsd-version": "5.3.8",
+        "x-jsd-version-type": "version",
+        "content-length": "24469"
+      }
+    }
+  ]
+}

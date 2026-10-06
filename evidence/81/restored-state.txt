@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1:63736/__bootstrap_acceptance",
+  "cssLoaded": true,
+  "bootstrap": "5.3.8",
+  "expanded": "true",
+  "collapseClasses": "navbar-collapse collapse show",
+  "collapseDisplay": "block",
+  "flashCount": 0,
+  "stimulus": true,
+  "turbo": true
+}

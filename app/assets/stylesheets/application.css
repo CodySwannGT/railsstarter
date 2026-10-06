@@ -1,9 +1,9 @@
 /*
- * Qualis Application Styles
+ * Starter Application Styles
  *
  * Design tokens, layout structure, and component overrides for the
- * multi-tenant DME management application. Built on Bootstrap 5
- * with CSS custom properties for tenant-specific theming.
+ * Rails starter application. Built on Bootstrap 5
+ * with CSS custom properties for application theming.
  *
  * Bootstrap 5 is loaded via CDN in the application layout.
  * Google Fonts (Rubik) is loaded via CDN preconnect.

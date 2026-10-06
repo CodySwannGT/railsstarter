@@ -1,0 +1,604 @@
+{
+  "schema_version": 1,
+  "review_type": "donor current proof validity; read-only local pre-commit check",
+  "captured_at": "2026-10-04T18:07:08.999295+00:00",
+  "status": "PASS retained local proof remains applicable",
+  "native_verifier_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+  "same_native_session": true,
+  "cwd": "/Users/cody/.codex/worktrees/769f/railsstarter",
+  "branch": "codex/81-bootstrap-cdn-sri",
+  "committed_head": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "committed_head_excludes_81_edits": true,
+  "provider": "github",
+  "ref": "CodySwannGT/railsstarter#81",
+  "build_id": "uncommitted-81-703000135175cf6eb214b8b87ffc0db81788d41b06bdca762efed5383ec9d3f8",
+  "prior_source_manifest": "evidence/81/independent-final-source-manifest.json",
+  "current_source_files": [
+    {
+      "path": "app/views/layouts/application.html.erb",
+      "bytes": 2558,
+      "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    {
+      "path": "spec/browser/bootstrap_assets_spec.rb",
+      "bytes": 4180,
+      "sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    {
+      "path": "spec/fixtures/browser/bootstrap_server.rb",
+      "bytes": 2842,
+      "sha256": "bed7cea4343144a9bf1a9d07161f5f54325b230243142d0fbf71d9a8b17bd446"
+    },
+    {
+      "path": "spec/fixtures/browser/bootstrap_harness.rb",
+      "bytes": 4902,
+      "sha256": "cad89380186df863c1fac5a962babab42feaf1b191f9bb53d8ab61d6fbb8460d"
+    },
+    {
+      "path": "bdd/features/bootstrap-assets.feature",
+      "bytes": 1410,
+      "sha256": "f85373f4aba8f321e10cc6fa24781970a5f847cc89b68bb07c81869b5eb8d92a"
+    },
+    {
+      "path": "bdd/coverage-map.json",
+      "bytes": 1740,
+      "sha256": "e3fa6b805c62675f5765c7e31a39029a631af0eb396bfed958474fd4051cabbf"
+    },
+    {
+      "path": "bdd/coverage-report.json",
+      "bytes": 2518,
+      "sha256": "2b20c54008efcc537d1776311122b5d85384db0391f4da18b4177bacf60102be"
+    },
+    {
+      "path": "docs/e2e-bdd-coverage.md",
+      "bytes": 3593,
+      "sha256": "ba9358f586834a0664f701b7d8dd35f0a69abbe38be7914f3162e2db2507fa2a"
+    },
+    {
+      "path": "docs/bdd-scenario-matrix.md",
+      "bytes": 1541,
+      "sha256": "c06eaf6b8499c5ddd92c69d7a6d661b2db322e6e659ccd694b401987e053267b"
+    }
+  ],
+  "source_drift": [],
+  "evidence_drift": [],
+  "supporting_real_app_importmap_sdk_source_files_match": [
+    {
+      "path": "app/views/layouts/application.html.erb",
+      "bytes": 2558,
+      "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    {
+      "path": "app/views/layouts/_flash_messages.html.erb",
+      "bytes": 530,
+      "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+    },
+    {
+      "path": "app/views/home/index.html.erb",
+      "bytes": 119,
+      "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+    },
+    {
+      "path": "app/helpers/application_helper.rb",
+      "bytes": 553,
+      "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+    },
+    {
+      "path": "app/controllers/home_controller.rb",
+      "bytes": 187,
+      "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+    },
+    {
+      "path": "app/javascript/application.js",
+      "bytes": 157,
+      "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+    },
+    {
+      "path": "app/javascript/controllers/application.js",
+      "bytes": 218,
+      "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+    },
+    {
+      "path": "app/javascript/controllers/index.js",
+      "bytes": 272,
+      "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+    },
+    {
+      "path": "config/importmap.rb",
+      "bytes": 316,
+      "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+    },
+    {
+      "path": "spec/fixtures/runtime/smoke.rb",
+      "bytes": 11371,
+      "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+    },
+    {
+      "path": "spec/fixtures/runtime/acceptance.json",
+      "bytes": 902,
+      "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+    }
+  ],
+  "schema_v2": {
+    "path": ".lisa/verification-status.json",
+    "sha256": "f19bcf753923ae02154677a030d7b255a01f961ad775159837e8d9ca8f7aec3a",
+    "claims_validated": 9,
+    "evidence_records_validated": 13,
+    "local_conformance": "CONFORMS",
+    "full_delivery_status": "in_progress",
+    "not_established_reviewed": true
+  },
+  "captured_browser_proof": {
+    "controller": "Actual interactive Playwright MCP",
+    "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+    "capture_manifest": "evidence/81/browser-source-manifest.json",
+    "network_capture_timestamp": "2026-10-04T17:21:17.428Z",
+    "captured_positive_css_js_and_ui": "Retained successful loading, correct SRI/anonymous crossorigin, navbar expansion, real flash dismissal, Stimulus/Turbo initialization and Home navigation",
+    "captured_negative_css": "Separate single-character actual-layout copy observed explicit SRI block and missing stylesheet/style",
+    "captured_negative_js": "Separate single-character actual-layout copy observed explicit SRI block, absent Bootstrap and inert controls",
+    "captured_restoration": "Normal source restored; complete success journey repeated with zero console errors",
+    "current_validity": "Exact current source/support/assets declarations and retained capture hashes match; captured empirical proof remains valid for these donor bytes",
+    "current_runtime_observed": false,
+    "new_browser_or_network_run": false,
+    "asset_network_records": [
+      {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
+        "status": 200,
+        "bytes": 232111,
+        "sha256": "d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede",
+        "sri": "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
+        "headers": {
+          "content-type": "text/css; charset=utf-8",
+          "content-encoding": "br",
+          "access-control-allow-origin": "*",
+          "cross-origin-resource-policy": "cross-origin",
+          "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable",
+          "x-jsd-version": "5.3.8",
+          "x-jsd-version-type": "version",
+          "content-length": "33048"
+        }
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
+        "status": 200,
+        "bytes": 80496,
+        "sha256": "e4fd49181388c48ec5040bd3fe66f57c29c8e67fcd8502b3354b96ec7ab47cc7",
+        "sri": "sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
+        "headers": {
+          "content-type": "application/javascript; charset=utf-8",
+          "content-encoding": "br",
+          "access-control-allow-origin": "*",
+          "cross-origin-resource-policy": "cross-origin",
+          "cache-control": "public, max-age=31536000, s-maxage=31536000, immutable",
+          "x-jsd-version": "5.3.8",
+          "x-jsd-version-type": "version",
+          "content-length": "24469"
+        }
+      }
+    ],
+    "single_character_control_identity_readback": [
+      {
+        "resource": "css",
+        "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+        "control_sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea",
+        "offset": 698,
+        "single_character_mutation_recomputed_without_writing": true
+      },
+      {
+        "resource": "js",
+        "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+        "control_sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684",
+        "offset": 1066,
+        "single_character_mutation_recomputed_without_writing": true
+      }
+    ],
+    "evidence_records": [
+      {
+        "path": "evidence/81/baseline.png",
+        "sha256": "05c9258dfe150350b7e839001a8a9c6eb6c528b352214e570ef7e0d661627f1d",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T16:10:47.697629+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/negative-css.png",
+        "sha256": "fc15d2539b2507bc8695be1cbd0c842426b3fb42b6fd972a27b1a5daebd1f6af",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:22:26.722190+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/negative-js.png",
+        "sha256": "2156062af19c9d5533914ddfb02560d1acc106f737f0be642cbe7d36ad220a33",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:22:46.587449+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/restored.png",
+        "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:23:04.767462+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/success-dismissed.png",
+        "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:22:04.751375+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/success-expanded.png",
+        "sha256": "cd257101bf894405314242a6b4bd6ca5f240fa5bb55dae2c5f5619fc9ba3f241",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:22:03.390987+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/success-home.png",
+        "sha256": "eccb895547df9fd52ed27b71fc0c6316878f52f008bb3c96595415109b3b8ce5",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:22:06.799480+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/success-initial.png",
+        "sha256": "730ecae5bc3ed43777d798443572b0076db1ecd986f722c180c93dc541b14ac7",
+        "kind": "screenshot",
+        "captured_at": "2026-10-04T17:21:41.765522+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/baseline-and-success.txt",
+        "sha256": "a36b79a43a6c5de91661d30fece53495b415d328e65fda82ac8320c1a9e65e0e",
+        "kind": "cli-output",
+        "captured_at": "2026-10-04T17:37:19.389513+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/independent-final-review.txt",
+        "sha256": "90693fb82fca4cd7519733e1c258ad6e4f46d5f8836b6b729f0df09860f5c885",
+        "kind": "cli-output",
+        "captured_at": "2026-10-04T17:47:36.719129+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/independent-bdd-gate.json",
+        "sha256": "0dcac5f7a979c2761d0114634dbfa188ee1634ce1bde2ce78a0379503b37dc3f",
+        "kind": "cli-output",
+        "captured_at": "2026-10-04T17:46:13.536216+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/codified-green.log",
+        "sha256": "fafc81deb9e60e475cfb5f8f71b024e366fb0ba7f0df2751ac54e85c4e3d6fa5",
+        "kind": "test-run-log",
+        "captured_at": "2026-10-04T17:42:13.654552+00:00",
+        "current_digest_matches": true
+      },
+      {
+        "path": "evidence/81/independent-input-scope-readback.txt",
+        "sha256": "d1ff49046bf2b15dcea663eff0ff5c042a6bc9ae1502ea0f6f53d001b4197ef6",
+        "kind": "cli-output",
+        "captured_at": "2026-10-04T17:52:09.714045+00:00",
+        "current_digest_matches": true
+      }
+    ]
+  },
+  "codification_retained": {
+    "named_final_green_examples": [
+      "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "loads source CDN assets and expands navigation, dismisses flash and initializes importmap"
+    ],
+    "examples": 3,
+    "failures": 0,
+    "pending": 0,
+    "red_css_failures": 1,
+    "red_js_failures": 1,
+    "red_negative_checker_failures": 2,
+    "temporary_checker_spec_sha256": "b560a4bcb854e23858f24e0ea0ccf096cbb8df1077a6206987b2d1433497e9c8",
+    "restored_checker_spec_sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32",
+    "scoped_lint": "3 files, 0 offenses",
+    "bdd": "3/3 mapped/executed/passed, zero findings",
+    "new_tests_run": false
+  },
+  "cleanup_readback": {
+    "prior_manual_owned_runtime_exit_code": 0,
+    "prior_manual_pid_port_absent": true,
+    "manual_owned_scratch_currently_absent": true,
+    "seven_test_children_prior_owned_reaped": true,
+    "seven_token_proved_scratch_paths_currently_absent": true,
+    "controller_cleanup_retained": "Only own 16 generated files and owned tab; prior record unchanged",
+    "no_cleanup_mutation_now": true
+  },
+  "input_retained": {
+    "private_context_bytes": 221581,
+    "private_context_sha256": "74fb3082cc038bb6b34e66990ad3e42a2506b88273c0ba56b6d82fc7b8858d78",
+    "private_context_mode": "0600",
+    "ignored": true,
+    "context_consumption": "Complete exact authored context consumed in prior phase of this same native session; current bytes unchanged; no private text republished",
+    "binding": {
+      "version": 1,
+      "branch": "codex/81-bootstrap-cdn-sri",
+      "provider": "github",
+      "ref": "CodySwannGT/railsstarter#81"
+    },
+    "historical_hold": "Preserved, current supported direct-session authorization is not trusted-human impersonation"
+  },
+  "current_operator_scope": "Same-team small normal local #81 donor commits for parent #65 batch authorized. Root owns staging/commits. This verifier only writes this new sanitized current-proof report and returns before commits. No push, PR, full CI, release, closure, restart, model or trust override. Prior handoff stop text remains historical; this report records current steering without rewriting it.",
+  "known_gaps": [
+    "No current runtime/browser/network observation; present check is CLI file/hash readback of retained actual empirical proof",
+    "No hosted CI, push/PR/merge/release/closure or proof of parent #65 batch integration",
+    "Exact immutable CDN network/Chrome prerequisites remain; no new network availability claim",
+    "BDD package/CI wiring and hosted scratch supervisor prerequisites remain outside scope",
+    "No full suite/application coverage/Safari/Firefox/device/database/production/live AWS claim",
+    "Report is pre-commit at listed HEAD; later donor commit identity and parent integration readback belong to root",
+    "Scoped lint retained PASS text independently matches prior read; log lacks prior serialized digest in historical final-file manifest. Current log hash is recorded, no fresh lint run claimed."
+  ],
+  "additional_current_artifact_hashes": [
+    {
+      "path": ".lisa/handoff-81.md",
+      "bytes": 13176,
+      "sha256": "2605726983ba02fa0eb812ac60924e3288956706a81c7c7f1af47d3724ed15d5"
+    },
+    {
+      "path": ".lisa/verification-81.md",
+      "bytes": 23121,
+      "sha256": "a22f6a25cc45ae390324755b2c228d9bc324394ed59361297c370198cf4d39d4"
+    },
+    {
+      "path": "evidence/81/root-review.json",
+      "bytes": 3849,
+      "sha256": "5e1ff108337ed57ef69fef3bff4938ecb06a4c51e4b60a476e7197a24a8a9c1d"
+    },
+    {
+      "path": "evidence/81/browser-source-manifest.json",
+      "bytes": 23415,
+      "sha256": "f1c358ba530ac27070e391612f7c4fd8c1767032ed1074fd57a4448e4d4a6b41"
+    },
+    {
+      "path": "evidence/81/success-network.json",
+      "bytes": 1529,
+      "sha256": "cd2d9d09e7e4dc95058ac0a723221287da4715cad229644a0945487eb4e0c5b6"
+    },
+    {
+      "path": "evidence/81/control-identity.json",
+      "bytes": 1472,
+      "sha256": "4b850060bb7c9202a7bc7e911b37f4c0812213ee0b5770e880c213fe5258f724"
+    },
+    {
+      "path": "evidence/81/codified-green.json",
+      "bytes": 1414,
+      "sha256": "44cf09862a917dcc9f5f11c6154268ae47a870fd8c899f6dcc1672c492962ac9"
+    },
+    {
+      "path": "evidence/81/codified-red-css.json",
+      "bytes": 1131,
+      "sha256": "2e20995fcd0b44a60d85f44b52c7481dcef13c4bb59942708108601d6dbc1fb0"
+    },
+    {
+      "path": "evidence/81/codified-red-js.json",
+      "bytes": 1131,
+      "sha256": "dc1e73f993b4f5ec2c595e0d9e88698c7e2c5f72f7d61f68f0266995716393a6"
+    },
+    {
+      "path": "evidence/81/codified-red-boundary-checkers.json",
+      "bytes": 1703,
+      "sha256": "ab01a8837d698eb3f0fdcd3dde0da5763df9d9850ad5953ba8a9531facba2566"
+    },
+    {
+      "path": "evidence/81/codification-runs.json",
+      "bytes": 4145,
+      "sha256": "56d1a52840de3d69198fb970cf6205467b66aec0043eb5697a426d921c08926b"
+    },
+    {
+      "path": "evidence/81/scoped-lint.log",
+      "bytes": 41,
+      "sha256": "d5e5254090aaf8ed365bcfe2f556341af25b614cfa2b0454552dc653eadf1784"
+    },
+    {
+      "path": "evidence/81/bdd-gate.json",
+      "bytes": 1010,
+      "sha256": "92a12a3eb41808e22a066aa10551ba6403520347b350f0edd8b9a29ca9e0e138"
+    },
+    {
+      "path": "evidence/81/independent-bdd-gate.json",
+      "bytes": 1009,
+      "sha256": "0dcac5f7a979c2761d0114634dbfa188ee1634ce1bde2ce78a0379503b37dc3f"
+    },
+    {
+      "path": "evidence/81/bdd-execution.json",
+      "bytes": 886,
+      "sha256": "2d5bf2f68ad6e9e31be66bc7f143607f121faa375bf3ded58da4326105b9bd68"
+    },
+    {
+      "path": "evidence/81/runtime-cleanup.json",
+      "bytes": 1937,
+      "sha256": "c43461051722e2d79eddacf1c37f0bb5be40b55a6016ed93b93b1a7f1dce0601"
+    },
+    {
+      "path": "evidence/81/test-cleanup.jsonl",
+      "bytes": 2023,
+      "sha256": "6bd6585628129a984cc4bd2e536e5f2fceda86f9afab3f987cdfdd13b5327f59"
+    },
+    {
+      "path": "evidence/81/browser-scratch-cleanup.json",
+      "bytes": 5087,
+      "sha256": "93b9468f3b9143f3afe31b50d4e759f488e4afe9089aeaba3c8d69918c4ed6af"
+    },
+    {
+      "path": "evidence/81/success-initial-state.txt",
+      "bytes": 776,
+      "sha256": "69b5d63022490ce60fa7e3eab8003f7bc524d7a90d65b6b4446b7e9ea23176b0"
+    },
+    {
+      "path": "evidence/81/success-expanded-state.txt",
+      "bytes": 131,
+      "sha256": "bbd9f01e6b0f1134949222f5efa059ada58922f50385bc4d590cbf55444de05f"
+    },
+    {
+      "path": "evidence/81/success-dismissed-state.txt",
+      "bytes": 82,
+      "sha256": "33b40b90ba7bdf1c9cebd62c28f9046966d7c62fbddb931df3c49028afbc4954"
+    },
+    {
+      "path": "evidence/81/success-importmap-navigation.txt",
+      "bytes": 160,
+      "sha256": "de455e12396b553a69819499b0517376b033deb712254a921660d0a448803daf"
+    },
+    {
+      "path": "evidence/81/negative-css-state.txt",
+      "bytes": 461,
+      "sha256": "81068afa913ec408785917cdfca944fedb5a79ccd42781fe89c817e482e06d80"
+    },
+    {
+      "path": "evidence/81/negative-css-console.txt",
+      "bytes": 391,
+      "sha256": "8904e5e0ebd516cad58781a212bd1bf8996d9b2891ce0bd72421a29a86e59e78"
+    },
+    {
+      "path": "evidence/81/negative-js-after-clicks.txt",
+      "bytes": 187,
+      "sha256": "be8c7b1618c3f2f02adcfe000aa4b4a1757b40c717bcd35426c545df79bc939b"
+    },
+    {
+      "path": "evidence/81/negative-js-console.txt",
+      "bytes": 395,
+      "sha256": "9dd0babf057dd3cf01883d072a47452721d68be9cb7874670ed8db6931f29d8f"
+    },
+    {
+      "path": "evidence/81/restored-state.txt",
+      "bytes": 267,
+      "sha256": "1d5a0df40f3c01ff365573095ab2b0146de1eca84abce52bd295846bfd672c04"
+    },
+    {
+      "path": "evidence/81/restored-console.txt",
+      "bytes": 43,
+      "sha256": "8244bba88be0b62a7e4395f5ad8839ee394e16c040dcd709e31a5bdd12a704a7"
+    }
+  ],
+  "writes": "Only evidence/81/donor-current-proof-review.json; prior evidence, source, binding and private context unchanged",
+  "historical_artifact_manifest_comparison": {
+    "manifest": "evidence/81/final-file-manifest.json",
+    "captured_at": "2026-10-04T18:01:32.212Z",
+    "sha256": "f49f11d4629ba905c18fc3cf7bbd2cef664a305324cdd3c3f1db16d52b90d6e2",
+    "matched_captured_supplemental_logs_reports_and_state": [
+      {
+        "path": ".lisa/handoff-81.md",
+        "sha256": "2605726983ba02fa0eb812ac60924e3288956706a81c7c7f1af47d3724ed15d5"
+      },
+      {
+        "path": ".lisa/verification-81.md",
+        "sha256": "a22f6a25cc45ae390324755b2c228d9bc324394ed59361297c370198cf4d39d4"
+      },
+      {
+        "path": "evidence/81/root-review.json",
+        "sha256": "5e1ff108337ed57ef69fef3bff4938ecb06a4c51e4b60a476e7197a24a8a9c1d"
+      },
+      {
+        "path": "evidence/81/browser-source-manifest.json",
+        "sha256": "f1c358ba530ac27070e391612f7c4fd8c1767032ed1074fd57a4448e4d4a6b41"
+      },
+      {
+        "path": "evidence/81/success-network.json",
+        "sha256": "cd2d9d09e7e4dc95058ac0a723221287da4715cad229644a0945487eb4e0c5b6"
+      },
+      {
+        "path": "evidence/81/control-identity.json",
+        "sha256": "4b850060bb7c9202a7bc7e911b37f4c0812213ee0b5770e880c213fe5258f724"
+      },
+      {
+        "path": "evidence/81/codified-green.json",
+        "sha256": "44cf09862a917dcc9f5f11c6154268ae47a870fd8c899f6dcc1672c492962ac9"
+      },
+      {
+        "path": "evidence/81/codified-red-css.json",
+        "sha256": "2e20995fcd0b44a60d85f44b52c7481dcef13c4bb59942708108601d6dbc1fb0"
+      },
+      {
+        "path": "evidence/81/codified-red-js.json",
+        "sha256": "dc1e73f993b4f5ec2c595e0d9e88698c7e2c5f72f7d61f68f0266995716393a6"
+      },
+      {
+        "path": "evidence/81/codified-red-boundary-checkers.json",
+        "sha256": "ab01a8837d698eb3f0fdcd3dde0da5763df9d9850ad5953ba8a9531facba2566"
+      },
+      {
+        "path": "evidence/81/codification-runs.json",
+        "sha256": "56d1a52840de3d69198fb970cf6205467b66aec0043eb5697a426d921c08926b"
+      },
+      {
+        "path": "evidence/81/bdd-gate.json",
+        "sha256": "92a12a3eb41808e22a066aa10551ba6403520347b350f0edd8b9a29ca9e0e138"
+      },
+      {
+        "path": "evidence/81/independent-bdd-gate.json",
+        "sha256": "0dcac5f7a979c2761d0114634dbfa188ee1634ce1bde2ce78a0379503b37dc3f"
+      },
+      {
+        "path": "evidence/81/bdd-execution.json",
+        "sha256": "2d5bf2f68ad6e9e31be66bc7f143607f121faa375bf3ded58da4326105b9bd68"
+      },
+      {
+        "path": "evidence/81/runtime-cleanup.json",
+        "sha256": "c43461051722e2d79eddacf1c37f0bb5be40b55a6016ed93b93b1a7f1dce0601"
+      },
+      {
+        "path": "evidence/81/test-cleanup.jsonl",
+        "sha256": "6bd6585628129a984cc4bd2e536e5f2fceda86f9afab3f987cdfdd13b5327f59"
+      },
+      {
+        "path": "evidence/81/browser-scratch-cleanup.json",
+        "sha256": "93b9468f3b9143f3afe31b50d4e759f488e4afe9089aeaba3c8d69918c4ed6af"
+      },
+      {
+        "path": "evidence/81/success-initial-state.txt",
+        "sha256": "69b5d63022490ce60fa7e3eab8003f7bc524d7a90d65b6b4446b7e9ea23176b0"
+      },
+      {
+        "path": "evidence/81/success-expanded-state.txt",
+        "sha256": "bbd9f01e6b0f1134949222f5efa059ada58922f50385bc4d590cbf55444de05f"
+      },
+      {
+        "path": "evidence/81/success-dismissed-state.txt",
+        "sha256": "33b40b90ba7bdf1c9cebd62c28f9046966d7c62fbddb931df3c49028afbc4954"
+      },
+      {
+        "path": "evidence/81/success-importmap-navigation.txt",
+        "sha256": "de455e12396b553a69819499b0517376b033deb712254a921660d0a448803daf"
+      },
+      {
+        "path": "evidence/81/negative-css-state.txt",
+        "sha256": "81068afa913ec408785917cdfca944fedb5a79ccd42781fe89c817e482e06d80"
+      },
+      {
+        "path": "evidence/81/negative-css-console.txt",
+        "sha256": "8904e5e0ebd516cad58781a212bd1bf8996d9b2891ce0bd72421a29a86e59e78"
+      },
+      {
+        "path": "evidence/81/negative-js-after-clicks.txt",
+        "sha256": "be8c7b1618c3f2f02adcfe000aa4b4a1757b40c717bcd35426c545df79bc939b"
+      },
+      {
+        "path": "evidence/81/negative-js-console.txt",
+        "sha256": "9dd0babf057dd3cf01883d072a47452721d68be9cb7874670ed8db6931f29d8f"
+      },
+      {
+        "path": "evidence/81/restored-state.txt",
+        "sha256": "1d5a0df40f3c01ff365573095ab2b0146de1eca84abce52bd295846bfd672c04"
+      },
+      {
+        "path": "evidence/81/restored-console.txt",
+        "sha256": "8244bba88be0b62a7e4395f5ad8839ee394e16c040dcd709e31a5bdd12a704a7"
+      }
+    ],
+    "not_in_manifest": [
+      "evidence/81/scoped-lint.log"
+    ],
+    "drift": [],
+    "lint_note": "scoped-lint.log was independently read in the original local review and again now with identical 3-files/no-offenses text. It has no prior serialized digest in final-file-manifest.json; current hash is recorded, so archival digest continuity is not claimed for that log."
+  }
+}

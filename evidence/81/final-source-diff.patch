@@ -1,0 +1,702 @@
+diff --git a/app/views/layouts/application.html.erb b/app/views/layouts/application.html.erb
+index ac5b4f2..87eee27 100644
+--- a/app/views/layouts/application.html.erb
++++ b/app/views/layouts/application.html.erb
+@@ -14,9 +14,9 @@
+     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+     <link rel="apple-touch-icon" href="/icon.png">
+ 
+-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
++    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+           rel="stylesheet"
+-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YcnS/1WR6zNMYVL+UlKBFaFJiKDs2CO2jRK"
++          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+           crossorigin="anonymous">
+ 
+     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+@@ -25,8 +25,8 @@
+ 
+     <%= javascript_importmap_tags %>
+ 
+-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
++    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
++            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+             crossorigin="anonymous"
+             defer></script>
+   </head>
+@@ -39,6 +39,16 @@
+         <% unless Rails.env.production? %>
+           <small class="text-muted">(<%= Rails.env.capitalize %>)</small>
+         <% end %>
++        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
++                data-bs-target="#navbar-navigation" aria-controls="navbar-navigation"
++                aria-expanded="false" aria-label="Toggle navigation">
++          <span class="navbar-toggler-icon"></span>
++        </button>
++        <div class="collapse navbar-collapse" id="navbar-navigation">
++          <div class="navbar-nav">
++            <a class="nav-link" href="/">Home</a>
++          </div>
++        </div>
+       </div>
+     </nav>
+ 
+diff --git a/spec/browser/bootstrap_assets_spec.rb b/spec/browser/bootstrap_assets_spec.rb
+new file mode 100644
+index 0000000..658eb5a
+--- /dev/null
++++ b/spec/browser/bootstrap_assets_spec.rb
+@@ -0,0 +1,96 @@
++# frozen_string_literal: true
++
++require 'spec_helper'
++require 'capybara/rspec'
++require_relative '../fixtures/browser/bootstrap_harness'
++
++Capybara.threadsafe = true
++
++RSpec.describe BootstrapAssets do
++  let(:harness) { described_class.new }
++  let(:page) { harness.page }
++
++  around do |example|
++    harness.start
++    example.run
++  ensure
++    harness.stop
++  end
++
++  def visit_fixture(control = nil)
++    control ||= ENV.fetch('BOOTSTRAP_BROWSER_CONTROL', nil)
++    raise 'Unknown falsification control' if control && !control.match?(/\A(?:css|js)\z/)
++
++    path = '/__bootstrap_acceptance'
++    path += "?control=#{control}" if control
++    page.visit(path)
++    wait_for { page.evaluate_script('!!window.Stimulus && !!window.Turbo') }
++  end
++
++  def wait_for(&)
++    Selenium::WebDriver::Wait.new(timeout: 10).until(&)
++  end
++
++  def browser_errors
++    page.driver.browser.logs.get(:browser).select { |entry| entry.level == 'SEVERE' }.map(&:message)
++  end
++
++  def expect_loaded_styles
++    expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet')).to be(true), 'Source Bootstrap stylesheet was blocked'
++    expect(page.evaluate_script('getComputedStyle(document.querySelector("nav")).display')).to eq('flex')
++    expect(page.evaluate_script('getComputedStyle(document.querySelector(".alert")).backgroundColor')).to eq('rgb(209, 231, 221)')
++  end
++
++  def expect_loaded_script
++    expect(page.evaluate_script('!!window.bootstrap')).to be(true), 'Source Bootstrap JavaScript was blocked'
++    version = page.find('link[href*="bootstrap"]', visible: :all)[:href].match(%r{bootstrap@([^/]+)})[1]
++    expect(page.evaluate_script('bootstrap.Collapse.VERSION')).to eq(version)
++  end
++
++  def expect_source_identity
++    css = page.find('link[href*="bootstrap"]', visible: :all)
++    script = page.find('script[src*="bootstrap"]', visible: :all)
++    expect(harness.source).to include(css[:href], css[:integrity], script[:src], script[:integrity])
++    expect([css[:crossorigin], script[:crossorigin]]).to eq(%w[anonymous anonymous])
++  end
++
++  def expect_navigation_and_flash
++    expect(page).to have_css('#navbar-navigation', visible: :hidden)
++    page.find('button[aria-label="Toggle navigation"]').click
++    expect(page).to have_css('#navbar-navigation.show', visible: :visible)
++    expect(page.find('button[aria-label="Toggle navigation"]')[:'aria-expanded']).to eq('true')
++    page.find('button[aria-label="Close"]').click
++    expect(page).to have_no_css('#flash-messages .alert', visible: :all)
++  end
++
++  it('loads source CDN assets and expands navigation, dismisses flash and initializes importmap') do
++    visit_fixture
++    expect_loaded_styles
++    expect_loaded_script
++    expect_source_identity
++    expect_navigation_and_flash
++    page.find('#navbar-navigation a', text: 'Home').click
++    expect(page).to have_current_path('/')
++    wait_for { page.evaluate_script('!!window.Stimulus && !!window.Turbo') }
++    expect(browser_errors).to be_empty
++  end
++
++  it('blocks a corrupt stylesheet integrity while unrelated importmap initializes') do
++    visit_fixture('css')
++    expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet')).to be(false)
++    expect(page.evaluate_script('getComputedStyle(document.querySelector("nav")).display')).to eq('block')
++    expect(page.evaluate_script('getComputedStyle(document.querySelector(".alert")).backgroundColor')).to eq('rgba(0, 0, 0, 0)')
++    expect(browser_errors.join("\n")).to match(/integrity.*bootstrap|bootstrap.*integrity/i)
++  end
++
++  it('blocks corrupt script integrity and cannot expand navigation or dismiss flash') do
++    visit_fixture('js')
++    expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet')).to be(true)
++    expect(page.evaluate_script('typeof window.bootstrap')).to eq('undefined')
++    page.find('button[aria-label="Toggle navigation"]').click
++    expect(page.find('button[aria-label="Toggle navigation"]')[:'aria-expanded']).to eq('false')
++    page.find('button[aria-label="Close"]').click
++    expect(page).to have_css('#flash-messages .alert', count: 1)
++    expect(browser_errors.join("\n")).to match(/integrity.*bootstrap|bootstrap.*integrity/i)
++  end
++end
+diff --git a/spec/fixtures/browser/bootstrap_harness.rb b/spec/fixtures/browser/bootstrap_harness.rb
+new file mode 100644
+index 0000000..5f2d373
+--- /dev/null
++++ b/spec/fixtures/browser/bootstrap_harness.rb
+@@ -0,0 +1,143 @@
++# frozen_string_literal: true
++
++require 'capybara'
++require 'selenium-webdriver'
++require 'tmpdir'
++require 'fileutils'
++require 'json'
++require 'socket'
++require 'net/http'
++require 'securerandom'
++require 'rbconfig'
++require 'timeout'
++
++# Owns one real Rails process and one fresh browser per example, without a DB.
++class BootstrapAssets
++  attr_reader :page, :source
++
++  # @return [void] start the guarded real app and our browser
++  def start
++    setup_scratch
++    spawn_server
++    wait_for_server
++    validate_runtime!
++    @source = File.read(File.join(@root, 'app/views/layouts/application.html.erb'))
++    start_browser
++  end
++
++  # @return [void] stop only our unreaped child and token-proved scratch
++  def stop
++    @page&.driver&.quit
++    stop_server
++  ensure
++    cleanup_scratch
++  end
++
++  private
++
++  def setup_scratch
++    @root = File.expand_path('../../..', __dir__)
++    @scratch = Dir.mktmpdir('railsstarter-bootstrap-browser-')
++    @token = SecureRandom.hex(16)
++    File.write(File.join(@scratch, 'owner.json'), JSON.generate(token: @token), mode: 'wx', perm: 0o600)
++    FileUtils.mkdir_p(File.join(@scratch, 'views', 'layouts'))
++    socket = TCPServer.new('127.0.0.1', 0)
++    @port = socket.addr[1]
++    socket.close
++  end
++
++  def environment
++    inherited = ENV.to_h.select do |key, _|
++      key.match?(/\A(?:AWS_|OTEL_|DATABASE|PRIMARY_DB_HOST|CLOUDFRONT_ENDPOINT)|_DATABASE_URL\z/)
++    end
++    inherited.transform_values { nil }.merge(
++      'RAILS_ENV' => 'test', 'RACK_ENV' => 'test', 'RUNTIME_SMOKE_DB' => '0', 'RUNTIME_SMOKE_IMAGE' => '0',
++      'SECRET_KEY_BASE_DUMMY' => nil, 'DATABASE_NAME' => "railsstarter_63_smoke_b81_#{SecureRandom.hex(4)}",
++      'PRIMARY_DB_HOST' => '127.0.0.1', 'DATABASE_PORT' => '19481',
++      'BOOTSTRAP_BROWSER_SCRATCH' => @scratch, 'BOOTSTRAP_BROWSER_TOKEN' => @token,
++      'BOOTSTRAP_BROWSER_PORT' => @port.to_s
++    )
++  end
++
++  def spawn_server
++    @pid = Process.spawn(environment, RbConfig.ruby, File.join(@root, 'spec/fixtures/browser/bootstrap_server.rb'),
++                         chdir: @root, out: File.join(@scratch, 'server.log'), err: [:child, :out])
++  end
++
++  def wait_for_server
++    Timeout.timeout(30) do
++      loop do
++        begin
++          break if Net::HTTP.get_response(URI("http://127.0.0.1:#{@port}/up")).code == '200'
++        rescue Errno::ECONNREFUSED
++          raise File.read(File.join(@scratch, 'server.log')) if Process.waitpid(@pid, Process::WNOHANG)
++        end
++        sleep 0.1
++      end
++    end
++  end
++
++  def read_owner
++    JSON.parse(File.read(File.join(@scratch, 'server-owner.json')))
++  end
++
++  def validate_owner!(owner)
++    raise 'Owned browser server readback failed' unless owner.values_at('token', 'pid', 'cwd', 'port') == [@token, @pid, @root, @port]
++  end
++
++  def validate_runtime!
++    owner = read_owner
++    validate_owner!(owner)
++    raise 'Authored SDK fixture not consumed' unless owner['aws_fixture_consumed'] == 'authored-local-only' && owner['aws_stub_responses']
++  end
++
++  def browser_options
++    options = Selenium::WebDriver::Chrome::Options.new
++    options.add_argument('--headless=new')
++    options.add_argument('--window-size=800,900')
++    options.add_option('goog:loggingPrefs', browser: 'ALL', performance: 'ALL')
++    options
++  end
++
++  def start_browser
++    args = { browser: :chrome, options: browser_options }
++    args[:service] = Selenium::WebDriver::Service.chrome(path: ENV.fetch('CHROMEDRIVER')) if ENV['CHROMEDRIVER']
++    name = :"bootstrap_#{@token}"
++    Capybara.register_driver(name) { |app| Capybara::Selenium::Driver.new(app, **args) }
++    @page = Capybara::Session.new(name)
++    @page.config.default_max_wait_time = 10
++    @page.config.app_host = "http://127.0.0.1:#{@port}"
++  end
++
++  def stop_server
++    return unless @pid && Process.waitpid(@pid, Process::WNOHANG).nil?
++
++    validate_owner!(read_owner) if File.exist?(File.join(@scratch, 'server-owner.json'))
++    # waitpid proves this is still our child, not a recycled ambient PID.
++    Process.kill('TERM', @pid)
++    @reaped = Process.waitpid(@pid) == @pid
++  rescue Errno::ECHILD
++    nil # A failed boot was already reaped by the readiness check.
++  end
++
++  def cleanup_scratch
++    return unless @scratch && File.exist?(File.join(@scratch, 'owner.json'))
++
++    raise 'Refusing unowned scratch cleanup' unless JSON.parse(File.read(File.join(@scratch, 'owner.json')))['token'] == @token
++
++    FileUtils.remove_entry_secure(@scratch)
++    raise 'Owned scratch remains after cleanup' if File.exist?(@scratch)
++
++    record_cleanup
++  end
++
++  def record_cleanup
++    file = ENV.fetch('BOOTSTRAP_BROWSER_CLEANUP_REPORT', nil)
++    return unless file
++
++    observation = { pid: @pid, port: @port, cwd: @root, owned_child_reaped: @reaped,
++                    scratch: @scratch, token_verified: true, scratch_removed: !File.exist?(@scratch),
++                    database_mode: false }
++    File.open(file, 'a') { |output| output.puts(JSON.generate(observation)) }
++  end
++end
+diff --git a/spec/fixtures/browser/bootstrap_server.rb b/spec/fixtures/browser/bootstrap_server.rb
+new file mode 100644
+index 0000000..4b6bb3e
+--- /dev/null
++++ b/spec/fixtures/browser/bootstrap_server.rb
+@@ -0,0 +1,71 @@
++# frozen_string_literal: true
++
++# Owned, database-free browser fixture. Renders the real app, never copied assets.
++require 'json'
++require 'digest'
++require 'bundler/setup'
++
++root = File.expand_path('../../..', __dir__)
++scratch = ENV.fetch('BOOTSTRAP_BROWSER_SCRATCH')
++owner = JSON.parse(File.read(File.join(scratch, 'owner.json')))
++raise 'Browser fixture ownership mismatch' unless owner.fetch('token') == ENV.fetch('BOOTSTRAP_BROWSER_TOKEN')
++
++require File.join(root, 'spec/fixtures/runtime/smoke')
++DependencySmoke.validate_environment!
++DependencySmoke.configure_environment
++DependencySmoke.configure_aws
++
++require 'mysql2'
++module BootstrapBrowserNoDatabase
++  def new(*)
++    raise 'Bootstrap browser journey forbids database connections'
++  end
++end
++Mysql2::Client.singleton_class.prepend(BootstrapBrowserNoDatabase)
++
++require File.join(root, 'config/environment')
++DependencySmoke.validate_authored_responses!
++
++# Only negative controls copy the real layout, changing exactly one SRI character.
++source = File.binread(File.join(root, 'app/views/layouts/application.html.erb'))
++controls = {}
++%w[css js].each do |kind|
++  tag = kind == 'css' ? 'link' : 'script'
++  pattern = /(<#{tag}[^>]*bootstrap[^>]*integrity="sha384-)(.)/m
++  raise "Missing #{kind} source integrity" unless source.match?(pattern)
++
++  changed = source.sub(pattern) { "#{Regexp.last_match(1)}#{Regexp.last_match(2) == 'A' ? 'B' : 'A'}" }
++  raise 'Control must change exactly one source byte' unless source.bytes.zip(changed.bytes).one? { |a, b| a != b }
++
++  file = File.join(scratch, 'views', 'layouts', "control_#{kind}.html.erb")
++  File.write(file, changed, mode: 'wx', perm: 0o600)
++  controls[kind] = { sha256: Digest::SHA256.hexdigest(changed), source_sha256: Digest::SHA256.hexdigest(source) }
++end
++
++class BootstrapBrowserFixtureController < HomeController
++  def index
++    flash.now[:notice] = 'Bootstrap acceptance flash'
++    if %w[css js].include?(params[:control])
++      prepend_view_path File.join(ENV.fetch('BOOTSTRAP_BROWSER_SCRATCH'), 'views')
++      render 'home/index', layout: "control_#{params[:control]}"
++    else
++      render 'home/index'
++    end
++  end
++end
++
++Rails.application.routes.prepend do
++  get '/__bootstrap_acceptance' => 'bootstrap_browser_fixture#index'
++end
++
++require 'puma'
++port = Integer(ENV.fetch('BOOTSTRAP_BROWSER_PORT'))
++owner.merge!('pid' => Process.pid, 'cwd' => root, 'port' => port, 'controls' => controls,
++             'aws_fixture_consumed' => ENV.fetch('_RUNTIME_SMOKE_FIXTURE'),
++             'aws_stub_responses' => Aws.config[:stub_responses], 'database_mode' => false)
++File.write(File.join(scratch, 'server-owner.json'), JSON.pretty_generate(owner), mode: 'wx', perm: 0o600)
++server = Puma::Server.new(Rails.application)
++server.add_tcp_listener('127.0.0.1', port)
++trap('TERM') { server.stop(true) }
++trap('INT') { server.stop(true) }
++server.run.join
+diff --git a/bdd/features/bootstrap-assets.feature b/bdd/features/bootstrap-assets.feature
+new file mode 100644
+index 0000000..32a5743
+--- /dev/null
++++ b/bdd/features/bootstrap-assets.feature
+@@ -0,0 +1,28 @@
++@web @gh-81 @ratified-bootstrap-cdn-acceptance
++Feature: Starter Bootstrap assets and interactions
++  The source layout and its real modules govern rendering.
++
++  @BDD-BOOTSTRAP-001
++  Scenario: Loaded CDN assets support navigation, flash and importmap
++    Given the starter uses verified CDN URLs with matching integrity and anonymous crossorigin
++    And a dismissible flash is rendered through the real application partial
++    When the starter page loads at a compact viewport
++    Then the Bootstrap stylesheet and bundle load without integrity errors
++    When the user expands navigation and dismisses the flash
++    Then navigation is visible and the flash disappears
++    And the real importmap modules initialize and Home navigation works
++
++  @BDD-BOOTSTRAP-002
++  Scenario: Corrupt stylesheet integrity is blocked by the browser
++    Given an owned copy of the source layout with only CSS integrity corrupted
++    When the starter page loads
++    Then the browser blocks the stylesheet and Bootstrap styles are absent
++    And unrelated importmap modules initialize
++
++  @BDD-BOOTSTRAP-003
++  Scenario: Corrupt script integrity is blocked by the browser
++    Given an owned copy of the source layout with only JavaScript integrity corrupted
++    When the starter page loads
++    Then the browser blocks the bundle
++    And navigation expansion and flash dismissal do not run
++    And unrelated importmap modules initialize
+diff --git a/bdd/coverage-map.json b/bdd/coverage-map.json
+new file mode 100644
+index 0000000..f518b18
+--- /dev/null
++++ b/bdd/coverage-map.json
+@@ -0,0 +1,76 @@
++{
++  "schemaVersion": 2,
++  "asOf": "2026-10-04",
++  "runnerPlatforms": {
++    "rspec-capybara-selenium": [
++      "web"
++    ]
++  },
++  "coverageFloor": {
++    "web": 100
++  },
++  "testDiscovery": {
++    "rspec-capybara-selenium": {
++      "roots": [
++        "spec/browser",
++        "spec/fixtures/browser"
++      ],
++      "extensions": [
++        ".rb"
++      ],
++      "ignore": [],
++      "evidence": {
++        "kind": "call-title",
++        "functions": [
++          "it"
++        ]
++      }
++    }
++  },
++  "trackers": {
++    "required": true,
++    "keys": [],
++    "github": {
++      "org": "CodySwannGT",
++      "defaultRepo": "railsstarter",
++      "repos": [
++        "railsstarter"
++      ]
++    }
++  },
++  "platformWaivers": [],
++  "retirements": [],
++  "exclusions": [],
++  "mappings": [
++    {
++      "scenario": "BDD-BOOTSTRAP-001",
++      "runner": "rspec-capybara-selenium",
++      "platforms": [
++        "web"
++      ],
++      "file": "spec/browser/bootstrap_assets_spec.rb",
++      "evidence": "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
++      "level": "behavioral"
++    },
++    {
++      "scenario": "BDD-BOOTSTRAP-002",
++      "runner": "rspec-capybara-selenium",
++      "platforms": [
++        "web"
++      ],
++      "file": "spec/browser/bootstrap_assets_spec.rb",
++      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
++      "level": "behavioral"
++    },
++    {
++      "scenario": "BDD-BOOTSTRAP-003",
++      "runner": "rspec-capybara-selenium",
++      "platforms": [
++        "web"
++      ],
++      "file": "spec/browser/bootstrap_assets_spec.rb",
++      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
++      "level": "behavioral"
++    }
++  ]
++}
+diff --git a/bdd/coverage-report.json b/bdd/coverage-report.json
+new file mode 100644
+index 0000000..ecb5730
+--- /dev/null
++++ b/bdd/coverage-report.json
+@@ -0,0 +1,105 @@
++{
++  "schemaVersion": 3,
++  "asOf": "2026-10-04",
++  "scenarios": {
++    "declared": 3,
++    "required": 3,
++    "excluded": 0,
++    "blocked": 0,
++    "referenceOnly": 0,
++    "superseded": 0
++  },
++  "traceability": {
++    "note": "Obligations whose aligned automation is mapped AND whose evidence string still resolves — a mapping whose test was renamed or deleted stops counting here immediately, even in bootstrap where the matching defect is only a warning. This is TRACEABILITY coverage, not execution coverage and not a pass rate.",
++    "overall": {
++      "covered": 3,
++      "total": 3,
++      "percentage": 100,
++      "exact": 100
++    },
++    "byPlatform": {
++      "web": {
++        "covered": 3,
++        "total": 3,
++        "percentage": 100,
++        "exact": 100
++      }
++    },
++    "byRunner": {
++      "rspec-capybara-selenium": {
++        "covered": 3,
++        "total": 3,
++        "percentage": 100,
++        "exact": 100
++      }
++    }
++  },
++  "execution": {
++    "supplied": true,
++    "sources": [
++      {
++        "runner": "rspec-capybara-selenium",
++        "runId": "bootstrap-81-local-final",
++        "completedAt": null,
++        "resultCount": 3
++      }
++    ],
++    "mappedTests": 3,
++    "executed": 3,
++    "passed": 3,
++    "failed": 0,
++    "skipped": 0,
++    "notRun": 0,
++    "notRunTests": []
++  },
++  "testInventory": {
++    "note": "Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.",
++    "runners": [
++      "rspec-capybara-selenium"
++    ],
++    "roots": [
++      "spec/browser",
++      "spec/fixtures/browser"
++    ],
++    "discovered": 3,
++    "disclosed": 3,
++    "dynamicTitles": 0,
++    "undisclosed": [],
++    "exclusions": []
++  },
++  "waived": {
++    "note": "A waiver is a dated IOU with a named owner and a retiring ticket. It is never coverage.",
++    "count": 0,
++    "entries": []
++  },
++  "floor": {
++    "byPlatform": {
++      "web": {
++        "floor": 100,
++        "state": "declared",
++        "actual": 100,
++        "exact": 100,
++        "ok": true
++      }
++    },
++    "unset": [],
++    "invalid": [],
++    "ok": true
++  },
++  "trackers": {
++    "scenariosWithTag": 3,
++    "scenariosWithoutTag": 0,
++    "tags": [
++      {
++        "tag": "gh-81",
++        "url": "https://github.com/CodySwannGT/railsstarter/issues/81",
++        "scenarios": [
++          "BDD-BOOTSTRAP-001",
++          "BDD-BOOTSTRAP-002",
++          "BDD-BOOTSTRAP-003"
++        ]
++      }
++    ]
++  },
++  "gaps": []
++}
+diff --git a/docs/e2e-bdd-coverage.md b/docs/e2e-bdd-coverage.md
+new file mode 100644
+index 0000000..5136c82
+--- /dev/null
++++ b/docs/e2e-bdd-coverage.md
+@@ -0,0 +1,73 @@
++# BDD behavior contract — coverage burndown
++
++Generated from `bdd/features/*.feature` and `bdd/coverage-map.json` as of 2026-10-04.
++Regenerated by `BDD_BASE_SHA="$(git merge-base HEAD origin/HEAD)" bun run bdd:coverage:write`; never hand-edited.
++
++## What each number means
++
++This document reports five different facts and never merges them:
++
++1. **Declared** — behaviors written as Gherkin scenarios. 3 total, 3 in the denominator, 0 excluded (0 blocked, 0 reference-only, 0 superseded).
++2. **Traceability coverage** — required obligations with aligned automation mapped and their evidence string still present. **This is not execution coverage and not a pass rate.** A mapped test that fails on every run still counts here.
++3. **Execution** — how many of those mapped tests actually ran in a supplied run.
++4. **Results** — what those runs returned: pass, fail, skip.
++5. **Waivers** — obligations deliberately outside the denominator. A waiver is a dated IOU with an owner and a retiring ticket; it is never coverage.
++
++## Traceability coverage
++
++| Platform | Obligations with mapped automation |
++|---|---:|
++| web | 3/3 (100.0%) |
++| **Overall** | **3/3 (100.0%)** |
++
++## Execution
++
++| Mapped tests | Executed | Passed | Failed | Skipped | Not run |
++|---:|---:|---:|---:|---:|---:|
++| 3 | 3 | 3 | 0 | 0 | 0 |
++
++Sources:
++
++- `rspec-capybara-selenium` run `bootstrap-81-local-final` (3 results, completed unknown)
++
++## Coverage floor
++
++The committed floor is an absolute bar — "is this platform below it right now" — and nothing else. It is **not** a ratchet and nobody has to nudge it upward: what protects coverage already earned is a separate, per-obligation check. Coverage accepted at the base revision cannot disappear, and behavior that is new must arrive mapped or waived; either reduction takes a recorded route — a complete `retirements` record or a `platformWaivers` entry — which lands in the diff where it can be read and challenged.
++
++| Platform | Committed floor | Current | Status |
++|---|---:|---:|---|
++| web | 100% | 100% | ok |
++
++## Waived obligations
++
++A waiver is a dated IOU with a named owner and a retiring ticket. It is never coverage.
++
++| Scenario | Platforms | Runner | Owner | Reason | Ticket | Expires |
++|---|---|---|---|---|---|---|
++| — | — | — | — | None | — | — |
++
++## Discovered tests the contract does not mention
++
++Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.
++
++3 tests discovered under `spec/browser`, `spec/fixtures/browser`; 3 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
++
++| Runner | File | Test not named by the contract |
++|---|---|---|
++| — | — | None |
++
++## Tests deliberately aligned to no behavior
++
++Every row here is a standing claim that a real test proves nothing about product behavior. An exclusion whose file is gone, whose title was renamed, or that no discovery root covers is a defect, not a permanent excuse.
++
++| File | Test | Reason it aligns to no product behavior |
++|---|---|---|
++| — | — | None |
++
++## Traceability to work items
++
++3 of 3 scenarios carry a tracker tag; 0 do not. Tags are validated for syntax and against this repo's declared trackers; the gate never contacts a tracker, so an unreachable issue can never block a merge.
++
++## Required obligations with no mapped proof
++
++None. Every required, non-waived obligation has aligned automation mapped to it.
+diff --git a/docs/bdd-scenario-matrix.md b/docs/bdd-scenario-matrix.md
+new file mode 100644
+index 0000000..32e1e42
+--- /dev/null
++++ b/docs/bdd-scenario-matrix.md
+@@ -0,0 +1,18 @@
++# BDD scenario traceability matrix
++
++Every declared behavior, where it came from, and what actually proves it.
++Generated by `BDD_BASE_SHA="$(git merge-base HEAD origin/HEAD)" bun run bdd:matrix`; never hand-edited.
++
++- **Mapped** — aligned automation exists in that runner for the platforms the scenario requires, and its evidence string still resolves. This is **traceability**, not a result: a mapped test that fails still shows `✓`.
++- **Executed** — what the supplied run evidence returned for those mapped tests. Run evidence was supplied for this render.
++- **Lifecycle** — `required` counts toward coverage; `blocked`, `reference-only`, and `superseded` are excluded until that changes.
++
++3 scenarios declared, 3 required.
++
++## Starter Bootstrap assets and interactions
++
++| ID | Behavior | Source | Lifecycle | Mapped (rspec-capybara-selenium) | Executed |
++|---|---|---|---|---|---|
++| `BDD-BOOTSTRAP-001` | Loaded CDN assets support navigation, flash and importmap | `ratified-bootstrap-cdn-acceptance`<br>[gh-81](https://github.com/CodySwannGT/railsstarter/issues/81) | required | ✓ web | 1 passed |
++| `BDD-BOOTSTRAP-002` | Corrupt stylesheet integrity is blocked by the browser | `ratified-bootstrap-cdn-acceptance`<br>[gh-81](https://github.com/CodySwannGT/railsstarter/issues/81) | required | ✓ web | 1 passed |
++| `BDD-BOOTSTRAP-003` | Corrupt script integrity is blocked by the browser | `ratified-bootstrap-cdn-acceptance`<br>[gh-81](https://github.com/CodySwannGT/railsstarter/issues/81) | required | ✓ web | 1 passed |

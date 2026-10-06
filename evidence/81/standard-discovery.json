@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-10-04T17:43:50.917210+00:00",
+  "source_url": "https://github.com/CodySwannGT/lisa/blob/main/.github/workflows/quality-rails.yml",
+  "github_blob_sha": "27c37742c8faaca8f31706d2146c74cf3075b787",
+  "sha256": "1f3398f2a7f0829d728e63f1f5ea801de5040e8a4720381c48f1323a5bd65af9",
+  "test_job_excerpt": "  test-mysql:\n    permissions:\n      contents: read\n      checks: write\n      pull-requests: write\n    name: Test (MySQL)\n    runs-on: ubuntu-latest\n    if: ${{ !contains(format(',{0},', inputs.skip_jobs), ',test,') && inputs.database_type == 'mysql' }}\n    services:\n      mysql:\n        image: mysql:${{ inputs.database_version || '8.0' }}\n        env:\n          MYSQL_ROOT_PASSWORD: password\n          MYSQL_DATABASE: ${{ inputs.database_name }}\n        ports:\n          - 3306:3306\n        options: >-\n          --health-cmd \"mysqladmin ping -h localhost\"\n          --health-interval 10s\n          --health-timeout 5s\n          --health-retries 5\n    env:\n      RAILS_ENV: test\n      PRIMARY_DB_HOST: 127.0.0.1\n      DATABASE_NAME: ${{ inputs.database_name }}\n      DATABASE_PASSWORD: password\n      DATABASE_USER: root\n      DATABASE_PORT: 3306\n    steps:\n      - name: \ud83d\udce5 Checkout repository\n        uses: actions/checkout@v6\n\n      - name: \ud83d\udc8e Setup Ruby\n        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0\n        with:\n          bundler-cache: true\n\n      - name: \ud83d\uddc4\ufe0f Prepare database\n        # Outside the supervisor for the same reason as the PostgreSQL route.\n        run: bin/rails db:prepare\n\n      - name: \ud83e\uddf9 Assert the scratch supervisor is installed\n        # Every Rails test and mutation route enters the supervisor, and it is\n        # the only boundary on that route.\n        #\n        # This workflow is consumed at `@main`, so it goes live in a caller the\n        # moment it merges, while `scripts/lisa-scratch-run.sh` arrives on the\n        # `lisa apply` channel \u2014 the two halves land in that order, and there is\n        # a window where a caller has this step and not that file. The window\n        # closes on the caller's next apply, and the same argument the threshold\n        # ratchet gate makes above applies here: a gate that passes because it\n        # found nothing is worse than no gate. Running the payload unsupervised\n        # is exactly the abandoned-scratch behavior this step exists to end, so\n        # the absence is a failure with a named remedy.\n        run: |\n          if [ ! -f scripts/lisa-scratch-run.sh ]; then\n            echo \"::error title=Scratch supervisor missing::scripts/lisa-scratch-run.sh does not exist, so this suite has no run-scoped scratch ownership and no cleanup authority that survives a killed run. Run 'lisa' to install the Lisa-managed script, or add 'test' (or 'mutation') to skip_jobs to decline the job deliberately, which at least records the decision in the caller.\"\n            exit 1\n          fi\n\n      - name: \ud83e\uddea Run tests\n        run: bash scripts/lisa-scratch-run.sh --suite rspec-mysql -- bundle exec rspec\n\n",
+  "claim": "Source configuration only; no hosted execution. Standard bundle exec rspec discovers spec/**/*_spec.rb.",
+  "caller": ".github/workflows/ci.yml",
+  "local_rspec_options": "--format documentation\n--color\n--require spec_helper\n",
+  "installed_rspec_default_pattern": "**{,/*/**}/*_spec.rb",
+  "spec_matches_default_discovery": true,
+  "prerequisites": [
+    "Existing Ruby 3.4.8 and installed bundle",
+    "Chrome with compatible Selenium/ChromeDriver availability",
+    "Network access to immutable jsDelivr CDN assets"
+  ],
+  "gaps": [
+    "No hosted execution",
+    "Current reusable workflow requires scripts/lisa-scratch-run.sh, absent in this scoped checkout",
+    "Package scripts contain no BDD invocation; no CI/package script edit authorized"
+  ]
+}

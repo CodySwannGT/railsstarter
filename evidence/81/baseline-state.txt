@@ -1,0 +1,8 @@
+{
+  "navbarToggle": false,
+  "navbarDisplay": "block",
+  "cssLoaded": false,
+  "bootstrap": "5.3.3",
+  "stimulus": true,
+  "turbo": true
+}

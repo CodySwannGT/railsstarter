@@ -1,0 +1,36 @@
+{
+  "captured_at": "2026-10-04T17:52:09.714045+00:00",
+  "native_verifier_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "repository": "CodySwannGT/railsstarter",
+  "branch": "codex/81-bootstrap-cdn-sri",
+  "committed_head": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "binding": {
+    "version": 1,
+    "branch": "codex/81-bootstrap-cdn-sri",
+    "provider": "github",
+    "ref": "CodySwannGT/railsstarter#81"
+  },
+  "context": {
+    "bytes": 221581,
+    "mode": "0600",
+    "sha256": "74fb3082cc038bb6b34e66990ad3e42a2506b88273c0ba56b6d82fc7b8858d78",
+    "retained": true
+  },
+  "tracked_uncommitted_files": [
+    "app/views/layouts/application.html.erb"
+  ],
+  "owned_final_functional_files": [
+    "app/views/layouts/application.html.erb",
+    "spec/browser/bootstrap_assets_spec.rb",
+    "spec/fixtures/browser/bootstrap_server.rb",
+    "spec/fixtures/browser/bootstrap_harness.rb",
+    "bdd/features/bootstrap-assets.feature",
+    "bdd/coverage-map.json",
+    "bdd/coverage-report.json",
+    "docs/e2e-bdd-coverage.md",
+    "docs/bdd-scenario-matrix.md"
+  ],
+  "scope_exclusions": "No other audit/product/CI/Ruby/dependency/guard/policy/production/cross-repository functional edits in this lane; prior integrated ancestry separate",
+  "historical_hold": "Preserved per root live body equality readback",
+  "full_delivery": "in_progress; no commit/push/PR/merge; binding and context retained"
+}

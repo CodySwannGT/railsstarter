@@ -1,0 +1,26 @@
+{
+  "url": "http://127.0.0.1:63736/__bootstrap_acceptance",
+  "bootstrap": "5.3.8",
+  "css": [
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
+      "integrity": "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
+      "crossorigin": "anonymous",
+      "sheet": true
+    }
+  ],
+  "js": [
+    {
+      "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
+      "integrity": "sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
+      "crossorigin": "anonymous"
+    }
+  ],
+  "navDisplay": "flex",
+  "collapseDisplay": "none",
+  "toggleExpanded": "false",
+  "flashCount": 1,
+  "flashBackground": "rgb(209, 231, 221)",
+  "stimulus": true,
+  "turbo": true
+}
