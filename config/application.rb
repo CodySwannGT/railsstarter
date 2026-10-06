@@ -8,6 +8,9 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative '../lib/aws_bootstrap'
+AwsBootstrap.load!(environment: Rails.env)
+
 module App
   # Main application configuration for the Your Project Rails app.
   class Application < Rails::Application
