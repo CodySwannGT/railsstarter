@@ -2,12 +2,26 @@
 
 set -euo pipefail
 
-CLUSTER_NAME="webCluster"
-SERVICE_NAME="web-rails-service"
-DEFAULT_PROFILE_NAME="qualis-staging"
+CLUSTER_NAME=${ECS_CLUSTER:-}
+SERVICE_NAME=${ECS_SERVICE:-}
 COMMAND="bin/rails db:verify_schema"
 
-PROFILE_NAME=${1:-$DEFAULT_PROFILE_NAME}
+PROFILE_NAME=${1-${AWS_PROFILE:-}}
+REGION_NAME=${AWS_REGION:-}
+
+# Validate the whole explicit configuration before invoking the AWS CLI.
+for SETTING in AWS_PROFILE AWS_REGION ECS_CLUSTER ECS_SERVICE; do
+  case "$SETTING" in
+    AWS_PROFILE) VALUE=$PROFILE_NAME ;;
+    AWS_REGION) VALUE=$REGION_NAME ;;
+    ECS_CLUSTER) VALUE=$CLUSTER_NAME ;;
+    ECS_SERVICE) VALUE=$SERVICE_NAME ;;
+  esac
+  if [[ ! "$VALUE" =~ [^[:space:]] ]]; then
+    echo "Missing explicit ${SETTING}. Set it before running bin/verify-schema (profile may be the first argument)." >&2
+    exit 1
+  fi
+done
 
 echo "Verifying schema on ${PROFILE_NAME}..."
 
@@ -15,6 +29,7 @@ echo "Verifying schema on ${PROFILE_NAME}..."
 TASK_ARN=$(aws ecs list-tasks \
   --cluster "$CLUSTER_NAME" \
   --service-name "$SERVICE_NAME" \
+  --region "$REGION_NAME" \
   --profile "$PROFILE_NAME" \
   --query 'taskArns[0]' \
   --output text)
@@ -30,11 +45,12 @@ TASK_ID=$(echo "$TASK_ARN" | awk -F/ '{print $NF}')
 CONTAINER_NAME=$(aws ecs describe-tasks \
   --cluster "$CLUSTER_NAME" \
   --tasks "$TASK_ID" \
+  --region "$REGION_NAME" \
   --profile "$PROFILE_NAME" \
   --query 'tasks[0].containers[?starts_with(name, `ecs-service-connect`) == `false`].name' \
   --output text | awk '{print $1}')
 
-if [ -z "$CONTAINER_NAME" ]; then
+if [ -z "$CONTAINER_NAME" ] || [ "$CONTAINER_NAME" = "None" ]; then
   echo "No suitable containers found in task ${TASK_ID}"
   exit 1
 fi
@@ -47,12 +63,23 @@ OUTPUT=$(aws ecs execute-command \
   --container "$CONTAINER_NAME" \
   --interactive \
   --command "$COMMAND" \
-  --profile "$PROFILE_NAME" 2>/dev/null)
+  --region "$REGION_NAME" \
+  --profile "$PROFILE_NAME")
 
 echo "$OUTPUT"
 
-# Parse status from JSON output
-STATUS=$(echo "$OUTPUT" | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4)
+# ECS session output includes banners around the task's one-line JSON result.
+STATUS=$(printf '%s\n' "$OUTPUT" | ruby -rjson -e '
+  results = STDIN.each_line.filter_map do |line|
+    begin
+      result = JSON.parse(line)
+      result["status"] if result.is_a?(Hash)
+    rescue JSON::ParserError
+      nil
+    end
+  end
+  puts results.last
+')
 
 if [ "$STATUS" = "pass" ]; then
   echo ""

@@ -13,7 +13,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 1) do
-  create_table 'solid_cable_messages', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_cable_messages', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.binary 'channel', limit: 1024, null: false
     t.bigint 'channel_hash', null: false
     t.datetime 'created_at', null: false
