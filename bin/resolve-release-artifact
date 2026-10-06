@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Local release/source and image identity contract for the opt-in ECS template.
+set -euo pipefail
+fail() { echo "::error::$*" >&2; exit 1; }
+case "${1:-}" in
+  source)
+    [[ $# == 4 ]] || fail 'Usage: resolve-release-artifact source TRIGGER_SHA BRANCH TIP_SHA'
+    trigger="$2" branch="$3" tip="$4"
+    [[ "$trigger" =~ ^[a-f0-9]{40}$ && "$tip" =~ ^[a-f0-9]{40}$ ]] || fail 'Release source requires full commit SHAs'
+    git cat-file -e "$trigger^{commit}" 2>/dev/null || fail 'Trigger commit unavailable'
+    git cat-file -e "$tip^{commit}" 2>/dev/null || fail 'Fetched branch commit unavailable'
+    git merge-base --is-ancestor "$trigger" "$tip" || fail 'Fetched branch is unrelated to trigger'
+    interval=$(git rev-list --first-parent "$trigger..$tip")
+    candidates=()
+    while IFS= read -r tag; do
+      [[ $(git cat-file -t "refs/tags/$tag") == tag ]] || continue
+      sha=$(git rev-parse "refs/tags/$tag^{commit}" 2>/dev/null) || continue
+      [[ "$interval" == "$sha" || "$interval" == "$sha"$'\n'* || "$interval" == *$'\n'"$sha" || "$interval" == *$'\n'"$sha"$'\n'* ]] || continue
+      git merge-base --is-ancestor "$trigger" "$sha" || continue
+      version=$(git show "$sha:VERSION" 2>/dev/null) || continue
+      [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
+      [[ $(git show -s --format=%s "$sha") == "chore(release): $version" ]] || continue
+      case "$branch" in
+        main|master|prod|production) [[ "$tag" == "v$version" ]] || continue ;;
+        *) label=$(printf '%s' "$branch" | tr -c 'A-Za-z0-9.-' '-')
+           prefix="v$version-$label."
+           [[ "$tag" == "$prefix"* && "${tag#"$prefix"}" =~ ^[0-9]+$ ]] || continue ;;
+      esac
+      candidates+=("$sha $tag")
+    done < <(git tag --list)
+    [[ ${#candidates[@]} == 1 ]] || fail "Expected one released artifact after trigger; found ${#candidates[@]} (missing or ambiguous release, replay rejected)"
+    read -r sha tag <<< "${candidates[0]}"
+    [[ $(git rev-parse "$sha^") == "$trigger" ]] || fail 'Released commit is not the direct successor of this trigger'
+    printf 'RELEASE_SHA=%s\nRELEASE_TAG=%s\n' "$sha" "$tag"
+    ;;
+  image)
+    [[ $# == 4 ]] || fail 'Usage: resolve-release-artifact image IMAGE_ID REPOSITORY RELEASE_SHA'
+    image_id="$2" repository="$3" sha="$4"
+    [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ && "$sha" =~ ^[a-f0-9]{40}$ ]] || fail 'Invalid immutable image or release SHA'
+    revision=$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image_id")
+    [[ "$revision" == "$sha" ]] || fail "Image revision does not match released commit ($image_id)"
+    digests=$(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image_id")
+    matches=$(printf '%s\n' "$digests" | awk -v prefix="$repository@" 'index($0, prefix) == 1')
+    [[ "${matches#"$repository@"}" =~ ^sha256:[a-f0-9]{64}$ && "$matches" != *$'\n'* ]] || fail "Could not resolve a unique pushed digest for $repository ($image_id)"
+    resolved_id=$(docker image inspect --format '{{.Id}}' "$matches")
+    [[ "$resolved_id" == "$image_id" ]] || fail 'Pushed digest resolves to a different image'
+    printf '%s\n' "$matches"
+    ;;
+  *) fail 'Expected source or image command' ;;
+esac
