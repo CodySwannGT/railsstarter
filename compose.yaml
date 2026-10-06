@@ -1,5 +1,6 @@
 services:
   web:
+    image: &app-image "${COMPOSE_PROJECT_NAME:-railsstarter}-app:local"
     build:
       context: ./
       dockerfile: Dockerfile.local
@@ -15,14 +16,14 @@ services:
     environment:
       - HISTFILE=/usr/src/app/log/.bash_history
     depends_on:
-      db:
-        condition: service_healthy
+      db-prepare:
+        condition: service_completed_successfully
       # redis:
       #   condition: service_started
   worker:
-    build:
-      context: ./
-      dockerfile: worker.Dockerfile.local
+    image: *app-image
+    pull_policy: never
+    command: ["./bin/worker-docker-entrypoint", "./bin/jobs"]
     volumes:
       - .:/rails
       # - bundle:/usr/local/bundle
@@ -33,19 +34,33 @@ services:
     environment:
       - HISTFILE=/usr/src/app/log/.bash_history
     depends_on:
-      db:
-        condition: service_healthy
+      db-prepare:
+        condition: service_completed_successfully
       # redis:
       #   condition: service_started
+  db-prepare:
+    image: *app-image
+    pull_policy: never
+    command: ["./bin/rails", "db:prepare"]
+    restart: "no"
+    volumes:
+      - .:/rails
+    env_file:
+      - .env
+    environment:
+      - HISTFILE=/usr/src/app/log/.bash_history
+    depends_on:
+      db:
+        condition: service_healthy
   db:
-    image: mysql:latest
+    image: mysql:8.4.11@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242
     volumes:
       - ./db-init:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
     ports:
       - "127.0.0.1:3306:3306"
     healthcheck:
-      test: '/usr/bin/mysql --user=root --execute "SHOW DATABASES;"'
+      test: '/usr/bin/mysql --protocol=TCP --host=127.0.0.1 --user=root --execute "SHOW DATABASES;"'
       interval: 2s
       timeout: 20s
       retries: 10
