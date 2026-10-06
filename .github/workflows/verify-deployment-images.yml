@@ -1,0 +1,49 @@
+name: Verify Deployment Images
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deployment-images:
+    name: Credential-free Images and Asset Publication
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verify scanner rejects hidden content and metadata
+        run: python3 -m unittest discover -s spec/deployment -p '*_test.py' -v
+      - name: Build actual images without deployment credentials
+        run: |
+          set -euo pipefail
+          unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_CONFIG_FILE AWS_SHARED_CREDENTIALS_FILE
+          mkdir -p "$RUNNER_TEMP/deployment-image-evidence"
+          sentinel="synthetic-image-proof-$(python3 -c 'import uuid; print(uuid.uuid4().hex)')"
+          printf '%s' "$sentinel" > "$RUNNER_TEMP/image-sentinel"
+          for file in aws_credentials aws_credentials.test .aws/credentials .lisa/work-item-context.md .entire/synthetic-session.json; do
+            mkdir -p "$(dirname "$file")"
+            printf '%s' "$sentinel" > "$file"
+          done
+          docker build --progress plain -t deployment-proof-web . 2>&1 | tee "$RUNNER_TEMP/deployment-image-evidence/web-build.log"
+          docker build --progress plain -f worker.Dockerfile -t deployment-proof-worker . 2>&1 | tee "$RUNNER_TEMP/deployment-image-evidence/worker-build.log"
+      - name: Inspect every layer and exercise actual compiled asset publication
+        run: |
+          python3 bin/verify-deployment-images.py \
+            --web-image deployment-proof-web --worker-image deployment-proof-worker \
+            --sentinel-file "$RUNNER_TEMP/image-sentinel" \
+            --report-directory "$RUNNER_TEMP/deployment-image-evidence"
+      - name: Boot both immutable production images with authored SDK responses
+        run: |
+          python3 bin/verify-runtime-images.py \
+            --web-image deployment-proof-web --worker-image deployment-proof-worker \
+            --report-directory "$RUNNER_TEMP/deployment-image-evidence"
+      - name: Retain image and publication evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deployment-image-evidence
+          path: ${{ runner.temp }}/deployment-image-evidence
+          if-no-files-found: error

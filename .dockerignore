@@ -15,6 +15,16 @@
 /config/master.key
 /config/credentials/*.key
 
+# Deployment credentials and private agent/session data never belong in images.
+**/aws_credentials
+**/aws_credentials.*
+**/.aws
+**/.entire
+/.lisa
+/.claude
+/.codex
+/.opencode
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*

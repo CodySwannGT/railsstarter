@@ -3,7 +3,7 @@
 # Deploy Staging Images
 #
 # Build Docker images locally and push them to ECR, then update ECS services.
-# Mirrors .github/workflows/deploy.yml but adapted for local workstation use
+# Mirrors templates/github/workflows/deploy-ecs.yml for local workstation use
 # with AWS SSO authentication.
 #
 # All AWS configuration is fetched dynamically from CloudFormation exports
@@ -127,7 +127,7 @@ done
 # ---------------------------------------------------------------------------
 print_header "Checking prerequisites"
 
-for cmd in docker aws jq git; do
+for cmd in docker aws jq git tar; do
   if ! command -v "$cmd" &>/dev/null; then
     print_error "$cmd is required but not installed."
     exit 1
@@ -141,17 +141,51 @@ if ! docker info &>/dev/null; then
 fi
 print_success "Docker daemon running"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
-if [[ ! -f "$SCRIPT_DIR/Dockerfile" ]]; then
-  print_error "Dockerfile not found in $SCRIPT_DIR"
+# Capture the intended commit once, before authentication. Git archive excludes
+# ignored/untracked inputs and .git, so a later branch advance cannot change a
+# build's contents while its revision label still names the original commit.
+SOURCE_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)
+SOURCE_STATUS=$(git -C "$SCRIPT_DIR" status --porcelain --untracked-files=normal)
+if [[ "$SOURCE_ROOT" != "$SCRIPT_DIR" || -n "$SOURCE_STATUS" ]]; then
+  print_error "Deployment requires clean committed source (tracked and untracked files)." >&2
+  exit 1
+fi
+IMAGE_TAG=$(git -C "$SCRIPT_DIR" rev-parse --verify 'HEAD^{commit}')
+if [[ ! "$IMAGE_TAG" =~ ^[a-f0-9]{40}$ ]]; then
+  print_error "Deployment requires a full source commit SHA." >&2
+  exit 1
+fi
+umask 077
+BUILD_CONTEXT=$(mktemp -d "${TMPDIR:-/tmp}/rails-deploy-source.XXXXXX")
+cleanup_source() {
+  local status=$?
+  trap - EXIT
+  rm -rf -- "$BUILD_CONTEXT" || status=1
+  exit "$status"
+}
+trap cleanup_source EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+git -C "$SCRIPT_DIR" archive --format=tar "$IMAGE_TAG" | tar -xf - -C "$BUILD_CONTEXT"
+for helper in resolve-release-artifact publish-assets; do
+  if [[ ! -x "$BUILD_CONTEXT/bin/$helper" ]]; then
+    print_error "Required executable bin/$helper missing from committed source." >&2
+    exit 1
+  fi
+done
+print_success "Build source (git SHA): $IMAGE_TAG"
+
+if [[ ! -f "$BUILD_CONTEXT/Dockerfile" ]]; then
+  print_error "Dockerfile not found in committed source"
   exit 1
 fi
 print_success "Dockerfile found"
 
 if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
-  if [[ ! -f "$SCRIPT_DIR/worker.Dockerfile" ]]; then
-    print_error "worker.Dockerfile not found in $SCRIPT_DIR"
+  if [[ ! -f "$BUILD_CONTEXT/worker.Dockerfile" ]]; then
+    print_error "worker.Dockerfile not found in committed source"
     exit 1
   fi
   print_success "worker.Dockerfile found"
@@ -222,8 +256,10 @@ if [[ "$SERVICE" == "all" || "$SERVICE" == "worker" ]]; then
   print_success "Worker ECR repo: $WORKER_ECR_REPO"
 fi
 
-S3_BUCKET_NAME=$(cf_export_value_starts_with "ClientUploadBucket")
-print_success "S3 bucket: $S3_BUCKET_NAME"
+if [[ "$SERVICE" != "worker" && "$NO_DEPLOY" != "true" ]]; then
+  S3_BUCKET_NAME=$(cf_export_value_starts_with "ClientUploadBucket")
+  print_success "S3 bucket: $S3_BUCKET_NAME"
+fi
 
 RAILS_SERVICE_NAME=$(cf_export_value "RailsServiceName" "web-rails-service")
 print_success "Rails service: $RAILS_SERVICE_NAME"
@@ -255,41 +291,6 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Image tag
-# ---------------------------------------------------------------------------
-IMAGE_TAG=$(git -C "$SCRIPT_DIR" rev-parse HEAD)
-print_success "Image tag (git SHA): $IMAGE_TAG"
-
-if ! git -C "$SCRIPT_DIR" diff --quiet HEAD 2>/dev/null; then
-  print_warning "Working tree has uncommitted changes — image tag will not match built content"
-fi
-
-# ---------------------------------------------------------------------------
-# Credentials file for BuildKit
-# ---------------------------------------------------------------------------
-print_header "Preparing BuildKit credentials"
-
-CREDS_FILE=$(mktemp)
-chmod 600 "$CREDS_FILE"
-cleanup() {
-  rm -f "$CREDS_FILE"
-}
-trap cleanup EXIT INT TERM HUP
-
-if [[ "$DRY_RUN" == "true" ]]; then
-  echo -e "${YELLOW}[dry-run]${NC} Writing temp credentials to $CREDS_FILE"
-else
-  CREDS_JSON=$(aws configure export-credentials --profile "$PROFILE" --format process)
-  cat > "$CREDS_FILE" <<CREDS
-AWS_ACCESS_KEY_ID=$(echo "$CREDS_JSON" | jq -r '.AccessKeyId')
-AWS_SECRET_ACCESS_KEY=$(echo "$CREDS_JSON" | jq -r '.SecretAccessKey')
-AWS_SESSION_TOKEN=$(echo "$CREDS_JSON" | jq -r '.SessionToken')
-AWS_REGION=$AWS_REGION
-CREDS
-  print_success "Credentials written to temp file"
-fi
-
-# ---------------------------------------------------------------------------
 # Build images
 # ---------------------------------------------------------------------------
 print_header "Building images"
@@ -299,24 +300,30 @@ if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
   run_cmd env DOCKER_BUILDKIT=1 docker build \
     --platform linux/amd64 \
     --build-arg RAILS_ENV=staging \
-    --build-arg S3_BUCKET_NAME="$S3_BUCKET_NAME" \
-    --secret id=aws_credentials,src="$CREDS_FILE" \
+    --label "org.opencontainers.image.revision=$IMAGE_TAG" \
     -t "$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG" \
     -t "$ECR_REGISTRY/$RAILS_ECR_REPO:latest" \
-    "$SCRIPT_DIR"
+    "$BUILD_CONTEXT"
   print_success "Web image built"
+  if [[ "$DRY_RUN" != "true" ]]; then
+    WEB_IMAGE_ID=$(docker image inspect --format '{{.Id}}' "$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG")
+  fi
 fi
 
 if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
   print_step "Building worker image..."
   run_cmd docker build \
     --platform linux/amd64 \
-    -f "$SCRIPT_DIR/worker.Dockerfile" \
+    -f "$BUILD_CONTEXT/worker.Dockerfile" \
     --build-arg RAILS_ENV=staging \
+    --label "org.opencontainers.image.revision=$IMAGE_TAG" \
     -t "$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG" \
     -t "$ECR_REGISTRY/$WORKER_ECR_REPO:latest" \
-    "$SCRIPT_DIR"
+    "$BUILD_CONTEXT"
   print_success "Worker image built"
+  if [[ "$DRY_RUN" != "true" ]]; then
+    WORKER_IMAGE_ID=$(docker image inspect --format '{{.Id}}' "$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG")
+  fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -341,9 +348,33 @@ fi
 # ---------------------------------------------------------------------------
 # ECS deploy
 # ---------------------------------------------------------------------------
+# Share the CI identity verifier: revision, unique repository digest, and the
+# digest's immutable image ID must agree even when ECS deployment is disabled.
+if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+  if [[ "$DRY_RUN" == "true" ]]; then
+    WEB_RELEASE_IMAGE="$ECR_REGISTRY/$RAILS_ECR_REPO:$IMAGE_TAG"
+    WEB_IMAGE_ID="$WEB_RELEASE_IMAGE"
+  else
+    WEB_RELEASE_IMAGE=$("$BUILD_CONTEXT/bin/resolve-release-artifact" image "$WEB_IMAGE_ID" "$ECR_REGISTRY/$RAILS_ECR_REPO" "$IMAGE_TAG")
+  fi
+fi
+if [[ "$SERVICE" == "worker" || "$SERVICE" == "all" ]]; then
+  if [[ "$DRY_RUN" == "true" ]]; then
+    WORKER_RELEASE_IMAGE="$ECR_REGISTRY/$WORKER_ECR_REPO:$IMAGE_TAG"
+  else
+    WORKER_RELEASE_IMAGE=$("$BUILD_CONTEXT/bin/resolve-release-artifact" image "$WORKER_IMAGE_ID" "$ECR_REGISTRY/$WORKER_ECR_REPO" "$IMAGE_TAG")
+  fi
+fi
+
 if [[ "$NO_DEPLOY" == "true" ]]; then
   print_warning "Skipping ECS deployment (--no-deploy)"
 else
+  if [[ "$SERVICE" == "web" || "$SERVICE" == "all" ]]; then
+    print_header "Publishing compiled web assets"
+    run_cmd "$BUILD_CONTEXT/bin/publish-assets" --image "$WEB_IMAGE_ID" \
+      --bucket "$S3_BUCKET_NAME" --profile "$PROFILE" --region "$AWS_REGION"
+  fi
+
   print_header "Updating ECS services"
 
   declare -a SERVICES_TO_UPDATE=()
@@ -373,7 +404,11 @@ else
         --region "$AWS_REGION" \
         --query 'taskDefinition')
 
-      NEW_IMAGE="$ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
+      if [[ "$ECR_REPO" == "$RAILS_ECR_REPO" ]]; then
+        NEW_IMAGE="$WEB_RELEASE_IMAGE"
+      else
+        NEW_IMAGE="$WORKER_RELEASE_IMAGE"
+      fi
 
       UPDATED_DEF=$(echo "$TASK_DEF" | jq --arg IMG "$NEW_IMAGE" \
         '.containerDefinitions |= map(if .essential == true then .image = $IMG else . end) |

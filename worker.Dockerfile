@@ -1,8 +1,8 @@
 # syntax = docker/dockerfile:1
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.4.8
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+ARG RUBY_VERSION=3.4.11
+FROM docker.io/library/ruby:$RUBY_VERSION-slim-trixie@sha256:4677fd16f2b54ef534d18b0e34e20a15726b62c203cb996fd70297a058864c60 AS base
 
 # Worker app lives here
 WORKDIR /rails
@@ -47,8 +47,10 @@ RUN apt-get update -qq && \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+# Source archives extracted under a private umask can contain owner-only directories.
+# Grant source read/traverse access, preserving executable bits and runtime-only writes.
+RUN chmod -R a+rX /rails && \
+  useradd rails --create-home --shell /bin/bash && \
   chown -R rails:rails db log storage tmp
 USER rails:rails
 
