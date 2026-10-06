@@ -7,7 +7,7 @@
     "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/all/copy-overwrite/scripts/lisa-postinstall.mjs || true"
   },
   "devDependencies": {
-    "@codyswann/lisa": "^4.70.3"
+    "@codyswann/lisa": "^4.70.4"
   },
   "trustedDependencies": [
     "@codyswann/lisa"
