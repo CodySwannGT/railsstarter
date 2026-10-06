@@ -1,0 +1,7 @@
+# Doctor diagnostic side effect and scoped restoration
+
+During this research stage the local specialist executed the issue-documented installed Lisa 4.67.0 `doctor . --json --offline` once. It returned exit 1 and unexpectedly appended 22 lines to AGENTS.md through `dist/cli/doctor.js` checkInstructionFiles → migrateInstructionFiles. The specialist reported it immediately after coordinator detected it. The initial assertion that no source mutation occurred was corrected in the specialist artifact.
+
+The coordinator verified AGENTS.md consisted of its byte-for-byte stage-start HEAD content followed only by the exact two managed blocks LISA_HOST_RULES and LISA_PROJECT_LEARNINGS. No unrelated content change was present. The coordinator removed only that attributable appended suffix and verified AGENTS.md matches its stage-start content. This is restoration of the research tool's own side effect, not an implementation or reversion of another lane. The preserved native .claude/settings.json plugin-key migration was untouched.
+
+Future `doctor` proof must execute in a disposable clone/snapshot or an explicitly reviewed implementation lane, with before/after status. `--offline` disables network checks but does not guarantee a read-only command. The exact diagnostic evidence and exit status remain in the local research artifact; the restored bridge is not proposed for this stage's commit.
