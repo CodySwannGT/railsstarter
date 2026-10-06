@@ -1,0 +1,56 @@
+# #65 / #62 owned default-suite access recipe
+
+Research only, 2026-10-04. Existing recorded #65 roster governs this bounded researcher. No source/index/config/binding mutation, container or DB provisioning, application boot, test execution, signal experiment, apply, hosted CI or provider writes. Private resolver values and donor runtime environment were not printed or copied. Existing state manifests are historical and MUST NOT be reused.
+
+## Verified current access
+
+- Accepted selected interpreter: Ruby 3.4.11 (revision592f1ffdb3), ARM64 Darwin; narrow resolver Bundler2.4.10. Actual `bundle check` exit0, dependencies satisfied. Both DISABLE_BOOTSNAP and DISABLE_BOOTSNAP_COMPILE_CACHE absent in the narrow prerequisite environment.
+- Docker server29.2.1 read-only version probe succeeds. Both `mysql:8.4` and `mysql@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242` resolve to that exact imageID, ARM64. These are local installation prerequisites, not LinuxAMD64 hosted proof. No image mutation or foreign-resource inventory/cleanup.
+- Google Chrome154.0.8037.93 installed. `/usr/local/bin/chromedriver` absent, but cached `/Users/cody/.cache/selenium/chromedriver/mac-arm64/154.0.8037.92/chromedriver` returns the matching8037 build version. Selenium manager binary also exists. The browser harness supports optional CHROMEDRIVER for this installed executable, otherwise Selenium manager selects it. Browser execution was not performed.
+- Public Bootstrap5.3.8 source CSS and bundleJS requests each returned HTTP200,232111/80496bytes. Downloaded SHA384 values independently equal current layout's authored SRI values. Imports are local application/Turbo/Stimulus pins. This verifies CDN read access and source integrity now, not actual browser behavior.
+- Parent donor-review SHA256 matches supplied `71aa477e4313f01a37a5fbf990e8d2bf56e23901c6f6606568063a5737825050`. Donor structured command is exactly `["bundle","exec","rspec"]`, exit0, private log digest `1cc6f5db444b177a4be44633e43b58a5647fc10718b3d7cd92a201e9e74ee4b2`. Its165case result remains donor-only proof.
+
+No required credential/access failure found. A NEW owned endpoint remains an installation/setup prerequisite, never permanent missing credentials. No secret values were read from donor runtime-env.json or existing owned-app-state.json.
+
+## Reusable provision/preaccess/cleanup source
+
+`/tmp/railsstarter-65-owned-app.py`, SHA256 `13773e98d88ee24e696374a14ddabbf71f9d6b10d1d473268256c3fd0fa29e10`, already provides setup/run/cleanup against the current #65 root and explicit Ruby3.4.11/Bundler2.4.10 resolver. The earlier `/tmp/railsstarter-65-owned-runtime-contract.md` SHA256 `674c34ab9444f705eef9fb6616c33bdef3176999c3825b64db69e65a1f52748d` explains why old #69 resource manifests/UUIDs cannot be reused.
+
+Create a separate private stage runner under a NEW path, not overwrite this historical script or receipts. Parameterize STATE, OWNER and EVERY `/tmp/railsstarter-65-owned-app-...` output with the new62integration stage prefix. OWNER must identify actual nativeUUID01a103db-d315-7e12-887a-3a67d75d920d plus this fresh stage. Generate new random container/volume/namespace/user/password and dynamic loopback port, rather than borrowing old donor or #65 state. Keep any runtime state and raw logs0600 and ignored/private. Do not print script's state or child environment. Startup refusal of existing state is deliberate preservation, not a defect.
+
+Its setup owns only a new labeled volume and container at the exact inspected cached digest, guards an empty datadir in entrypoint, dynamically publishes127.0.0.1, asserts label/image/mount/volume-exclusive-consumer/port identity before SQL, verifies MySQL8.4/serverUUID, creates four fresh utf8mb4 test databases, creates a synthetic user restricted to those four grants plusUSAGE, verifies each physical identity and empty namespace. It then renders all five ERB/YAML roles without Rails/Mysql2, asserts exact host/port/name/user/password/replica/config equality with no socket/URL/SSL/IAM escape, and executes ten synthetic unsafe-environment refusals without driver load. The helper must be reached only after independent read-only confirmation of those live physical/config/grant/empty namespace verdicts.
+
+The provisioner sets test Rails/Rack env, synthetic app/AWS credentials and disabledmetadata; its narrow baseenv merges only reviewed resolver keys with owned runtime config. AWS_BOOTSTRAP_ENABLED must remain absent for the local no-optin contract. New runner should explicitly assert both externalBootsnap-disable keys absent; do not inject either key externally. Retain actual-source schema smoke and final AwsBootstrap assertions. Handle setup partial failure using only identities recorded by this new setup, not broad cleanup.
+
+Proposed future invocation recipe, after lead creates/reviews the new private script (NOT executed here):
+
+```text
+python3 /tmp/railsstarter-65-62-owned-app.py setup
+# Independent physical/config/grant/empty namespace read-only approval here.
+python3 /tmp/railsstarter-65-62-owned-app.py run schema ruby spec/fixtures/runtime/smoke.rb
+# Inspect exact four schema results, five role identities, home/health200 and zeroAWS.
+python3 /tmp/railsstarter-65-62-owned-app.py run default rspec
+# Actual resolved argv: selectedRuby -x selectedBundle _2.4.10_ exec rspec
+python3 /tmp/railsstarter-65-62-owned-app.py cleanup
+```
+
+Existing run mode calls its selected Ruby/Bundler wrapper with those passed arguments, reasserts exact physical container state and serverUUID immediately before every invocation, and sanitizes private output. Use no `--options`, path filters, `-r config/boot`, inherited RUBYOPT/preload or external cache-disable flags. Default `.rspec` must remain operative. Final frozen-source hashes before/after, actual exit/count/pending, unchanged80line/70branch coverage, and named-example execution need recording from the resulting current run. `ruby spec/fixtures/runtime/smoke.rb` loads the exact four schemas through supported temporary pools only on the validated fresh target; avoid db:prepare/reset on any ambient endpoint. Recheck current smoke fixture implementation after conflict resolution, because the tracked merge currently has conflict markers.
+
+Cleanup reasserts exact label/image/mount/volume-exclusive-consumer/port identity, removes only that recorded container then that owned volume, independently proves both absent and its portunbound, preserving shared image/foreign resources. The current script's inspect requiresRunning: if setup fails before running or a container unexpectedly dies, lead must inspect original identities read-only and make an explicit bounded cleanup choice, never broaden scope.
+
+## Donor launcher limitations
+
+`/Users/cody/.codex/worktrees/c659/railsstarter/.lisa/automations/runs/issue62-build/run-default-owned.py`, SHA256 `22f95a55ff383c897e2780c281cd998c85d33be0d2f5a731a3e83d883efef863`, is only a historical launcher. It inherits ambient environment then overlays donor private runtime-env.json and strips both externalBootsnap keys. It does NOT provision or enforce fresh endpoint ownership. Do not run it in #65 against the destroyed donor endpoint or borrow its manifest. Its exact-default command and optional evidence-variable names are reusable design references, not permission to copy runtime inputs.
+
+For current default evidence, narrowly assign fresh `ISSUE62_DATABASE_EVIDENCE_PATH`, optional `UNICODE_WITNESS_EVIDENCE_PATH` if adopted wrapper supports it, and `BOOTSTRAP_BROWSER_CLEANUP_REPORT` to new private paths. Add optional cached CHROMEDRIVER only to this child's approved local environment. These are instrumentation parameters, not filters or skips.
+
+## Required default discovery witnesses
+
+- `spec/safety/rails_helper_isolation_spec.rb`:13 actual subprocess boundaries. Three nontest environments, Rackmismatch, two unsafeURL roles and five postbootunsafe roles each refuse beforedriver/schema/cleanup. Historicalhelper and valid synthetic controls must actually reach allthree tripwires, preventing vacuousPASS.
+- `spec/requests/database_isolation_spec.rb`:two physical tests; allfive configs including hiddenreplica select their exact database and commonserverUUID; actual GET / and /up200, applicationwriting/reading pools, SQL traceonly testidentities. It uses independent probe pools and disables transactionsharing only for this physical read-role witness, not testexecution.
+- Canonical #65 `spec/database/utf8mb4_spec.rb` wrapper must remain default-discovered and launch `test/runtime/utf8mb4_spec.rb` subprocess. It demands exactlyfourpassed/zerofailed/zeropending childcases, utf8error1366, allfourroles, exactUnicodebytes/schema/table/column charset, cleanup and unchanged parentpool/config/connectedstate. Do not adopt donor's overlapping standalone implementation in-place or remove the wrapper. Current merge conflict requires source review beforeexecution.
+- `spec/runtime/dependency_smoke_spec.rb`:local boot/eagerload/home/healthzeroAWS, inheritedoptin forcedoff, actualnativeRuby/mysql2/Bootsnap, existing explicit deterministic productionSDK consumption and unsafeinput/imageguards remain.
+- `spec/browser/bootstrap_assets_spec.rb`:three realChrome journeys, sourceassets/navigation/flash/importmap and corruptCSS/JS SRI controls. Owned Rails browserfixture forbidsMysql2.new, uses no-optin AWS evidence and owns scratch/server process cleanup. No user browser session or ambient DB target.
+- Existing deploymentpublication/credential-layer, customlint/security, callercontract and other defaultspecpaths remain unfiltered. Newly integrated `spec/workflows/recurring_worker_caller_spec.rb` is sixcases. The separate noargs `bin/test-recurring-worker` is required runtimecommand, not a defaultRSpec privateartifact dependency; its finalcandidate signalproof remains parent-assigned/pending, not this researcher's credit.
+
+Donor compile-cache setting is builtin `spec/spec_helper.rb` before SimpleCov, not an external flag. It retains Bootsnaploadpath caching, applicationcoverage floors80/70 and fail_if_no_examples. Final assembled default suite is not satisfied by old180preloadedcases, donor165cases, isolatedcontractgreen or this prerequisite research.
