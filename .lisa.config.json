@@ -7,6 +7,11 @@
   "harness": "fleet",
   "tracker": "github",
   "source": "github",
+  "deploy": {
+    "branches": {
+      "production": "main"
+    }
+  },
   "github": {
     "org": "CodySwannGT",
     "repo": "railsstarter",
@@ -30,6 +35,21 @@
         "shipped": "prd-shipped",
         "sentinel": "prd-intake-feedback"
       }
+    }
+  },
+  "gates": {
+    "introduced-history-credential-leakage": {
+      "push": "required",
+      "pull-request": {
+        "level": "required",
+        "caller_chain": [
+          "Quality Checks",
+          "History Secrets"
+        ]
+      }
+    },
+    "traceability": {
+      "pull-request": "required"
     }
   }
 }

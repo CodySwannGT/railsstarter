@@ -1,4 +1,4 @@
-# Your Project Engineering Wiki — Index
+# Railsstarter Engineering Wiki — Index
 
 > The navigation map of this wiki. Maintained on every ingestion. One table per category;
 > rows are `| Page | Summary | Updated |`. Read this first when looking for anything.
@@ -21,3 +21,8 @@
 | [Legal & Compliance](staff/lex.md) | Contracts, compliance, risk | — |
 
 <!-- Synthesis categories (concepts / entities / decisions / architecture / requirements / playbooks / open-questions / projects / sales / marketing / finance / customers / people / legal) will appear below as `/ingest` runs populate them. -->
+
+## Playbooks
+| Page | Summary | Updated |
+|---|---|---|
+| [Onboarding](playbooks/onboarding.md) | Setup/rename, locked tools, MySQL/TCP, shared-image startup, offline smoke and real main-only contribution boundaries | 2026-10-06 |

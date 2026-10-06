@@ -1,198 +1,70 @@
 # Project Rules
 
-Project-specific rules and guidelines that apply to this codebase.
+Use the [README checklist](../../README.md) with actual configuration. It describes the supported setup and disposable consumer validation routes. Source descriptions and documented commands are not runtime success claims.
 
-Rules in `.claude/rules/` are automatically loaded by Claude Code at session start.
-Add project-specific patterns, conventions, and requirements below.
+## Local tools and configuration
 
----
+Ruby is 3.4.11 in `.mise.toml`, `.ruby-version`, `Gemfile` and Dockerfiles. Use mise for host Ruby/Bundler, for example `mise exec ruby@3.4.11 -- ruby --version`. Resolve exact Node/Bun from the Lisa entry in committed `package-lock.json`, and Bundler from `Gemfile.lock`. Use Bun for project JavaScript dependencies. Setup uses a present Bun lock frozen and creates the initial lock when absent; do not prescribe a frozen install against an absent file or infer template adoption from postinstall success.
 
-## Local Development
+Use the real `DATABASE_USER`. Compose reads private `.env` with `PRIMARY_DB_HOST=db`; there is no dotenv gem to load it on the host. Host Rails/tests/hooks need explicit `PRIMARY_DB_HOST=127.0.0.1`, `DATABASE_PORT=3306` and matching consumer base/user. `localhost` can use a Unix socket unavailable through Docker. Private passwords/keys stay in resolver/input locations, never source, logs or task prompts.
 
-### Setup
+Compose binds MySQL to `127.0.0.1:3306` and web to port 3000. `COMPOSE_PROJECT_NAME` isolates names/volumes, not ports. Use an isolated host or verified free ports; never reuse another actor's database/volume.
 
-```bash
-# Initial setup
-cp env.sample .env
-docker compose up --build
+## MySQL and startup
 
-# Access app at http://localhost:3000
+Adapter `mysql2`; Compose pins MySQL 8.4.11 by digest. Encoding/collation are `utf8mb4`/`utf8mb4_0900_ai_ci`. For base `D`:
+
+| Concern | Development | Test |
+|---|---|---|
+| Primary | `D` | `D_test` |
+| Queue | `D_queue` | `D_queue_test` |
+| Cache | `D_cache` | `D_cache_test` |
+| Cable | `D_cable` | `D_cable_test` |
+
+Local replica uses the primary database name, not a fifth physical database. Do not import PostgreSQL claims from a downstream wiki.
+
+Web, worker and one-shot `db-prepare` share the application image; build through web before using the others. Preparation waits for healthy MySQL; both application services wait for successful preparation. Entry points execute their command without independent migrations.
+
+`bin/setup --skip-server` requires a standalone checkout with its own `.git`, validates exact locked Ruby/Node/Bun/Bundler versions, installs JavaScript dependencies, checks/installs the development bundle, installs Lefthook, prepares development and test databases, and clears logs/temp files. It preserves dependency inputs and checks the installed Lisa identity without applying templates. Without that option it starts `bin/dev` (web only). It does not rename or start a worker. Never bypass its shared-hook or lifecycle refusal.
+
+For installed host gems and isolated healthy MySQL, prepare tests with the consumer's TCP/base/user settings, for example:
+
+```sh
+DATABASE_NAME=acme_portal DATABASE_USER=root DATABASE_PORT=3306 \
+  PRIMARY_DB_HOST=127.0.0.1 AWS_BOOTSTRAP_ENABLED=false RAILS_ENV=test \
+  mise exec ruby@3.4.11 -- bin/rails db:prepare
 ```
 
-### Rails Commands (via Docker)
+Replace sample `acme_portal`/`root`; resolve private secrets separately. Root-default success does not prove that a chosen database user was configured. A non-root user needs real grants on every required development/test database.
 
-```bash
-# General Rails commands
-docker compose run web bin/rails <command>
+## Hooks and quality
 
-# Database operations
-docker compose run web bin/rails db:create
-docker compose run web bin/rails db:migrate
-docker compose run web bin/rails db:seed
+Host hooks require the development bundle/test databases, not just container gems. Respect existing `core.hooksPath` and foreign hooks. Read both `lefthook.yml` and `lefthook-local.yml`. Durable managed helper/hook/gem changes belong upstream in Lisa, not a manual copy or speculative apply.
 
-# Console access
-docker compose run web bin/rails console
-
-# Testing
-docker compose run web bin/rails test
-docker compose run web bin/rails test:system
-
-# Stop services
-docker compose down
-```
-
-### Ruby Version (mise)
-
-This project uses Ruby 3.4.8 managed by [mise](https://mise.jdx.dev/). The system Ruby (2.6.10 on macOS) will **not** work. Always activate mise before running any host-side Ruby/Rails/Bundler command:
-
-```bash
-eval "$(mise activate bash)"
-```
-
-Without this, you'll get `Your Ruby version is 2.6.10, but your Gemfile specified 3.4.8 (Bundler::RubyVersionMismatch)`.
-
-### Pre-push Hooks (MySQL Required)
-
-The `lefthook.yml` pre-push hooks run `bundle exec rspec` and `bundle exec brakeman` directly on the host (not inside Docker). Since rspec needs MySQL, you must have the database container running before pushing:
-
-```bash
-# Activate mise for correct Ruby version
-eval "$(mise activate bash)"
-
-# Start MySQL (runs at localhost:3306, accessible from host via TCP)
-docker compose up -d db
-
-# First time only: create and migrate test databases
-PRIMARY_DB_HOST=127.0.0.1 bin/rails db:prepare RAILS_ENV=test
-```
-
-**Important:** Use `PRIMARY_DB_HOST=127.0.0.1` (not `localhost`) when running Rails commands on the host against Docker MySQL. The MySQL client interprets `localhost` as "use Unix socket" (`/tmp/mysql.sock`), which Docker doesn't expose. `127.0.0.1` forces TCP, which Docker does expose via `ports: ["3306:3306"]`.
-
-There is no dotenv gem, so the `.env` file (with `PRIMARY_DB_HOST=db`) is only loaded by Docker Compose. Host-side commands use `database.yml` defaults (`localhost`) unless overridden.
-
-### Auto-Generated Schema Files
-
-Running `db:migrate` regenerates `db/schema.rb`, `db/cable_schema.rb`, `db/cache_schema.rb`, and `db/queue_schema.rb`. These files use double-quoted strings and lack `frozen_string_literal` comments, which triggers RuboCop violations. Always fix these violations before committing — never leave them broken or skip them. Run `bundle exec rubocop -A` on the changed schema files after any migration.
-
-**Important:** Auto-generated schema files may have outdated `ActiveRecord::Schema` version numbers (e.g., 7.2 or 8.0 instead of 8.1). Always verify and update them to match the current Rails version.
-
-### Multi-Database Commands
-
-This app uses multiple databases (primary, queue, cache, cable). When running database commands on the host, always namespace the task for the specific database:
-
-```bash
-# Wrong - fails in multi-database apps
-bin/rails db:migrate:down VERSION=20250212000000
-
-# Correct - specify the database
-bin/rails db:migrate:down:primary VERSION=20250212000000
-```
-
-### Code Quality
-
-All host-side commands require `eval "$(mise activate bash)"` first.
-
-```bash
-# RuboCop (configured via Lefthook git hooks)
-bundle exec rubocop
-
-# Security scanning
-bundle exec brakeman
-
-# Run all pre-commit hooks manually
-bundle exec lefthook run pre-commit
-```
-
-### Remote Environment Access
-
-```bash
-# Connect to remote console (staging)
-aws sso login --profile your-project-staging
-bin/remote-console your-project-staging
-
-# Tail CloudWatch logs
-aws logs tail <log-group> --follow --profile your-project-staging
-```
-
-## Architecture
-
-### Rails 8 Modern Stack
-
-- **Database**: Multi-database MySQL setup (primary, replica, queue, cache, cable)
-- **Jobs**: Solid Queue (database-backed, no Redis required)
-- **Cache**: Solid Cache (database-backed)
-- **WebSockets**: Solid Cable (database-backed)
-- **Assets**: Propshaft pipeline with Importmap for JavaScript
-- **Frontend**: Hotwire (Turbo + Stimulus) for SPA-like behavior
-
-### Key Application Components
-
-**Controllers**: Basic web interface (`app/controllers/`)
-- `HomeController` - Main landing page
-
-**Background Jobs** (`app/jobs/`):
-- `PublishCloudWatchMetricsJob` - Publishes queue metrics to AWS CloudWatch
-- Scheduled via `config/recurring.yml` (every minute)
-
-**Services** (`app/services/`):
-- `CloudWatchService` - AWS CloudWatch integration for metrics publishing
-
-### Multi-Database Configuration
-
-The app uses separate databases for different concerns:
-- **Primary**: Main application data
-- **Queue**: Solid Queue job storage
-- **Cache**: Solid Cache storage
-- **Cable**: Solid Cable WebSocket connections
-- **Replica**: Read-only database replica (when configured)
-
-### AWS Integration
-
-- **CloudWatch**: Metrics publishing and logging
-- **SSM Parameter Store**: Environment variable management (prefixed with `_`)
-- **Secrets Manager**: Sensitive data storage
-- **ECS Fargate**: Production deployment with separate web/worker containers
-- **OpenTelemetry**: Distributed tracing (staging/production only)
-
-## Deployment
-
-### Environment Strategy
-
-- **Development**: Local Docker Compose
-- **Staging**: Auto-deploy on merge to `staging` branch
-- **Production**: Auto-deploy on merge to `main` branch
-
-### Local Staging Deploy
-
-Build Docker images locally and push to ECR, then update ECS services:
-
-```bash
-# Full deploy (build, push, update ECS)
-bin/deploy-staging --profile your-project-staging
-
-# Build and push only the web image
-bin/deploy-staging --service web --no-deploy
-
-# Preview commands without executing
-bin/deploy-staging --dry-run
-```
-
-### Scheduled Jobs
-
-Configure recurring jobs in `config/recurring.yml`. Current jobs:
-- Heartbeat (every 30s)
-- CloudWatch metrics publishing (every minute)
-
-## Environment Variables
-
-Add sensitive variables via AWS SSM:
-
-```bash
-aws ssm put-parameter --name "/app/my_variable" --value "secret" --type "SecureString" --region "us-east-1" --profile your-project-staging
-```
-
-Access in app as: `ENV['_MY_VARIABLE']`
-
-## Code Quality Rules
+Setup installs Lefthook. Work-item hooks require a real canonical binding, item/trailer and applicable provider gates; a conventional headline alone is not proof. Use the installed Lisa workflow to link the actual tracker item and attach the contribution branch, then ordinary Git commit/push invokes the original hooks and pre-push input. Do not bypass a missing gate or infer functionality from config/executable-file presence. The disposable smoke receipt hashes wrappers but does not execute these gates; functional hook verification uses the real contribution route.
 
 Never modify `.reek.yml` to suppress or disable reek detectors without explicit human approval. Fix the underlying code smells instead.
+
+## Native generated schemas
+
+Rails owns `db/schema.rb`, `db/queue_schema.rb`, `db/cache_schema.rb`, `db/cable_schema.rb`. Use native preparation/migration/dump tasks and inspect diffs. Dumps depend on task/config; staging/production disable post-migration dumping. Do not claim every migration rewrites all four files, manually force class versions/headers or use blanket `rubocop -A` to rewrite native output. Resolve real lint/generator conflicts with the owner.
+
+Use database-specific task names where required, such as `db:migrate:down:primary` for primary rollback. Confirm the task/version before destructive operations.
+
+## AWS and worker boundaries
+
+`AwsBootstrap` loads before environment/database configuration. Development/test default off; staging/production default on. Explicit true/false, existing ENV precedence and paginated SSM/exports/secret inventory govern lookup. `/app/my_variable` becomes `MY_VARIABLE`, with no automatic leading underscore. Missing database/key values need explicit unique secret selection and authorized environment-owned access. Keep errors/receipts sanitized.
+
+Solid Queue/Cache/Cable are database-backed. Worker runs `bin/jobs`; recurring config declares heartbeat/CloudWatch schedules, but declarations/process health do not prove consumption. Bootstrap disabled does not disable the CloudWatch SDK call. `bin/smoke-consumer` validates two committed-source, renamed disposable consumers with test-only SDK tripwires, actual workers, synthetic-job completion, native schemas, named HTTP responses and owned cleanup. It uses ephemeral loopback ports and runs setup twice. Its test-only fixture is not an ordinary production configuration; normal workers need their selected scheduled integrations configured. Deployment credentials are not local acceptance prerequisites.
+
+## Integration and optional deployment
+
+`main` is the only permanent integration branch. Rails environment files do not create branch mappings or prove automatic deployment. Documentation/source findings do not establish hosted CI, release or deployed health.
+
+Use the README's explicit placeholder map. Deployment/storage/telemetry examples are optional until chosen; owner supplies real profile/region, SSM path, selectors/exports, database/key values, IAM, ECR/ECS and bucket/CDN. Do not infer them from starter/inherited profiles, Kamal sample hosts/IPs or commented storage/mail examples. Do not make a new product-profile decision from this checklist.
+
+Credential-free image construction, runtime configuration and asset publication are separate. `bin/publish-assets` extracts compiled assets from a created never-started immutable image and syncs without deleting old fingerprints; `bin/deploy-staging` publishes before ECS update. Its `--dry-run` authenticates/discovers AWS and `--no-deploy` builds/pushes. Neither is a read-only local probe.
+
+## Wiki ownership
+
+Query the installed wiki workflow first; empty synthesis permits source fallback, not runtime authority. Bootstrap/rendering belongs to the installed plugin, not an assumed consumer `scripts/ensure-wiki.mjs`. Kernel contracts are rendered from configuration. Ingestion order: sanitized source note, synthesis, index, log, verification, state, then commit/PR policy. No state advance before verification or hand-edited generated contract. Immutable historical source notes/cursors keep their original provenance when documentation changes; ingest the changed source separately. Wiki checks and independent fresh-consumer proof remain separate from source review.
