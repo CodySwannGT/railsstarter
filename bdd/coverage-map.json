@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "asOf": "2026-10-05",
+  "runnerPlatforms": {
+    "rspec-capybara-selenium": [
+      "web"
+    ]
+  },
+  "coverageFloor": {
+    "web": 100
+  },
+  "testDiscovery": {
+    "rspec-capybara-selenium": {
+      "roots": [
+        "spec/browser",
+        "spec/fixtures/browser"
+      ],
+      "extensions": [
+        ".rb"
+      ],
+      "ignore": [],
+      "evidence": {
+        "kind": "call-title",
+        "functions": [
+          "it"
+        ]
+      }
+    }
+  },
+  "trackers": {
+    "required": true,
+    "keys": [],
+    "github": {
+      "org": "CodySwannGT",
+      "defaultRepo": "railsstarter",
+      "repos": [
+        "railsstarter"
+      ]
+    }
+  },
+  "platformWaivers": [],
+  "retirements": [],
+  "exclusions": [],
+  "mappings": [
+    {
+      "scenario": "BDD-BOOTSTRAP-001",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BOOTSTRAP-002",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BOOTSTRAP-003",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-CSP-001",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "enforces request nonces while scripts, styles, navbar, flash and Turbo navigation work",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-CSP-002",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "blocks absent nonces, inline handlers and an unlisted script and style origin",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-CSP-003",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "detects missing importmap nonce and required CDN source controls in real Chrome",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-SRI-004",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-SRI-005",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-QUOTA-006",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "preserves nonces, required resources and navbar flash Turbo navigation with the physical quota enabled",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-QUOTA-007",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "enforces the existing missing-importmap-nonce failure control with the physical quota enabled",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUEST-QUOTA-008",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "observes real HTTP quota rejection in Chrome while exact health remains available",
+      "level": "behavioral"
+    }
+  ]
+}

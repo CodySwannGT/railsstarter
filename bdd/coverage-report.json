@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 3,
+  "asOf": "2026-10-04",
+  "scenarios": {
+    "declared": 3,
+    "required": 3,
+    "excluded": 0,
+    "blocked": 0,
+    "referenceOnly": 0,
+    "superseded": 0
+  },
+  "traceability": {
+    "note": "Obligations whose aligned automation is mapped AND whose evidence string still resolves — a mapping whose test was renamed or deleted stops counting here immediately, even in bootstrap where the matching defect is only a warning. This is TRACEABILITY coverage, not execution coverage and not a pass rate.",
+    "overall": {
+      "covered": 3,
+      "total": 3,
+      "percentage": 100,
+      "exact": 100
+    },
+    "byPlatform": {
+      "web": {
+        "covered": 3,
+        "total": 3,
+        "percentage": 100,
+        "exact": 100
+      }
+    },
+    "byRunner": {
+      "rspec-capybara-selenium": {
+        "covered": 3,
+        "total": 3,
+        "percentage": 100,
+        "exact": 100
+      }
+    }
+  },
+  "execution": {
+    "supplied": true,
+    "sources": [
+      {
+        "runner": "rspec-capybara-selenium",
+        "runId": "bootstrap-81-local-final",
+        "completedAt": null,
+        "resultCount": 3
+      }
+    ],
+    "mappedTests": 3,
+    "executed": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "notRun": 0,
+    "notRunTests": []
+  },
+  "testInventory": {
+    "note": "Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.",
+    "runners": [
+      "rspec-capybara-selenium"
+    ],
+    "roots": [
+      "spec/browser",
+      "spec/fixtures/browser"
+    ],
+    "discovered": 3,
+    "disclosed": 3,
+    "dynamicTitles": 0,
+    "undisclosed": [],
+    "exclusions": []
+  },
+  "waived": {
+    "note": "A waiver is a dated IOU with a named owner and a retiring ticket. It is never coverage.",
+    "count": 0,
+    "entries": []
+  },
+  "floor": {
+    "byPlatform": {
+      "web": {
+        "floor": 100,
+        "state": "declared",
+        "actual": 100,
+        "exact": 100,
+        "ok": true
+      }
+    },
+    "unset": [],
+    "invalid": [],
+    "ok": true
+  },
+  "trackers": {
+    "scenariosWithTag": 3,
+    "scenariosWithoutTag": 0,
+    "tags": [
+      {
+        "tag": "gh-81",
+        "url": "https://github.com/CodySwannGT/railsstarter/issues/81",
+        "scenarios": [
+          "BDD-BOOTSTRAP-001",
+          "BDD-BOOTSTRAP-002",
+          "BDD-BOOTSTRAP-003"
+        ]
+      }
+    ]
+  },
+  "gaps": []
+}
