@@ -247,8 +247,13 @@ if $0 == __FILE__
   RateLimitServerOwnership.boot
   mode = ARGV.fetch(0)
   result = case mode
-           when 'prepare', 'down', 'up' then RateLimitSchemaCommands.public_send(mode)
-           when 'increment', 'audit', 'housekeeping', 'expiration' then RateLimitCounterCommands.public_send(mode)
+           when 'prepare' then RateLimitSchemaCommands.prepare
+           when 'down' then RateLimitSchemaCommands.down
+           when 'up' then RateLimitSchemaCommands.up
+           when 'increment' then RateLimitCounterCommands.increment
+           when 'audit' then RateLimitCounterCommands.audit
+           when 'housekeeping' then RateLimitCounterCommands.housekeeping
+           when 'expiration' then RateLimitCounterCommands.expiration
            when 'server' then RateLimitHttpServer.run
            when 'alb' then RateLimitAlbModel.run
            else raise 'Unknown rate-limit fixture mode'
