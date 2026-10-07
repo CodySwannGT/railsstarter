@@ -38,7 +38,7 @@ controls = {}
   raise 'Control must change exactly one source byte' unless source.bytes.zip(changed.bytes).one? { |a, b| a != b }
 
   file = File.join(scratch, 'views', 'layouts', "control_#{kind}.html.erb")
-  File.write(file, changed, mode: 'wx', perm: 0o600)
+  File.binwrite(file, changed, mode: 'wx', perm: 0o600)
   controls[kind] = { sha256: Digest::SHA256.hexdigest(changed), source_sha256: Digest::SHA256.hexdigest(source) }
 end
 

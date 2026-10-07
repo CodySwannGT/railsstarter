@@ -1,5 +1,11 @@
 # Scoped plan — Bootstrap CDN/SRI #81 local handoff
 
+## 2026-10-07 binary fixture correction
+
+Task metadata: plan bootstrap-binary-layout; type bug; acceptance_criteria [preserve arbitrary UTF-8 layout bytes while corrupting exactly one SRI character in owned negative controls]; relevant_documentation spec/fixtures/browser/bootstrap_server.rb and original Bootstrap browser acceptance; testing_requirements [real three-example browser RED/GREEN, changed-file RuboCop, original commit hooks]; skills [lisa-tdd-implementation, lisa-git-commit].
+
+The ordinary full push at e68ebb ran 602 examples with four failures. Three were the same fixture failure: File.binread returned ASCII-8BIT layout bytes, and File.write tried to transcode the design-source comment's UTF-8 dash. Use File.binwrite for the already byte-validated negative controls, preserving exclusive creation and 0600 permissions. Actual focused browser GREEN: three examples, zero failures in 12.02 seconds. Command exit 2 preserves unchanged aggregate 80/70 coverage requirements; this focused run does not establish full-batch or hosted acceptance. Changed-file RuboCop passed. The separate consumer cleanup failure remains open.
+
 ## 2026-10-07 design-source review correction
 
 Current operator authorization includes completing and merging the batch. The enabled official design-source gate rejected the changed layout because its declaration was absent. The generic Bootstrap starter layout is maintained in this repository and has no Figma source in the project. Add the explicit, reason-bearing exception marker without changing any other layout byte or behavior.
