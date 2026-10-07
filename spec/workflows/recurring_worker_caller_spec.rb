@@ -54,7 +54,7 @@ RSpec.describe 'Required recurring worker caller' do # rubocop:disable RSpec/Des
   end
 
   it 'enforces immutable action revisions with the official checker' do
-    checker = File.join(root, 'node_modules/@codyswann/lisa/scripts/check-third-party-action-pins.mjs')
+    checker = File.join(root, 'scripts/check-third-party-action-pins.mjs')
     script = <<~JS
       import {readFileSync} from 'node:fs';
       import {pathToFileURL} from 'node:url';

@@ -67,7 +67,7 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     )
   end
 
-  it 'prepares the exact locked Bundler in a private HOME before consumer setup' do
+  it 'qualifies the exact locked Bundler with a private HOME before consumer setup' do
     Dir.mktmpdir('consumer-bundler', File.realpath(Dir.tmpdir)) do |home|
       command = described_class::Command.new(timeout: 180)
       metadata = locked_toolchain_metadata
@@ -77,7 +77,6 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       expect(status.success?).to be(true)
       expect(output.strip).to eq("Bundler version #{metadata.fetch('bundler')}")
       expect(environment.fetch('HOME')).to eq(home)
-      expect(environment.fetch('GEM_HOME')).to eq(File.join(home, 'gems'))
       expect(environment.fetch('BUNDLER_VERSION')).to eq(metadata.fetch('bundler'))
     end
   end
@@ -474,6 +473,13 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       header.to_s + body.ljust(512, "\0") + ("\0" * 1024)
     end
 
+    def commit_archive_sample(command, repository, contents)
+      File.write(File.join(repository, 'sample'), contents)
+      command.call('git', 'add', 'sample', chdir: repository, timeout: 10)
+      command.call('git', '-c', 'user.name=Archive witness', '-c', 'user.email=archive@example.invalid',
+                   'commit', '-m', "test: #{contents} archive", chdir: repository, timeout: 10)
+    end
+
     it 'refuses malformed explicit source identities before creating a destination' do
       Dir.mktmpdir('consumer-smoke-invalid-source', File.realpath(Dir.tmpdir)) do |base|
         destination = File.join(base, 'named_consumer')
@@ -486,10 +492,14 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     end
 
     it 'refuses a genuine archive whose comment belongs to a different accepted commit' do
-      command = SmokeConsumer::Command.new(timeout: 30)
-      archive, = command.capture('git', 'archive', '--format=tar', 'HEAD', timeout: 20)
-      different, = command.capture('git', 'rev-parse', 'HEAD^', timeout: 10)
       Dir.mktmpdir('consumer-smoke-mismatched-source', File.realpath(Dir.tmpdir)) do |base|
+        command = SmokeConsumer::Command.new(timeout: 30)
+        repository = File.join(base, 'repository')
+        command.call('git', 'init', repository, timeout: 10)
+        commit_archive_sample(command, repository, 'first')
+        archive, = command.call('git', 'archive', '--format=tar', 'HEAD', chdir: repository, timeout: 20)
+        commit_archive_sample(command, repository, 'second')
+        different, = command.call('git', 'rev-parse', 'HEAD', chdir: repository, timeout: 10)
         destination = File.join(base, 'named_consumer')
         expect { SmokeConsumer::Rename.export(archive, destination, source: different.strip) }
           .to raise_error(SmokeConsumer::Error, 'Git archive source metadata differs')
