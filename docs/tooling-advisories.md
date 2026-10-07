@@ -1,8 +1,8 @@
 # Tooling dependency dispositions
 
-Observed on 2026-10-06 with Node 22.23.3 and the genuine published Lisa 4.70.3 package. The starter is a private Rails application. Its only direct npm dependency is development tooling; these packages are absent from the production Docker dependency installation.
+Rechecked on 2026-10-07 with Node 22.23.3 and the integrity-qualified published Lisa 4.71.2 package. The starter is a private Rails application. Its only direct npm dependency is development tooling; these packages are absent from the production Docker dependency installation.
 
-`npm audit --ignore-scripts` reports 34 affected entries: 11 high and 23 moderate. These propagate five underlying advisories through the tooling graph. A normal `npm audit fix --ignore-scripts` refreshed compatible resolutions, but the same advisories remain. The audit exits nonzero and must remain visible. Its proposed forced change downgrades Lisa to 4.55.0 and is not an acceptable repair.
+`npm audit --ignore-scripts` reports 34 affected entries: 11 high and 23 moderate. These propagate the same five underlying advisories through the tooling graph. The prior compatible `npm audit fix --ignore-scripts` did not eliminate them; this adoption preserves every transitive lock entry. The audit exits nonzero and must remain visible. Its proposed forced change downgrades Lisa to 4.55.0 and is not an acceptable repair.
 
 | Advisory | Installed exposure | Disposition and replacement trigger |
 | --- | --- | --- |
@@ -15,3 +15,5 @@ Observed on 2026-10-06 with Node 22.23.3 and the genuine published Lisa 4.70.3 p
 Owner: starter maintainers for consumer adoption, Lisa maintainers for managed dependency repairs. Recheck these dispositions weekly and on every Lisa update. Next review is due 2026-10-13; after that date this document is stale until a new audit refreshes each row. Any new advisory, runtime inclusion, externally supplied input path or available upstream fix requires an immediate reassessment. This is a bounded residual exposure record, not a clean-audit claim or an audit suppression.
 
 The Ruby lock selects Brakeman 8.1.0, database_consistency 3.0.14, rack-mini-profiler 5.0.0, rspec-rails 8.0.4, rubocop-capybara 3.0.0, rubocop-yard 1.3.0, shoulda-matchers 8.0.1 and SimpleCov 1.3.2 through published Lisa constraints. `bundler-audit check --update` found no Ruby advisories against ruby-advisory-db revision `0af3fe207c318a8a99ce522c8538103a13eb6c0b` during the normal 4.70.3 adoption commit hook on 2026-10-06. Combined runtime and hosted validation remain separate evidence.
+
+The 4.71.2 adoption passed Bun 1.3.8 frozen installation with the original Lisa-only trusted-dependency policy. The installed AST and ESLint binaries remain usable. Genuine full apply recorded fleet mode with no stale templates, and offline doctor resolved all six enforcement guards. The ordinary dependency commit rechecked the same Ruby advisory database with no findings. These installation and source checks do not establish a new full Ruby suite, consumer journey or hosted CI result.
