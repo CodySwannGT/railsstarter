@@ -808,6 +808,7 @@ module SmokeConsumer
 
   # Names only fixed library sources, never private paths, method names, or arguments.
   class CleanupFailureLocations
+    # Fixed source basenames admitted to the private failure receipt.
     SOURCES = %w[command.rb cleanup_authority.rb ownership.rb].freeze
 
     # Retain the original exception without changing its backtrace or cause.
@@ -820,9 +821,18 @@ module SmokeConsumer
     # @return [Array<Hash>] allowlisted source basenames and native line numbers
     def to_a
       Array(@error.backtrace_locations).first(20).filter_map do |location|
-        source = SOURCES.find { |name| location.absolute_path == File.join(__dir__, name) }
+        source = source_for(location.absolute_path)
         { 'source' => source, 'line' => location.lineno } if source
       end
+    end
+
+    private
+
+    # Admit an absolute source only when it matches the fixed cleanup library.
+    # @param path [String, nil] original native exception source path
+    # @return [String, nil] admitted source basename, or no disclosure
+    def source_for(path)
+      SOURCES.find { |name| path == File.join(__dir__, name) }
     end
   end
 
