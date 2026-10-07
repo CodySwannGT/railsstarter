@@ -1,0 +1,61 @@
+# Project-owned literal README acceptance; not a replacement for ordinary CI.
+name: Onboarding Walkthrough
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact repository commit to clone and verify
+        required: true
+        type: string
+      qualification:
+        description: Published-main requires the literal clone HEAD to match
+        required: true
+        default: candidate
+        type: choice
+        options: [candidate, published-main]
+
+permissions:
+  contents: read
+
+jobs:
+  walkthrough:
+    name: Literal README Steps 1–6
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Install mise prerequisite
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3
+        with:
+          install: false
+      - name: Install native compiler and MySQL headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential libmysqlclient-dev libyaml-dev
+      - name: Qualify native Linux supervision and walkthrough contracts
+        run: |
+          python3 -c 'import sys; assert sys.platform == "linux", "Ubuntu native qualification required"'
+          python3 -m unittest discover -s test/runtime/onboarding_walkthrough -p '*_test.py' -v
+      - name: Follow the exact candidate README in a standalone clone
+        env:
+          WALKTHROUGH_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
+          WALKTHROUGH_PR: ${{ github.event.pull_request.number || '' }}
+          WALKTHROUGH_QUALIFICATION: ${{ inputs.qualification || 'candidate' }}
+        run: |
+          python3 test/runtime/onboarding_walkthrough/verify.py \
+            --source-root "$GITHUB_WORKSPACE" \
+            --source-sha "$WALKTHROUGH_SHA" --pull-request "$WALKTHROUGH_PR" \
+            --qualification "$WALKTHROUGH_QUALIFICATION" \
+            --destination "$RUNNER_TEMP/readme-walkthrough" \
+            --report "$RUNNER_TEMP/readme-walkthrough-report.json"
+      - name: Retain sanitized command and cleanup outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: onboarding-walkthrough-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readme-walkthrough-report.json
+          if-no-files-found: error
