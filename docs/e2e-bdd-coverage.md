@@ -44,7 +44,7 @@ A waiver is a dated IOU with a named owner and a retiring ticket. It is never co
 
 Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.
 
-23 tests discovered under `spec/browser`, `spec/fixtures/browser`; 23 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
+25 tests discovered under `spec/browser`, `spec/fixtures/browser`; 25 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
 
 | Runner | File | Test not named by the contract |
 |---|---|---|
@@ -56,8 +56,10 @@ Every row here is a standing claim that a real test proves nothing about product
 
 | File | Test | Reason it aligns to no product behavior |
 |---|---|---|
+| `spec/browser/request_security_spec.rb` | accepts positively reaped exit during profile validation without sending another signal | Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal. |
 | `spec/browser/request_security_spec.rb` | bounds a hung quit, records the failure and reports actual scratch cleanup | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | bounds TERM refusal, escalates only its captured child and proves reaping and absence | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
+| `spec/browser/request_security_spec.rb` | coordinates owned TERM with native ChromeDriver reaping before the quit deadline | Owned browser and driver lifecycle regression; validates teardown and reaping rather than a product behavior requirement. |
 | `spec/browser/request_security_spec.rb` | discovers hosted Linux Chrome and driver executables on PATH | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | matches only the exact owned profile flag and leaves a prefix neighbor untouched | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | names an absent Linux browser prerequisite with no macOS fallback | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |

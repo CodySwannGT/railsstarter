@@ -223,6 +223,21 @@ RSpec.describe RequestSecurity do
       end
     end
 
+    it('accepts positively reaped exit during profile validation without sending another signal') do
+      with_term_ignoring_child do |child|
+        owner_check = lambda do
+          child.terminate(timeout: 0.1)
+          false
+        end
+        controller = RequestSecurityProcess.new(child.pid, child: true, owner_check: owner_check)
+
+        expect { controller.request_termination }.not_to raise_error
+        expect(controller.signals).to eq([])
+        expect(child.reaped).to be(true)
+        expect(child.absent?).to be(true)
+      end
+    end
+
     it('rechecks profile ownership before KILL after TERM refusal') do
       with_term_ignoring_child do |child|
         checks = 0
@@ -289,6 +304,38 @@ RSpec.describe RequestSecurity do
       expect(Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to be < 2
       expect(harness.cleanup_record).to include(scratch_removed: true, quit_thread_absent: true)
       expect(harness.cleanup_record[:errors]).to include(a_string_matching(/driver_quit.*timed out/))
+    end
+
+    def suspend_owned_browser(harness)
+      harness.start
+      harness.page.visit('/__request_security?control=nonce')
+      Selenium::WebDriver::Wait.new(timeout: 10).until { harness.violations.any? }
+      harness.send(:record_browser_ownership)
+      driver_pid = harness.instance_variable_get(:@driver_pid)
+      chrome = harness.instance_variable_get(:@chrome_processes).find { |process| process.identity.split[1] == driver_pid }
+      raise 'Native shutdown fixture has no captured browser root' unless chrome
+
+      chrome.send(:signal, 'STOP')
+      resume = Thread.new do
+        chrome.send(:signal, 'CONT') if RequestSecurityDeadline.wait(15) { chrome.signals.include?('TERM') }
+      end
+      [chrome, resume]
+    end
+
+    it('coordinates owned TERM with native ChromeDriver reaping before the quit deadline') do
+      harness = described_class.new
+      chrome, resume = suspend_owned_browser(harness)
+
+      expect { harness.stop }.not_to raise_error
+      expect(resume.join(1)).to be(resume)
+      expect(harness.cleanup_record).to include(scratch_removed: true, driver_absent_after_quit: true,
+                                                server_absent: true, quit_thread_absent: true, errors: [])
+      expect(chrome.signals).to eq(%w[STOP TERM CONT])
+      expect(chrome.absent?).to be(true)
+    ensure
+      harness&.stop unless harness&.cleanup_record
+      resume&.kill
+      resume&.join(1)
     end
   end
 end

@@ -218,6 +218,10 @@ class RequestSecurityProcess
     raise 'Owned process is not our direct child' if child && @identity.split[1] != Process.pid.to_s
   end
 
+  # Let ChromeDriver reap its child while TERM starts our verified shutdown.
+  # @return [void] fresh identity/profile checks also apply to asynchronous shutdown
+  def request_termination = signal('TERM')
+
   # @param timeout [Numeric]
   # @return [void]
   def terminate(timeout:)
@@ -258,7 +262,11 @@ class RequestSecurityProcess
   def signal(name)
     return unless matching_identity?
 
-    raise "Owned PID #{@pid} profile ownership changed" if @owner_check && !@owner_check.call
+    if @owner_check && !@owner_check.call
+      return if absent?
+
+      raise "Owned PID #{@pid} profile ownership changed"
+    end
 
     Process.kill(name, @pid)
     @signals << name
@@ -314,6 +322,9 @@ module RequestSecurityCleanup
     rescue StandardError => error
       @quit_error = error
     end
+    # ChromeDriver must reap its child while our authenticated TERM wakes a
+    # custom-profile browser whose graceful close can exceed this deadline.
+    captured_chrome_processes.select { |process| process.identity.split[1] == @driver_pid }.each(&:request_termination)
     raise 'driver quit timed out' unless RequestSecurityDeadline.wait(@cleanup_timeout) { !@quit_thread.alive? }
     raise @quit_error if @quit_error
   end
@@ -321,11 +332,7 @@ module RequestSecurityCleanup
   def stop_chrome
     return unless @scratch
 
-    captured = Array(@chrome_processes)
-    unexpected = owned_browser_processes.map { |line| line.split.first.to_i } - captured.map(&:pid)
-    raise 'Uncaptured Chrome profile process; refusing escalation' unless unexpected.empty?
-
-    captured.each { |process| process.terminate(timeout: @cleanup_timeout) }
+    captured_chrome_processes.each { |process| process.terminate(timeout: @cleanup_timeout) }
   end
 
   def stop_server
@@ -589,5 +596,13 @@ class RequestSecurity
 
   def owned_browser_processes
     RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}")
+  end
+
+  def captured_chrome_processes
+    captured = Array(@chrome_processes)
+    unexpected = owned_browser_processes.map { |line| line.split.first.to_i } - captured.map(&:pid)
+    raise 'Uncaptured Chrome profile process; refusing escalation' unless unexpected.empty?
+
+    captured
   end
 end

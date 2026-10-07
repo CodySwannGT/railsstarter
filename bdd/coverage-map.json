@@ -110,6 +110,16 @@
       "file": "spec/browser/request_security_spec.rb",
       "evidence": "bounds a hung quit, records the failure and reports actual scratch cleanup",
       "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "coordinates owned TERM with native ChromeDriver reaping before the quit deadline",
+      "reason": "Owned browser and driver lifecycle regression; validates teardown and reaping rather than a product behavior requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "accepts positively reaped exit during profile validation without sending another signal",
+      "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
     }
   ],
   "mappings": [
