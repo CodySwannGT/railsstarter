@@ -355,3 +355,7 @@ Automation-authored by Codex native01a103db-d315-7e12-887a-3a67d75d920d. Origina
 ## 2026-10-07 BDD caller installer qualification
 
 The host rule requires Bun for project JavaScript dependencies. The new behavior caller now pins official oven-sh/setup-bun v2 to 0c5077e51419868618aeaa5fe8019c62421857d6 and Bun1.3.8. It uses a present Bun lock frozen, or imports the committed package-lock on first install, matching bin/setup. Native CI=true fresh private install resolved Lisa4.70.4, then a genuine frozen second install reported no changes. Neither original package input changed. No managed source, dependency version, gate, deadline or threshold was edited. Required hosted acceptance remains pending.
+
+## 2026-10-07 installer documentation correction for #76
+
+README now describes Bun as the supported project installer instead of claiming that package engine metadata strictly refuses all other managers. The installed Lisa metadata declares Bun1.3.8 and Node22.23.3 with please-use-bun entries for npm/pnpm/yarn. The genuine separate updater acceptance fixture installed Lisa4.71.0 through npm with engine warnings, disproving the old enforcement claim. This one-sentence source correction preserves the Bun setup commands. No dependency inputs, runtime behavior, quality gates or tests changed. The literal fresh-consumer README walkthrough and hosted acceptance remain pending.

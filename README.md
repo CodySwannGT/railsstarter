@@ -40,7 +40,7 @@ mise exec ruby@3.4.11 -- gem install bundler --version "$BUNDLER_VERSION"
 mise exec ruby@3.4.11 "node@$NODE_VERSION" "bun@$BUN_VERSION" -- bundle --version
 ```
 
-Use Bun for project JavaScript dependencies. Lisa's engines explicitly refuse npm/pnpm/yarn as the project installer. Do not run a frozen Bun install against an absent lock or change dependency versions just to satisfy setup.
+Use Bun for project JavaScript dependencies. Lisa's package metadata declares Bun as the supported project installer. Do not run a frozen Bun install against an absent lock or change dependency versions just to satisfy setup.
 
 ### 3. Rename explicitly
 
