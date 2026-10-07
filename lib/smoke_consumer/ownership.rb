@@ -70,11 +70,12 @@ module SmokeConsumer
       @status = nil
     end
 
-    # Run a fresh C-locale ps observation, bound collection/reaping, and require successful clean output.
+    # Isolate ps from managed groups: platforms may run it with a different effective UID.
+    # Keep fresh C-locale observation, bounded collection/reaping, and successful clean output.
     # @return [String]
     def call
       environment = SmokeConsumer.environment.merge('LC_ALL' => 'C', 'LANG' => 'C')
-      @pid = Process.spawn(environment, 'ps', '-eo', 'pid=,ppid=,pgid=,uid=,lstart=,stat=', **@streams.child_options)
+      @pid = Process.spawn(environment, 'ps', '-eo', 'pid=,ppid=,pgid=,uid=,lstart=,stat=', pgroup: true, **@streams.child_options)
       @streams.parent_ready
       output, error = @streams.collect(Deadline.new(2))
       reap

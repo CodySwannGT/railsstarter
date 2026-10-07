@@ -4,6 +4,31 @@ require 'spec_helper'
 require_relative '../../lib/smoke_consumer'
 
 RSpec.describe SmokeConsumer::QueryStreams do
+  context 'with native process observers' do
+    def observe_spawn_groups
+      observations = []
+      allow(Process).to receive(:spawn).and_wrap_original do |native, *arguments, **options|
+        pid = native.call(*arguments, **options)
+        observations << [pid, Process.getpgid(pid)]
+        pid
+      end
+      observations
+    end
+
+    it 'isolates and reaps the genuine census child without joining the managed caller group' do
+      groups = observe_spawn_groups
+      query = SmokeConsumer::ProcessQuery.new
+      output = query.call
+      row = output.lines.map { |line| SmokeConsumer::ProcessObservation.new(line) }.find { |item| item.pid == query.pid }
+
+      expect(groups).to eq([[query.pid, query.pid]])
+      expect(row.group).to eq(query.pid)
+      expect(row.group).not_to eq(Process.getpgrp)
+      expect { Process.waitpid(query.pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect(SmokeConsumer::ProcessCensus.observe.process(query.pid).absent?).to be(true)
+    end
+  end
+
   context 'with query output channels' do
     let(:output) { SmokeConsumer::PipeChannel.new }
     let(:error) { SmokeConsumer::PipeChannel.new }
