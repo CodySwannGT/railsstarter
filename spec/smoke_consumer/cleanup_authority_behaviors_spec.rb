@@ -387,42 +387,6 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect(File.exist?(File.join(ownership.root, 'armed.json'))).to be(true)
     end
 
-    it 'retains the failed cleanup stage and native child failure without publishing command output' do
-      fail_cleanup_with_native_child
-      with_cleanup_authority do |pid|
-        expect { described_class.finish(ownership, pid) }
-          .to raise_error(SmokeConsumer::Error, 'Owned cleanup failed; inspect private cleanup receipt')
-      end
-      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
-      expect(receipt.fetch('failure')).to include(
-        'stage' => 'containers',
-        'causes' => [{ 'class' => 'SmokeConsumer::Error',
-                       'message_sha256' => Digest::SHA256.hexdigest('ruby failed (exit 17)') }]
-      )
-      expect(JSON.generate(receipt)).not_to include('synthetic-private-output', RbConfig.ruby)
-    end
-
-    it 'bounds cleanup exception causes and fingerprints private messages without publishing them' do
-      error = private_cause_chain
-      failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
-      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated')]).to eq([4, true])
-      expect(failure.fetch('causes').first).to eq(
-        'class' => 'SmokeConsumer::Error', 'message_sha256' => Digest::SHA256.hexdigest('synthetic-private-message-5')
-      )
-      expect(JSON.generate(failure)).not_to include('synthetic-private-message')
-      allow(error).to receive(:cause).and_return(error)
-      cyclic_failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
-      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated')]).to eq([1, true])
-    end
-
-    it 'retains an original cleanup failure when native descriptor closure raises another exception' do
-      failure = SmokeConsumer::CleanupFailure.new('containers', native_descriptor_failure).to_h
-      expect(failure.fetch('causes').map { |cause| cause.fetch('class') }).to eq(['Errno::EBADF', 'SmokeConsumer::Error'])
-      expect(failure.fetch('causes').last.fetch('message_sha256')).to eq(Digest::SHA256.hexdigest('synthetic-private-original'))
-      expect(failure.fetch('cause_chain_truncated')).to be(false)
-      expect(JSON.generate(failure)).not_to include('synthetic-private-original')
-    end
-
     def fail_cleanup_with_native_child
       native_command = SmokeConsumer::Command.new(timeout: 60)
       collection = instance_double(SmokeConsumer::ContainerCollection)
@@ -509,6 +473,42 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
         .to eq('clean' => true, 'consumer_roots_absent' => true, 'registered_processes_nonrunning' => true, 'registered_processes_absent' => true)
       expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
       expect(File.exist?(consumer_path)).to be(false)
+    end
+
+    it 'retains the failed cleanup stage and native child failure without publishing command output' do
+      fail_cleanup_with_native_child
+      with_cleanup_authority do |pid|
+        expect { described_class.finish(ownership, pid) }
+          .to raise_error(SmokeConsumer::Error, 'Owned cleanup failed; inspect private cleanup receipt')
+      end
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt.fetch('failure')).to include(
+        'stage' => 'containers',
+        'causes' => [{ 'class' => 'SmokeConsumer::Error',
+                       'message_sha256' => Digest::SHA256.hexdigest('ruby failed (exit 17)') }]
+      )
+      expect(JSON.generate(receipt)).not_to include('synthetic-private-output', RbConfig.ruby)
+    end
+
+    it 'bounds cleanup exception causes and fingerprints private messages without publishing them' do
+      error = private_cause_chain
+      failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated')]).to eq([4, true])
+      expect(failure.fetch('causes').first).to eq(
+        'class' => 'SmokeConsumer::Error', 'message_sha256' => Digest::SHA256.hexdigest('synthetic-private-message-5')
+      )
+      expect(JSON.generate(failure)).not_to include('synthetic-private-message')
+      allow(error).to receive(:cause).and_return(error)
+      cyclic_failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated')]).to eq([1, true])
+    end
+
+    it 'retains an original cleanup failure when native descriptor closure raises another exception' do
+      failure = SmokeConsumer::CleanupFailure.new('containers', native_descriptor_failure).to_h
+      expect(failure.fetch('causes').map { |cause| cause.fetch('class') }).to eq(['Errno::EBADF', 'SmokeConsumer::Error'])
+      expect(failure.fetch('causes').last.fetch('message_sha256')).to eq(Digest::SHA256.hexdigest('synthetic-private-original'))
+      expect(failure.fetch('cause_chain_truncated')).to be(false)
+      expect(JSON.generate(failure)).not_to include('synthetic-private-original')
     end
   end
 end
