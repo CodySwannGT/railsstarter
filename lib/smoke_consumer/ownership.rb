@@ -54,7 +54,7 @@ module SmokeConsumer
     rescue EOFError
       @readers.delete(role)
       reader.close
-    rescue IO::WaitReadable
+    rescue IO::WaitReadable, Errno::EINTR
       nil
     end
   end
@@ -114,6 +114,13 @@ module SmokeConsumer
     # @return [Boolean]
     def matches_live?(_identity)
       false
+    end
+
+    # Accept positive absence as a nonrunning observation.
+    # @param _identity [Hash] expected process identity
+    # @return [Boolean]
+    def nonrunning?(_identity)
+      true
     end
 
     # Report positive absence in the observed census.
@@ -208,6 +215,15 @@ module SmokeConsumer
       raise Error, 'Owned process group or UID changed' unless wanted == group_identity.slice(*wanted.keys)
 
       true
+    end
+
+    # Keep indeterminate observations pending; otherwise require a nonmatching live identity.
+    # @param expected [Hash{String => Object}] previous observed birth/group identity
+    # @return [Boolean]
+    def nonrunning?(expected)
+      return false if @state.start_with?('?')
+
+      !matches_live?(expected)
     end
 
     # Report that this row is observed rather than positively absent.

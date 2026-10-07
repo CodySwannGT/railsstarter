@@ -157,7 +157,7 @@ module SmokeConsumer
       end
       Deadline.new(3, ceiling: @limit.expires_at).poll('Owned process remains running') do
         census = ProcessCensus.observe
-        @identities.none? { |identity| census.process(identity.fetch('pid')).matches_live?(identity) }
+        @identities.all? { |identity| census.process(identity.fetch('pid')).nonrunning?(identity) }
       end
       @identities
     end

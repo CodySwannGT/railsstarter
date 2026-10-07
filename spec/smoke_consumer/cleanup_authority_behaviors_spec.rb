@@ -218,6 +218,40 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect { SmokeConsumer::ProcessSignal.new(identity).stop }.to raise_error(SmokeConsumer::Error, 'Caller process refused')
     end
 
+    def indeterminate_observations(identity, persistent)
+      observations = 0
+      pid = identity.fetch('pid')
+      allow(SmokeConsumer::ProcessCensus).to receive(:observe).and_wrap_original do |native|
+        census = native.call
+        observations += 1
+        if observations == 2 || (persistent && observations > 2)
+          unknown = SmokeConsumer::ProcessObservation.new("#{pid} #{Process.pid} #{pid} #{Process.uid} #{identity.fetch('birth')} ?")
+          allow(census).to receive(:process).with(pid).and_return(unknown)
+        end
+        census
+      end
+      -> { observations }
+    end
+
+    # State fixtures alter only observations after the actual owned KILL signal.
+    [false, true].each do |persistent|
+      it "#{persistent ? 'times out on a persistent' : 'waits through a transient'} indeterminate state after killing its owned process" do
+        with_isolated_process do |pid|
+          identity = SmokeConsumer::ProcessCensus.observe.process(pid).group_identity
+          tree = SmokeConsumer::ProcessTree.new
+          tree.freeze_roots([identity])
+          observations = indeterminate_observations(identity, persistent)
+
+          if persistent
+            expect { tree.kill_frozen }.to raise_error(SmokeConsumer::Error, 'Owned process remains running')
+          else
+            expect(tree.kill_frozen).to eq([identity])
+            expect(observations.call).to be >= 3
+          end
+        end
+      end
+    end
+
     it 'refuses a cleanup request with a foreign token and records failure' do
       ownership.write_once('cleanup-request.json', 'token' => 'foreign-token')
       described_class.new(ownership).watch
