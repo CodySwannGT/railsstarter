@@ -1,5 +1,13 @@
 # Bounded implementation plan: CodySwannGT/railsstarter#65
 
+## Delivery validation correction: asynchronous policy-probe input
+
+Task metadata: plan delivery-policy-probe-input; type bug; acceptance_criteria [consume complete delayed nonblocking stdin through the actual official action-pin checker, preserve valid immutable and invalid mutable reference verdicts]; relevant_documentation spec/workflows/ci_migration_spec.rb and the tracked official action-pin checker; testing_requirements [native delayed nonblocking pipe RED/GREEN, existing immutable and mutated-reference examples, ordinary changed-file lint and commit hooks]; skills [lisa-tdd-implementation, lisa-git-commit]; learnings [a synchronous fd-zero read can raise EAGAIN before a pipe writer supplies data]. Verification type cli-test, command the private native stdin probe against the current authored JavaScript and actual tracked checker, expected both delayed inputs reach the checker with nonempty reference inventories and their original verdicts. This supplements, and does not replace, original full-push and hosted acceptance.
+
+The original full push at 2881a8b ran 597 examples with five failures; one is this probe's native EAGAIN. Before editing the probe, the controlled native delayed nonblocking pipe reproduced EAGAIN and exit 1 for both valid and mutable YAML. The probe retains its exact official checker and report structure. No production checker, deadline, quality threshold or workflow permission changes are admitted.
+
+Native GREEN: both delayed inputs exit 0 only after receiving the complete input; each reports six references. Immutable input has no findings, and the mutable fixture reports exactly synthetic-vendor/action, moving, mutable-ref. All eight existing workflow examples pass; narrow-selection command exit 2 retains the unchanged aggregate coverage failure. Changed-file RuboCop passes. Different read-only source/security review gives scoped GO (private receipt SHA256 a074b662ee50715ba0835ec70fb910f73ddecb22dcb2c48e33c76663a4eba614). Original full-push and hosted acceptance remain pending.
+
 Status: resumed parent-approved bounded disposition is implemented, independently reviewed and ready for normal scoped commit; the earlier research-stage proposals below remain historical and are superseded by the resumed section. Canonical worktree `/Users/cody/workspace/railsstarter/.claude/worktrees/65-ci-workflow-migration`, feature `codex/65-ci-workflow-migration`, base/PR `main`. Existing github/#65 binding remains exact. Full adoption/delivery remain pending; this plan does not complete #65 or the all-open-issue batch.
 
 ## Research gate and decisions

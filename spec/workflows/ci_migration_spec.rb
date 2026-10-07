@@ -55,12 +55,15 @@ RSpec.describe 'Starter CI migration' do
   def action_report(content)
     # Tracked common-adoption source takes precedence. Installed official source
     # is a local pre-adoption fallback; missing both is an explicit failure.
+    # A nonblocking pipe can be temporarily empty; wait for EOF before checking.
     checker = action_checker_path
     script = <<~JS
-      import {readFileSync} from 'node:fs';
       import {pathToFileURL} from 'node:url';
       const gate = await import(pathToFileURL(process.argv[2]));
-      const refs = gate.findActionRefs(readFileSync(0, 'utf8'));
+      process.stdin.setEncoding('utf8');
+      let content = '';
+      for await (const chunk of process.stdin) content += chunk;
+      const refs = gate.findActionRefs(content);
       console.log(JSON.stringify({checked: refs.length, refs: refs, findings: refs
         .filter(ref => gate.evaluateReference(ref) !== 'ok')
         .map(ref => ({action: ref.action, ref: ref.ref, verdict: gate.evaluateReference(ref)}))}));
