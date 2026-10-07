@@ -201,6 +201,17 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       expect { described_class::Toolchain.require_install_only(metadata) }.not_to raise_error
     end
 
+    it 'accepts the actually locked published install-only release' do
+      expect { described_class::Toolchain.require_install_only(locked_toolchain_metadata) }.not_to raise_error
+    end
+
+    %w[lisa_resolved lisa_integrity postinstall].each do |field|
+      it "rejects altered #{field} on the actually locked release" do
+        metadata = locked_toolchain_metadata.merge(field => "#{locked_toolchain_metadata.fetch(field)} altered")
+        expect { described_class::Toolchain.require_install_only(metadata) }.to raise_error(described_class::Error)
+      end
+    end
+
     it 'retains the real release provenance through lock metadata extraction' do
       lisa = { 'version' => released_metadata.fetch('lisa'), 'resolved' => released_metadata.fetch('lisa_resolved'),
                'integrity' => released_metadata.fetch('lisa_integrity'), 'engines' => { 'node' => '22.23.3', 'bun' => '1.3.8' } }
