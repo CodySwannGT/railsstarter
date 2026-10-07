@@ -64,6 +64,44 @@ def remove_exact_test_child(ready, token):
 
 
 class WalkthroughContracts(unittest.TestCase):
+    def test_native_compose_resolves_the_shared_image_build_owner_and_cleanup_labels(self):
+        source = Path(__file__).resolve().parents[3]
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "compose.yaml").write_bytes((source / "compose.yaml").read_bytes())
+            (root / ".env").write_text("")
+            project = "onboarding-" + secrets.token_hex(16)
+            environment = {"PATH": os.environ["PATH"], "LOCAL_UID": str(os.getuid()),
+                           "LOCAL_GID": str(os.getgid())}
+            result = subprocess.run(["docker", "compose", "--project-name", project,
+                "--file", str(root / "compose.yaml"), "--env-file", str(root / ".env"),
+                "config", "--format", "json"], env=environment,
+                capture_output=True, text=True, timeout=2)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            services = json.loads(result.stdout)["services"]
+            build = services["web"]["build"]
+            self.assertEqual(build["args"], {"LOCAL_UID": str(os.getuid()), "LOCAL_GID": str(os.getgid())})
+            self.assertEqual(build["labels"], {"com.docker.compose.project": project,
+                                              "com.docker.compose.service": "web"})
+            self.assertEqual({services[key]["image"] for key in ("web", "worker", "db-prepare")},
+                             {project + "-app:local"})
+
+    def test_literal_private_input_step_exports_the_native_nonroot_build_identity(self):
+        source = Path(__file__).resolve().parents[3]
+        body = commands((source / "README.md").read_text(), 4)
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "env.sample").write_text("SYNTHETIC_ONLY=true\n")
+            environment = {key: value for key, value in os.environ.items()
+                           if key not in ("LOCAL_UID", "LOCAL_GID")}
+            result = subprocess.run(["bash", "-euc", body +
+                '\ntest "$LOCAL_UID" -eq "$(id -u)"\n'
+                'test "$LOCAL_GID" -eq "$(id -g)"\n'
+                'test "$LOCAL_UID" -gt 0\n'], cwd=root, env=environment,
+                capture_output=True, text=True, timeout=2)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((root / ".env").stat().st_mode & 0o777, 0o600)
+
     def test_final_nonblocking_drain_keeps_the_complete_capture_ceiling(self):
         reader_fd, writer_fd = os.pipe()
         try:
