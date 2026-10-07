@@ -261,18 +261,34 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect(File.exist?(File.join(ownership.root, 'armed.json'))).to be(true)
     end
 
-    it 'arms a genuine separate authority and reaps it after empty owned cleanup' do
+    def with_cleanup_authority
       pid = described_class.arm(ownership)
       expect(Process.getpgid(pid)).to eq(pid)
-      receipt = described_class.finish(ownership, pid)
-      pid = nil
-      expect(receipt.fetch('clean')).to be(true)
-      expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
+      yield pid
     ensure
-      if pid
-        Process.kill('KILL', pid)
-        Process.waitpid(pid)
+      SmokeConsumer::DirectChild.new(pid).terminate if pid
+    end
+
+    it 'arms a genuine separate authority and reaps it after empty owned cleanup' do
+      with_cleanup_authority do |pid|
+        receipt = described_class.finish(ownership, pid)
+        expect(receipt.fetch('clean')).to be(true)
+        expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
       end
+    end
+
+    it 'preserves the cleanup failure after the genuine authority has been reaped' do
+      allow(ownership).to receive(:request_cleanup) { ownership.write_once('cleanup-request.json', 'token' => 'foreign-token') }
+      authority_pid = nil
+      expect do
+        with_cleanup_authority do |pid|
+          authority_pid = pid
+          described_class.finish(ownership, pid)
+        end
+      end.to raise_error(SmokeConsumer::Error, 'Owned cleanup failed; inspect private cleanup receipt')
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt).to include('token' => ownership.token, 'clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect { Process.waitpid(authority_pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
     end
 
     it 'acknowledges cleanup only after empty Docker inventories and actual directory removal' do

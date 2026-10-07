@@ -124,14 +124,45 @@ RSpec.describe RequestPolicy do
     end
   end
 
+  def term_refusal_acknowledged?(ready, token, process)
+    return false unless File.file?(ready) && File.size(ready).positive?
+
+    JSON.parse(File.read(ready)) == { 'token' => token, 'pid' => process.pid }
+  rescue JSON::ParserError
+    false
+  end
+
+  def verify_term_refusal_identity(ready, process)
+    identity = File.lstat(ready).then { |file| [file.file?, file.uid, file.mode & 0o777, file.nlink] }
+    raise 'TERM-refusal readiness file ownership changed' unless identity == [true, Process.uid, 0o600, 1]
+    raise 'TERM-refusal native child identity changed' unless RequestSecurityObservation.identity(process.pid.to_s) == process.identity
+  end
+
+  def start_term_refusal(command, directory)
+    token = SecureRandom.hex(16)
+    ready = File.join(directory, "ready-#{token}.json")
+    payload = 'sleep 0.3; trap("TERM", "IGNORE"); File.write(ARGV.fetch(0), JSON.generate(token: ARGV.fetch(1), pid: Process.pid), mode: "wx", perm: 0o600); sleep 20'
+    item = command.start([RbConfig.ruby, '-rjson', '-e', payload, ready, token])
+    acknowledged = RequestSecurityDeadline.wait(2) { term_refusal_acknowledged?(ready, token, item.fetch(:process)) }
+    raise 'Owned TERM-refusal child did not acknowledge readiness' unless acknowledged
+
+    verify_term_refusal_identity(ready, item.fetch(:process))
+    item
+  rescue StandardError
+    item&.fetch(:process)&.terminate(timeout: 2)
+    raise
+  end
+
   it 'bounds an owned command that refuses TERM, records escalation and proves absence' do
     Dir.mktmpdir('quota-command-control-') do |directory|
       command = RateLimitCommand.new(directory)
-      arguments = [RbConfig.ruby, '-e', 'trap("TERM", "IGNORE"); sleep 20']
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      expect { command.run(arguments, {}, timeout: 0.2) }.to raise_error(RuntimeError, /Owned command timed out/)
+      item = start_term_refusal(command, directory)
+      expect { command.finish(item, timeout: 0.2) }.to raise_error(RuntimeError, /Owned command timed out/)
       expect(Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to be < 5
       expect(command.receipts.last).to include(complete: false, absent: true, signals: %w[TERM KILL])
+    ensure
+      item&.fetch(:process)&.terminate(timeout: 2)
     end
   end
 
