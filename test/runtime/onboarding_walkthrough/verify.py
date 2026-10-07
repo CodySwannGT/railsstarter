@@ -12,6 +12,7 @@ import os
 import re
 import secrets
 import shlex
+import stat
 import subprocess
 import time
 import urllib.request
@@ -87,10 +88,65 @@ def inspect_acceptance(root):
             "http": statuses, "provider_hook_execution": "separate real contribution required"}
 
 
-def inspect_image(root, target):
+def image_diagnostics(image):
+    """Project only bounded image identity fields, never Config.Env or other labels."""
+    def selected(value):
+        if value is None:
+            return None
+        if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:/@-]{1,512}", value):
+            return value
+        return {"invalid_type_or_shape": True}
+
+    config = image.get("Config")
+    labels = config.get("Labels") if isinstance(config, dict) else None
+    labels = labels if isinstance(labels, dict) else {}
+    tags = image.get("RepoTags")
+    return {"id": selected(image.get("Id")),
+            "repo_tags": [selected(tag) for tag in tags] if isinstance(tags, list) and len(tags) <= 16 else {"invalid_inventory": True},
+            "project": selected(labels.get("com.docker.compose.project")),
+            "service": selected(labels.get("com.docker.compose.service"))}
+
+
+def command_diagnostics(events):
+    """Classify private captures using fixed indicators; no raw text is exported."""
+    indicators = {"permission_denied": b"permission denied", "read_only_filesystem": b"read-only file system",
+        "database_access_denied": b"access denied for user", "unknown_database": b"unknown database",
+        "mysql_connection_failed": b"can't connect to mysql", "bundler_missing_gem": b"could not find gem",
+        "ruby_load_error": b"loaderror", "missing_file": b"no such file or directory"}
+    summaries = []
+    for event in events:
+        if "capture_path" not in event:
+            continue
+        capture = Path(event["capture_path"])
+        fd = os.open(capture, os.O_RDONLY | os.O_NOFOLLOW)
+        with os.fdopen(fd, "rb") as source:
+            info = os.fstat(source.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077 or info.st_size > 16 * 1024 * 1024:
+                raise ValueError("Private command capture identity differs")
+            payload = source.read(16 * 1024 * 1024 + 1)
+        if len(payload) > 16 * 1024 * 1024 or hashlib.sha256(payload).hexdigest() != event["output_sha256"]:
+            raise ValueError("Private command capture bytes differ")
+        lowered = payload.lower()
+        permission_lines = [line for line in lowered.splitlines() if b"permission denied" in line]
+        summaries.append({"output_sha256": event["output_sha256"], "bytes": len(payload),
+            "indicators": [name for name, token in indicators.items() if token in lowered],
+            "permission_targets": [name for name in ("tmp", "log", "db", "storage", "bin", "config")
+                if any(("/rails/" + name + "/").encode() in line for line in permission_lines)]})
+    return summaries
+
+
+def inspect_image(root, target, records=None):
     """Accept one native object, or exact target-specific completed absence."""
-    result = subprocess.run(["docker", "image", "inspect", target], cwd=root,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+    record = {"target": target, "exit": None}
+    if records is not None:
+        records.append(record)
+    try:
+        result = subprocess.run(["docker", "image", "inspect", target], cwd=root,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+    except Exception as error:
+        record["error_class"] = type(error).__name__
+        raise
+    record.update(exit=result.returncode, stdout_bytes=len(result.stdout), stderr_bytes=len(result.stderr))
     if len(result.stdout) + len(result.stderr) > 16 * 1024 * 1024:
         raise ValueError("Image inventory exceeds the existing capture ceiling")
     output = result.stdout.decode("utf-8", errors="strict")
@@ -102,6 +158,7 @@ def inspect_image(root, target):
     objects = json.loads(output)
     if not isinstance(objects, list) or len(objects) != 1 or not isinstance(objects[0], dict):
         raise ValueError("Image inventory must contain exactly one object")
+    record["image"] = image_diagnostics(objects[0])
     return objects[0]
 
 
@@ -123,15 +180,15 @@ def owned_image_id(image, tag, project):
     return identifier
 
 
-def cleanup(root, project, before):
+def cleanup(root, project, before, image_records=None):
     # Unique project was reserved before any Compose allocation. Never prune.
     tag = project + "-app:local"
     native(["docker", "compose", "--project-name", project, "down", "--volumes", "--remove-orphans"], root, 120)
-    image = inspect_image(root, tag)
+    image = inspect_image(root, tag, image_records)
     if image is not None:
         identifier = owned_image_id(image, tag, project)
         native(["docker", "image", "rm", "--no-prune", identifier], root, 30)
-        if inspect_image(root, tag) is not None or inspect_image(root, identifier) is not None:
+        if inspect_image(root, tag, image_records) is not None or inspect_image(root, identifier, image_records) is not None:
             raise ValueError("Owned image tag or immutable ID remains")
     for args in (["ps", "-aq", "--filter", "label=com.docker.compose.project=" + project],
                  ["network", "ls", "-q", "--filter", "label=com.docker.compose.project=" + project],
@@ -183,6 +240,7 @@ def main(args):
     project = "onboarding-" + secrets.token_hex(16)
     before = None
     root_identity = None
+    failure = None
     try:
         assert_free_ports()
         before = census(destination)
@@ -213,13 +271,14 @@ def main(args):
         report["acceptance"] = inspect_acceptance(root)
     except Exception as error:
         report["failure_class"] = type(error).__name__
-        raise
+        failure = error
     finally:
         try:
             if any(event.get("process_started") and not event["group_absent"] for event in report["events"]):
                 raise RuntimeError("Command cleanup is unresolved; preserve the owned checkout")
             if before is not None and (root / ".env").is_file():
-                report["cleanup"] = cleanup(root, project, before)
+                report["image_diagnostics"] = []
+                report["cleanup"] = cleanup(root, project, before, report["image_diagnostics"])
             if root_identity is not None:
                 remove_clone(root, root_identity)
                 report["owned_checkout_absent"] = True
@@ -227,13 +286,25 @@ def main(args):
         except Exception as error:
             report["success"] = False
             report["cleanup_failure_class"] = type(error).__name__
-            raise
+            if isinstance(error, subprocess.CalledProcessError):
+                report["cleanup_native_exit"] = error.returncode
+            if failure is None:
+                failure = error
         finally:
+            try:
+                report["command_diagnostics"] = command_diagnostics(report["events"])
+            except Exception as error:
+                report["diagnostic_failure_class"] = type(error).__name__
+                if failure is None:
+                    failure = error
+                report["success"] = False
             report_path = Path(args.report)
             fd = os.open(report_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             with os.fdopen(fd, "w") as output:
                 json.dump(report, output, indent=2)
                 output.write("\n")
+    if failure is not None:
+        raise failure
 
 
 if __name__ == "__main__":

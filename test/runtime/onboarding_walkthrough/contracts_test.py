@@ -19,6 +19,7 @@ from walkthrough import (assert_free_ports, commands, configure_private_env, ren
                          require_revision, validate_schemas, allocate_clone, remove_clone,
                          exited_without_reaping, finish_group, group_rows, drain_available)
 from verify import cleanup, inspect_image, script
+import verify
 
 
 def process_identity(pid):
@@ -372,6 +373,116 @@ class ImageCleanupContracts(unittest.TestCase):
             with self.subTest(code=code, output=output), patch("verify.subprocess.run", return_value=result):
                 with self.assertRaises(ValueError):
                     inspect_image(Path("/synthetic-owned"), target)
+
+
+class FailureDiagnosticContracts(unittest.TestCase):
+    """Synthetic orchestration controls; no hosted application qualification."""
+
+    def test_original_command_error_survives_a_second_cleanup_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            destination = parent / "walkthrough"
+            original = ValueError("synthetic-original-command")
+            options = SimpleNamespace(source_sha="a" * 40, source_root=str(Path.cwd()),
+                destination=str(destination), qualification="candidate", pull_request="",
+                report=str(parent / "report.json"))
+
+            def failed_clone(_body, _cwd, _events, _label, _timeout):
+                (destination / "acme-portal/.env").write_text("synthetic-private-value")
+                raise original
+
+            with patch("verify.assert_free_ports"), patch("verify.census", return_value={}), \
+                 patch("verify.native", return_value="a" * 40), patch("verify.script", side_effect=failed_clone), \
+                 patch("verify.cleanup", side_effect=RuntimeError("synthetic-cleanup")):
+                with self.assertRaises(ValueError) as failure:
+                    verify.main(options)
+            self.assertIs(failure.exception, original)
+            report = json.loads(Path(options.report).read_text())
+            self.assertEqual(report["failure_class"], "ValueError")
+            self.assertEqual(report["cleanup_failure_class"], "RuntimeError")
+            self.assertFalse(report["success"])
+
+    def test_private_capture_summary_excludes_raw_secrets_and_paths(self):
+        with tempfile.TemporaryDirectory() as directory:
+            capture = Path(directory) / "output.bin"
+            payload = b"SECRET_KEY_BASE=synthetic-secret\nErrno::EACCES: Permission denied @ rb_sysopen - /rails/tmp/cache/private-token\n"
+            capture.write_bytes(payload)
+            capture.chmod(0o600)
+            event = {"capture_path": str(capture), "output_sha256": verify.hashlib.sha256(payload).hexdigest()}
+            summary = verify.command_diagnostics([event])
+            self.assertEqual(summary[0]["indicators"], ["permission_denied"])
+            self.assertEqual(summary[0]["permission_targets"], ["tmp"])
+            self.assertNotIn("synthetic-secret", json.dumps(summary))
+            self.assertNotIn("private-token", json.dumps(summary))
+            self.assertEqual(capture.read_bytes(), payload)
+
+    def test_image_diagnostic_selects_only_typed_identity_fields_and_status(self):
+        project = "onboarding-" + "a" * 32
+        image = {"Id": "sha256:" + "b" * 64, "RepoTags": [project + "-app:local"],
+            "Config": {"Env": ["SECRET_KEY_BASE=synthetic-secret"], "Labels": {
+                "com.docker.compose.project": "actual-project", "com.docker.compose.service": "web",
+                "private-label": "synthetic-secret"}}}
+        records = []
+        response = subprocess.CompletedProcess(["docker"], 0, json.dumps([image]).encode(), b"")
+        with patch("verify.subprocess.run", return_value=response):
+            self.assertEqual(verify.inspect_image(Path("/synthetic-owned"), project + "-app:local", records), image)
+        self.assertEqual(records[0]["exit"], 0)
+        self.assertEqual(records[0]["image"]["project"], "actual-project")
+        self.assertEqual(records[0]["image"]["service"], "web")
+        self.assertNotIn("synthetic-secret", json.dumps(records))
+
+    def test_unknown_native_image_query_still_fails_and_records_its_status(self):
+        records = []
+        response = subprocess.CompletedProcess(["docker"], 17, b"", b"synthetic-private-daemon-error")
+        with patch("verify.subprocess.run", return_value=response), self.assertRaises(ValueError):
+            verify.inspect_image(Path("/synthetic-owned"), "synthetic:local", records)
+        self.assertEqual(records[0]["exit"], 17)
+        self.assertNotIn("synthetic-private-daemon-error", json.dumps(records))
+
+    def test_image_query_timeout_remains_unknown_and_preserves_native_error(self):
+        records = []
+        error = subprocess.TimeoutExpired(["docker"], 30)
+        with patch("verify.subprocess.run", side_effect=error), self.assertRaises(subprocess.TimeoutExpired) as failure:
+            verify.inspect_image(Path("/synthetic-owned"), "synthetic:local", records)
+        self.assertIs(failure.exception, error)
+        self.assertIsNone(records[0]["exit"])
+        self.assertEqual(records[0]["error_class"], "TimeoutExpired")
+
+    def test_private_capture_summary_refuses_symlinks_and_changed_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            target = parent / "private-output"
+            target.write_bytes(b"synthetic-secret")
+            target.chmod(0o600)
+            alias = parent / "capture-link"
+            alias.symlink_to(target)
+            with self.assertRaises(OSError):
+                verify.command_diagnostics([{"capture_path": str(alias), "output_sha256": "a" * 64}])
+            with self.assertRaises(ValueError):
+                verify.command_diagnostics([{"capture_path": str(target), "output_sha256": "a" * 64}])
+            self.assertEqual(target.read_bytes(), b"synthetic-secret")
+
+    def test_native_failing_command_keeps_private_bytes_and_exports_only_indicators(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            events = []
+            with self.assertRaises(ValueError):
+                script("printf 'Permission denied: synthetic-secret' >&2; exit 17", root, events, "native-diagnostic", 3)
+            self.assertEqual(events[0]["exit"], 17)
+            self.assertTrue(events[0]["group_absent"])
+            capture = Path(events[0]["capture_path"])
+            self.assertEqual(capture.read_text(), "Permission denied: synthetic-secret")
+            summary = verify.command_diagnostics(events)
+            self.assertEqual(summary[0]["indicators"], ["permission_denied"])
+            self.assertNotIn("synthetic-secret", json.dumps(summary))
+
+    def test_untrusted_image_field_shapes_cannot_emit_multiline_values(self):
+        image = {"Id": "bad\nSECRET_KEY_BASE=synthetic-secret", "RepoTags": ["bad\nsynthetic-secret"],
+            "Config": {"Labels": {"com.docker.compose.project": "bad\nsynthetic-secret"}}}
+        summary = verify.image_diagnostics(image)
+        self.assertEqual(summary["id"], {"invalid_type_or_shape": True})
+        self.assertEqual(summary["project"], {"invalid_type_or_shape": True})
+        self.assertNotIn("synthetic-secret", json.dumps(summary))
 
 
 if __name__ == "__main__":
