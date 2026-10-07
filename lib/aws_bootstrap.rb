@@ -19,6 +19,23 @@ class AwsBootstrap
     'DATABASE_NAME' => 'dbname', 'PRIMARY_DB_HOST' => 'host', 'DATABASE_PORT' => 'port'
   }.freeze
 
+  # Bind each authored SDK operation to its exact response collection.
+  LISTINGS = {
+    [:get_parameters_by_path, :parameters] => lambda do |client, options|
+      response = client.get_parameters_by_path(**options)
+      [response, response.parameters]
+    end,
+    [:list_exports, :exports] => lambda do |client, options|
+      response = client.list_exports(**options)
+      [response, response.exports]
+    end,
+    [:list_secrets, :secret_list] => lambda do |client, options|
+      response = client.list_secrets(**options)
+      [response, response.secret_list]
+    end
+  }.freeze
+  private_constant :LISTINGS
+
   # Load remote settings only when the boot policy enables it, preserving caller values.
   # @param environment [String, Symbol] Rails environment evaluated by the boot policy
   # @param env [Hash, ENV] mutable environment settings; selectors are captured before loading
@@ -64,8 +81,9 @@ class AwsBootstrap
   end
 
   def pages(client, operation, collection, **arguments)
+    listing = LISTINGS.fetch([operation, collection]) { raise Error, 'AWS bootstrap: unsupported page operation or collection' }
     rows = []
-    each_page(client, operation, **arguments) { |response| rows.concat(response.public_send(collection)) }
+    each_page(client, operation, arguments, listing) { |values| rows.concat(values) }
     rows
   rescue Error
     raise
@@ -73,13 +91,13 @@ class AwsBootstrap
     raise Error, "AWS bootstrap: #{operation} failed (#{error.class.name})", cause: nil
   end
 
-  def each_page(client, operation, **arguments)
+  def each_page(client, operation, arguments, listing)
     token = nil
     seen = []
     loop do
       arguments[:next_token] = token if token
-      response = client.public_send(operation, **arguments)
-      yield response
+      response, values = listing.call(client, arguments)
+      yield values
       token = response.next_token
       break if token.blank?
       raise Error, "AWS bootstrap: #{operation} repeated pagination token" if seen.include?(token)

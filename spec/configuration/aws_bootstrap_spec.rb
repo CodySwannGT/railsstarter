@@ -48,6 +48,24 @@ RSpec.describe AwsBootstrap do
     described_class.load!(environment: 'production', env: env, asset_compilation: false)
   end
 
+  it 'rejects an unlisted SDK operation before making a provider request' do
+    bootstrap = described_class.new(env, deployed: true)
+
+    expect { bootstrap.send(:pages, ssm, :describe_parameters, :parameters) }
+      .to raise_error(described_class::Error, 'AWS bootstrap: unsupported page operation or collection')
+    expect(ssm.api_requests).to be_empty
+  end
+
+  it 'rejects an unlisted response collection without publishing partial ENV values' do
+    original = env.dup
+    bootstrap = described_class.new(env, deployed: true)
+
+    expect { bootstrap.send(:pages, ssm, :get_parameters_by_path, :to_a, path: '/owned67/') }
+      .to raise_error(described_class::Error, 'AWS bootstrap: unsupported page operation or collection')
+    expect(ssm.api_requests).to be_empty
+    expect(env).to eq(original)
+  end
+
   it 'applies incoming ENV then SSM then exports then database fields, with complete pagination' do
     env['DATABASE_USER'] = 'supplied_user'
     load_configuration
@@ -303,7 +321,8 @@ RSpec.describe AwsBootstrap do
   { ssm: :get_parameters_by_path, exports: :list_exports, secrets: :list_secrets }.each do |service, operation|
     it "sanitizes actual SDK #{operation} failures without partial ENV writes" do
       original = env.dup
-      public_send(service).stub_responses(operation, Seahorse::Client::NetworkingError.new(IOError.new('private-provider-value')))
+      selected = { ssm: ssm, exports: exports, secrets: secrets }.fetch(service)
+      selected.stub_responses(operation, Seahorse::Client::NetworkingError.new(IOError.new('private-provider-value')))
       expect { load_configuration }.to raise_error(described_class::Error) { |error|
         expect(error.message).to eq("AWS bootstrap: #{operation} failed (Seahorse::Client::NetworkingError)")
         expect(error.cause).to be_nil
