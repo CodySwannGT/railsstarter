@@ -40,6 +40,17 @@ mise exec ruby@3.4.11 -- gem install bundler --version "$BUNDLER_VERSION"
 mise exec ruby@3.4.11 "node@$NODE_VERSION" "bun@$BUN_VERSION" -- bundle --version
 ```
 
+On macOS, build the host `mysql2` gem with MariaDB Connector/C. It supports the MySQL server used by this starter and keeps Ruby and the client library on the same OpenSSL 3 family. Select it before installing the bundle:
+
+```sh
+if [ "$(uname -s)" = Darwin ]; then
+  brew install mariadb-connector-c
+  mise exec ruby@3.4.11 -- bundle config --local build.mysql2 "--with-mysql-config=$(brew --prefix mariadb-connector-c)/bin/mariadb_config"
+fi
+```
+
+If the host bundle already has `mysql2` compiled against another client library, rebuild it with `mise exec ruby@3.4.11 -- bundle pristine mysql2` after selecting Connector/C. The native client selection matters for host tests that fork while database connections are open.
+
 Use Bun for project JavaScript dependencies. Lisa's package metadata declares Bun as the supported project installer. Do not run a frozen Bun install against an absent lock or change dependency versions just to satisfy setup.
 
 ### 3. Rename explicitly
