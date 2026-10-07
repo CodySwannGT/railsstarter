@@ -487,20 +487,24 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
         'causes' => [{ 'class' => 'SmokeConsumer::Error',
                        'message_sha256' => Digest::SHA256.hexdigest('ruby failed (exit 17)') }]
       )
+      expect(receipt.fetch('failure').fetch('cause_locations').first)
+        .to include(a_hash_including('source' => 'command.rb', 'line' => be_positive))
       expect(JSON.generate(receipt)).not_to include('synthetic-private-output', RbConfig.ruby)
     end
 
     it 'bounds cleanup exception causes and fingerprints private messages without publishing them' do
       error = private_cause_chain
       failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
-      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated')]).to eq([4, true])
+      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated'), failure.fetch('cause_locations')])
+        .to eq([4, true, [[], [], [], []]])
       expect(failure.fetch('causes').first).to eq(
         'class' => 'SmokeConsumer::Error', 'message_sha256' => Digest::SHA256.hexdigest('synthetic-private-message-5')
       )
       expect(JSON.generate(failure)).not_to include('synthetic-private-message')
       allow(error).to receive(:cause).and_return(error)
       cyclic_failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
-      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated')]).to eq([1, true])
+      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated'), cyclic_failure.fetch('cause_locations')])
+        .to eq([1, true, [[]]])
     end
 
     it 'retains an original cleanup failure when native descriptor closure raises another exception' do
@@ -508,6 +512,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect(failure.fetch('causes').map { |cause| cause.fetch('class') }).to eq(['Errno::EBADF', 'SmokeConsumer::Error'])
       expect(failure.fetch('causes').last.fetch('message_sha256')).to eq(Digest::SHA256.hexdigest('synthetic-private-original'))
       expect(failure.fetch('cause_chain_truncated')).to be(false)
+      expect(failure.fetch('cause_locations')).to eq([[], []])
       expect(JSON.generate(failure)).not_to include('synthetic-private-original')
     end
 

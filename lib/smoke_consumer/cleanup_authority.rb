@@ -806,6 +806,26 @@ module SmokeConsumer
     end
   end
 
+  # Names only fixed library sources, never private paths, method names, or arguments.
+  class CleanupFailureLocations
+    SOURCES = %w[command.rb cleanup_authority.rb ownership.rb].freeze
+
+    # Retain the original exception without changing its backtrace or cause.
+    # @param error [Exception] actual observed cleanup failure
+    def initialize(error)
+      @error = error
+    end
+
+    # Extract at most twenty source positions from the fixed cleanup library.
+    # @return [Array<Hash>] allowlisted source basenames and native line numbers
+    def to_a
+      Array(@error.backtrace_locations).first(20).filter_map do |location|
+        source = SOURCES.find { |name| location.absolute_path == File.join(__dir__, name) }
+        { 'source' => source, 'line' => location.lineno } if source
+      end
+    end
+  end
+
   # Retains bounded failure fingerprints without exposing private exception messages.
   class CleanupFailure
     # Retain the fixed cleanup stage and the actual rescued exception.
@@ -821,15 +841,18 @@ module SmokeConsumer
     # @return [Hash] stage and bounded class/message-digest observations
     def to_h
       causes = []
+      locations = []
       seen = {}.compare_by_identity
       @current = @error
       while @current && causes.length < 4 && !seen.key?(@current)
         seen[@current] = true
         causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
                     'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
+        locations << CleanupFailureLocations.new(@current).to_a
         @current = @current.cause
       end
-      { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_chain_truncated' => @current ? true : false }
+      { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_locations' => locations,
+        'cause_chain_truncated' => @current ? true : false }
     end
   end
 
