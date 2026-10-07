@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "asOf": "2026-10-05",
+  "asOf": "2026-10-07",
   "runnerPlatforms": {
     "rspec-capybara-selenium": [
       "web"
@@ -120,6 +120,41 @@
       "file": "spec/browser/request_security_spec.rb",
       "evidence": "accepts positively reaped exit during profile validation without sending another signal",
       "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "cleans a verified later cross-site Chrome child while its captured root is suspended",
+      "reason": "Owned browser teardown regression for verified later native descendants; validates process lifecycle rather than a product request or CSP requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a matching-profile child whose ancestry belongs to another owner",
+      "reason": "Harness process-ownership validation control for foreign ancestry; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a reused captured root and a changed driver before child admission",
+      "reason": "Harness process-ownership validation control for stale identities; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses missing metadata and malformed or duplicate profile identities",
+      "reason": "Harness process-ownership validation control for unavailable or malformed observations; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses foreign UID and process group even when profile and parent match",
+      "reason": "Harness process-ownership validation control for foreign identity metadata; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a live foreign process copying the exact owned Chrome profile",
+      "reason": "Native harness ownership refusal control for a live foreign process with a copied profile flag; validates teardown signal safety rather than a product request or CSP requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a coherent replacement birth after a late child was captured",
+      "reason": "Harness owner-callback identity binding control for a coherent replacement birth after capture; validates signal safety rather than a product request or CSP requirement."
     }
   ],
   "mappings": [

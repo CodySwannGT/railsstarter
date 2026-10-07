@@ -190,6 +190,30 @@ class RequestSecurityObservation
     rows
   end
 
+  # Native UID/group/birth readback qualifies ancestry, never profile text alone.
+  def self.metadata(pids)
+    raise Failure, 'Invalid browser PID inventory' unless pids.size.between?(1, 128) && pids.uniq == pids && pids.all? { |pid| pid.is_a?(Integer) && pid.positive? }
+
+    result = capture(['-ww', '-p', pids.join(','), '-o', 'pid=,ppid=,pgid=,uid=,lstart='])
+    successful(result).lines.each_with_object({}) do |line, rows|
+      row = metadata_row(line)
+      pid = row.fetch(:pid)
+      raise Failure, 'Unexpected or duplicate browser native PID' unless pids.include?(pid) && !rows.key?(pid)
+
+      rows[pid] = row
+    end
+  end
+
+  def self.metadata_row(line)
+    fields = line.split
+    valid = fields.size == 9 && fields.first(4).all? { |value| value.match?(/\A\d+\z/) }
+    valid &&= valid_identity?(fields.values_at(0, 1, 2, 4, 5, 6, 7, 8), numbers: 3)
+    raise Failure, 'Malformed browser native metadata' unless valid
+
+    pid, parent, group, uid = fields.first(4).map(&:to_i)
+    { pid: pid, ppid: parent, pgid: group, uid: uid, birth: fields.last(5).join(' ') }.freeze
+  end
+
   def self.profiles(profile)
     successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='])).lines.filter_map do |line|
       fields = line.strip.split(/\s+/, 8)
@@ -197,6 +221,61 @@ class RequestSecurityObservation
       raise Failure, 'Process observation incomplete profile table' unless fields.length == 8 && valid_identity?(identity, numbers: 2)
 
       identity.join(' ') if fields.last.match?(/(?:^|\s)#{Regexp.escape(profile)}(?:\s|$)/)
+    end
+  end
+end
+
+# A later renderer is owned through retained native anchors and complete ancestry.
+# The profile flag is necessary, but can never make an unrelated process ours.
+class RequestSecurityBrowserInventory
+  def initialize(anchors, rows)
+    @anchors = anchors
+    @profiles = rows.map { |line| profile_identity(line) }
+    members = @profiles.map { |row| row.fetch(:pid) }
+    raise 'Ambiguous browser profile inventory' unless members.size <= 126 && members.uniq.size == members.size
+
+    roots = @anchors.values.select { |row| @anchors.key?(row[:ppid]) }
+    raise 'Browser retained anchor identity is ambiguous' unless @anchors.size == 2 && roots.one?
+
+    @root = roots.first
+  end
+
+  def validate(metadata)
+    @anchors.each do |pid, expected|
+      raise 'Browser retained anchor identity changed or unavailable' unless metadata[pid] == expected
+    end
+    raise 'Browser retained root profile missing' unless @profiles.any? { |row| row[:pid] == @root[:pid] }
+
+    @profiles.each { |profile| verify_profile(profile, metadata) }
+    @profiles
+  end
+
+  private
+
+  def verify_profile(profile, metadata)
+    actual = metadata[profile[:pid]]
+    raise 'Browser profile/native identity changed or unavailable' unless actual && profile.all? { |key, value| actual[key] == value }
+    raise 'Browser child owner or group changed' unless actual[:uid] == Process.uid && actual[:pgid] == @root[:pgid]
+
+    verify_ancestry(profile, metadata)
+  end
+
+  def profile_identity(line)
+    fields = line.split
+    raise 'Malformed browser profile identity' unless RequestSecurityObservation.valid_identity?(fields, numbers: 2)
+
+    { pid: fields[0].to_i, ppid: fields[1].to_i, birth: fields.last(5).join(' ') }
+  end
+
+  def verify_ancestry(profile, metadata)
+    members = @profiles.map { |row| row.fetch(:pid) }
+    visited = []
+    pid = profile[:pid]
+    until pid == @root[:pid]
+      raise 'Browser child ancestry is foreign, cyclic or incomplete' unless members.include?(pid) && visited.none?(pid)
+
+      visited << pid
+      pid = metadata.fetch(pid).fetch(:ppid)
     end
   end
 end
@@ -561,6 +640,8 @@ class RequestSecurity
   end
 
   def record_browser_ownership
+    return captured_chrome_processes if @chrome_processes
+
     @browser_processes = owned_browser_processes
     raise 'Fresh owned Chrome profile process not observed' if @browser_processes.empty?
 
@@ -577,6 +658,24 @@ class RequestSecurity
     @driver_identity = @driver_process.identity
     @chrome_processes = identities.map { |identity| capture_chrome_process(identity.first.to_i) }
     raise 'Browser driver is not our direct child' unless @driver_identity.split[1] == Process.pid.to_s
+
+    capture_browser_anchors
+  end
+
+  def capture_browser_anchors
+    roots = @chrome_processes.select { |process| process.identity.split[1] == @driver_pid }
+    raise 'Browser captured root is ambiguous' unless roots.one?
+
+    anchors = [@driver_process, roots.first]
+    metadata = RequestSecurityObservation.metadata(anchors.map(&:pid))
+    anchors.each { |process| verify_browser_capture(process, metadata.fetch(process.pid)) }
+    @browser_anchors = metadata.freeze
+  end
+
+  def verify_browser_capture(process, actual)
+    identity = process.identity.split
+    expected = { pid: process.pid, ppid: identity[1].to_i, pgid: identity[2].to_i, uid: Process.uid, birth: identity.last(5).join(' ') }
+    raise 'Browser capture native identity changed' unless actual == expected
   end
 
   def capture_chrome_process(pid)
@@ -600,9 +699,37 @@ class RequestSecurity
 
   def captured_chrome_processes
     captured = Array(@chrome_processes)
-    unexpected = owned_browser_processes.map { |line| line.split.first.to_i } - captured.map(&:pid)
-    raise 'Uncaptured Chrome profile process; refusing escalation' unless unexpected.empty?
+    rows = owned_browser_processes
+    unexpected = rows.map { |line| line.split.first.to_i } - captured.map(&:pid)
+    return captured if unexpected.empty?
 
-    captured
+    metadata = validated_browser_profiles(rows)
+    later = unexpected.map { |pid| capture_later_browser(pid, metadata.fetch(pid)) }
+    @chrome_processes = captured + later
+  end
+
+  def capture_later_browser(pid, actual)
+    admitted = actual.merge(birth: actual.fetch(:birth).dup.freeze).freeze
+    process = RequestSecurityProcess.new(pid, owner_check: -> { later_browser_owned?(pid, admitted) })
+    verify_browser_capture(process, admitted)
+    process
+  end
+
+  def validated_browser_profiles(rows)
+    raise 'Missing retained browser anchors' unless @browser_anchors
+
+    pids = (rows.map { |line| line.split.first.to_i } + @browser_anchors.keys).uniq
+    metadata = RequestSecurityObservation.metadata(pids)
+    RequestSecurityBrowserInventory.new(@browser_anchors, rows).validate(metadata)
+    metadata
+  end
+
+  def later_browser_owned?(pid, admitted)
+    return false if RequestSecurityObservation.identity(pid.to_s).empty?
+
+    rows = owned_browser_processes
+    return false unless rows.any? { |line| line.split.first.to_i == pid }
+
+    validated_browser_profiles(rows)[pid] == admitted
   end
 end

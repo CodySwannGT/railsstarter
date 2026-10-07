@@ -121,6 +121,93 @@ RSpec.describe RequestSecurity do
   end
 
   context 'with harness prerequisites and teardown' do
+    def browser_inventory_fixture
+      birth = 'Wed Oct 7 03:52:44 2026'
+      details = {
+        100 => { pid: 100, ppid: Process.pid, pgid: 100, uid: Process.uid, birth: birth },
+        101 => { pid: 101, ppid: 100, pgid: 100, uid: Process.uid, birth: birth },
+        102 => { pid: 102, ppid: 101, pgid: 100, uid: Process.uid, birth: birth }
+      }
+      anchors = details.slice(100, 101)
+      rows = ["101 100 #{birth}", "102 101 #{birth}"]
+      [anchors, rows, details]
+    end
+
+    it('refuses a matching-profile child whose ancestry belongs to another owner') do
+      anchors, rows, details = browser_inventory_fixture
+      details[102][:ppid] = Process.pid
+      rows[1] = "102 #{Process.pid} #{details[102][:birth]}"
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details) }.to raise_error(/ancestry/)
+    end
+
+    it('refuses a reused captured root and a changed driver before child admission') do
+      anchors, rows, details = browser_inventory_fixture
+      anchors = Marshal.load(Marshal.dump(anchors))
+      details[101][:birth] = 'Wed Oct 7 03:52:45 2026'
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details) }.to raise_error(/anchor identity/)
+      details[101][:birth] = anchors[101][:birth]
+      details[100][:ppid] = 1
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details) }.to raise_error(/anchor identity/)
+    end
+
+    it('refuses missing metadata and malformed or duplicate profile identities') do
+      anchors, rows, details = browser_inventory_fixture
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details.except(102)) }.to raise_error(/identity/)
+      expect { RequestSecurityBrowserInventory.new(anchors, [rows.first, 'malformed']).validate(details) }.to raise_error(/profile/)
+      expect { RequestSecurityBrowserInventory.new(anchors, rows + [rows.last]).validate(details) }.to raise_error(/profile/)
+      expect { RequestSecurityBrowserInventory.new(anchors, [rows.last]).validate(details) }.to raise_error(/root profile/)
+    end
+
+    it('refuses a live foreign process copying the exact owned Chrome profile') do
+      harness = described_class.new
+      harness.start
+      profile = File.join(harness.instance_variable_get(:@scratch), 'chrome')
+      with_term_ignoring_child("--user-data-dir=#{profile}") do |child|
+        expect { harness.send(:captured_chrome_processes) }.to raise_error(/ancestry|owner/)
+        expect(child.signals).to eq([])
+        expect(child.absent?).to be(false)
+      end
+    ensure
+      harness&.stop
+    end
+
+    it('refuses foreign UID and process group even when profile and parent match') do
+      anchors, rows, details = browser_inventory_fixture
+      details[102][:uid] += 1
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details) }.to raise_error(/owner/)
+      details[102][:uid] = Process.uid
+      details[102][:pgid] += 1
+      expect { RequestSecurityBrowserInventory.new(anchors, rows).validate(details) }.to raise_error(/owner/)
+    end
+
+    def replacement_browser_anchors(actual)
+      driver = actual.merge(pid: Process.ppid, ppid: 0)
+      root = actual.merge(pid: actual[:ppid], ppid: Process.ppid)
+      { driver[:pid] => driver, root[:pid] => root }
+    end
+
+    def replacement_browser_inventory(harness, actual)
+      anchors = replacement_browser_anchors(actual)
+      replacement = actual.merge(birth: (Time.strptime(actual[:birth], '%a %b %e %H:%M:%S %Y') + 1).strftime('%a %b %-d %H:%M:%S %Y'))
+      details = anchors.merge(actual[:pid] => replacement)
+      rows = [anchors.fetch(actual[:ppid]), replacement].map { |row| "#{row[:pid]} #{row[:ppid]} #{row[:birth]}" }
+      harness.instance_variable_set(:@browser_anchors, anchors)
+      allow(harness).to receive(:owned_browser_processes).and_return(rows)
+      allow(RequestSecurityObservation).to receive(:metadata).and_return(details)
+    end
+
+    it('refuses a coherent replacement birth after a late child was captured') do
+      harness = described_class.new
+      with_term_ignoring_child do |child|
+        actual = RequestSecurityObservation.metadata([child.pid]).fetch(child.pid)
+        captured = harness.send(:capture_later_browser, child.pid, actual)
+        replacement_browser_inventory(harness, actual)
+        expect(captured.instance_variable_get(:@owner_check).call).to be(false)
+        expect(captured.signals).to eq([])
+        expect(child.absent?).to be(false)
+      end
+    end
+
     def executable(directory, name, mode = 0o700)
       path = File.join(directory, name)
       File.write(path, '#!/bin/sh\nexit 0\n', mode: 'wx', perm: mode)
@@ -336,6 +423,68 @@ RSpec.describe RequestSecurity do
       harness&.stop unless harness&.cleanup_record
       resume&.kill
       resume&.join(1)
+    end
+
+    def later_cross_site_child(harness)
+      harness.start
+      harness.page.visit('/up')
+      harness.send(:record_browser_ownership)
+      captured, root = captured_browser_root(harness)
+      browser = harness.page.driver.browser
+      browser.switch_to.new_window(:tab)
+      browser.navigate.to("#{harness.origin.sub('127.0.0.1', 'localhost')}/up")
+      Selenium::WebDriver::Wait.new(timeout: 10).until { browser.execute_script('return location.hostname === "localhost" && document.readyState === "complete"') }
+      verify_later_children(harness, captured, root)
+      root
+    end
+
+    def captured_browser_root(harness)
+      captured = harness.instance_variable_get(:@chrome_processes)
+      driver_pid = harness.instance_variable_get(:@driver_pid)
+      root = captured.find { |process| process.identity.split[1] == driver_pid }
+      raise 'Cross-site fixture has no captured root' unless root
+
+      [captured, root]
+    end
+
+    def verify_later_children(harness, captured, root)
+      rows = harness.send(:owned_browser_processes)
+      later = rows.reject { |row| captured.map(&:pid).include?(row.split.first.to_i) }
+      raise 'No genuine later Chrome child observed' if later.empty?
+      raise 'Captured root changed before suspension' unless RequestSecurityObservation.identity(root.pid.to_s).split == root.identity.split
+
+      later.each { |row| verify_later_identity(row, root) }
+    end
+
+    def verify_later_identity(row, root)
+      fields = row.split
+      identity = RequestSecurityObservation.identity(fields.first).split
+      raise 'Later Chrome ancestry identity disagrees' unless identity.values_at(0, 1, 3, 4, 5, 6, 7) == fields && fields[1] == root.pid.to_s
+      raise 'Later Chrome process group disagrees' unless identity[2] == root.identity.split[2]
+    end
+
+    def finish_cross_site_fixture(harness, chrome, resume)
+      resume&.kill
+      resume&.join(1)
+      chrome.send(:signal, 'CONT') if chrome&.signals&.include?('STOP') && chrome.signals.none?('CONT')
+      harness&.stop unless harness&.cleanup_record&.dig(:scratch_removed)
+    end
+
+    it('cleans a verified later cross-site Chrome child while its captured root is suspended') do
+      harness = described_class.new
+      chrome = later_cross_site_child(harness)
+      chrome.send(:signal, 'STOP')
+      resume = Thread.new do
+        chrome.send(:signal, 'CONT') if RequestSecurityDeadline.wait(15) { chrome.signals.include?('TERM') }
+      end
+
+      expect { harness.stop }.not_to raise_error
+      expect(resume.join(1)).to be(resume)
+      expect(chrome.signals).to eq(%w[STOP TERM CONT])
+      expect(harness.cleanup_record).to include(scratch_removed: true, driver_absent_after_quit: true,
+                                                server_absent: true, quit_thread_absent: true, errors: [])
+    ensure
+      finish_cross_site_fixture(harness, chrome, resume)
     end
   end
 end
