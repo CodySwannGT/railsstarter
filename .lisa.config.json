@@ -35,6 +35,40 @@
         "shipped": "prd-shipped",
         "sentinel": "prd-intake-feedback"
       }
+    },
+    "rulesets": {
+      "requiredChecks": {
+        "quality checks": [
+          {
+            "context": "Quality Checks / Lint",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / Code Quality",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / Security",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / 🔗 Work-Item Traceability",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / History Secrets / 🔐 Introduced History Credential Leakage",
+            "integration_id": 15368
+          },
+          {
+            "context": "Behavior Checks / 🧾 BDD Behavior Contract",
+            "integration_id": 15368
+          },
+          {
+            "context": "recurring-worker-runtime",
+            "integration_id": 15368
+          }
+        ]
+      }
     }
   },
   "gates": {
