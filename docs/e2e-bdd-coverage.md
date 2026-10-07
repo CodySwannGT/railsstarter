@@ -44,7 +44,7 @@ A waiver is a dated IOU with a named owner and a retiring ticket. It is never co
 
 Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.
 
-32 tests discovered under `spec/browser`, `spec/fixtures/browser`; 32 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
+40 tests discovered under `spec/browser`, `spec/fixtures/browser`; 40 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
 
 | Runner | File | Test not named by the contract |
 |---|---|---|
@@ -56,6 +56,14 @@ Every row here is a standing claim that a real test proves nothing about product
 
 | File | Test | Reason it aligns to no product behavior |
 |---|---|---|
+| `spec/browser/browser_startup_diagnostics_spec.rb` | bounds retained startup output and preserves private file and directory permissions | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | prints only bounded native errors without protocol or credential-shaped lines | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | refuses a symlinked scratch directory | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | refuses an existing log without truncating its contents | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | refuses replaced log identity without retaining foreign bytes | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | retains an empty startup log when failure precedes driver execution | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | retains startup failure diagnostics through a private verbose IO without replacing the exception | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
+| `spec/browser/browser_startup_diagnostics_spec.rb` | retains the original exception when the diagnostic destination is unsafe | Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior. |
 | `spec/browser/request_security_spec.rb` | accepts positively reaped exit during profile validation without sending another signal | Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal. |
 | `spec/browser/request_security_spec.rb` | bounds a hung quit, records the failure and reports actual scratch cleanup | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | bounds TERM refusal, escalates only its captured child and proves reaping and absence | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |

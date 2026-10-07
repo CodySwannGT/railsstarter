@@ -49,11 +49,51 @@
       "spec/browser",
       "spec/fixtures/browser"
     ],
-    "discovered": 32,
-    "disclosed": 32,
+    "discovered": 40,
+    "disclosed": 40,
     "dynamicTitles": 0,
     "undisclosed": [],
     "exclusions": [
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "bounds retained startup output and preserves private file and directory permissions",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "prints only bounded native errors without protocol or credential-shaped lines",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "refuses a symlinked scratch directory",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "refuses an existing log without truncating its contents",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "refuses replaced log identity without retaining foreign bytes",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "retains an empty startup log when failure precedes driver execution",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "retains startup failure diagnostics through a private verbose IO without replacing the exception",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "retains the original exception when the diagnostic destination is unsafe",
+        "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
       {
         "file": "spec/browser/request_security_spec.rb",
         "evidence": "accepts positively reaped exit during profile validation without sending another signal",

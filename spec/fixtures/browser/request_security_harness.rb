@@ -10,6 +10,7 @@ require 'net/http'
 require 'securerandom'
 require 'rbconfig'
 require 'timeout'
+require_relative 'startup_diagnostics'
 require 'time'
 
 # Public caller prerequisites shared by supported macOS and Linux runners.
@@ -380,6 +381,7 @@ module RequestSecurityCleanup
     attempt_cleanup(:server) { stop_server }
     attempt_cleanup(:quit_thread) { finish_quit_thread }
     @log&.close
+    @startup_diagnostics&.close
     attempt_cleanup(:absence) { cleanup }
     persist_cleanup
     raise @cleanup_errors.join('; ') unless @cleanup_errors.empty?
@@ -628,7 +630,8 @@ class RequestSecurity
     options.add_argument('--window-size=800,900')
     options.add_argument("--user-data-dir=#{File.join(@scratch, 'chrome')}")
     options.add_option('goog:loggingPrefs', browser: 'ALL', performance: 'ALL')
-    service = Selenium::WebDriver::Service.chrome(path: @driver_binary)
+    @startup_diagnostics = BrowserStartupDiagnostics.new(@scratch, @token)
+    service = @startup_diagnostics.service(@driver_binary)
     driver_name = :"request_security_#{@token}"
     Capybara.register_driver(driver_name) { |app| Capybara::Selenium::Driver.new(app, browser: :chrome, options: options, service: service) }
     @page = Capybara::Session.new(driver_name)
@@ -637,6 +640,9 @@ class RequestSecurity
     @page.driver.browser
     record_browser_ownership
     instrument_browser
+  rescue StandardError => error
+    @startup_diagnostics&.retain(error, browser: @chrome_binary, driver: @driver_binary)
+    raise
   end
 
   def record_browser_ownership
