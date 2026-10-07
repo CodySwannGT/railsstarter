@@ -350,6 +350,10 @@ module SmokeConsumer
       ids
     end
 
+    protected
+
+    attr_reader :ownership, :command
+
     private
 
     # List current resource identifiers matching the exclusive ownership label.
@@ -378,12 +382,80 @@ module SmokeConsumer
     end
   end
 
+  # Verify every immutable identity before a bounded batch removal to avoid repeated Docker startup.
+  class ImmutableDockerCollection < DockerCollection
+    # Remove a fully verified inventory and independently prove fresh collection absence.
+    # @return [Array<String>]
+    def remove_all
+      ids = inventory
+      remove_batch(ids) unless ids.empty?
+      verify_absent
+      ids
+    end
+
+    private
+
+    # Reject ambiguous or abbreviated inventories before any inspection or mutation.
+    # @return [Array<String>]
+    # @raise [Error] inventory does not contain unique full immutable Docker identities
+    def inventory
+      ids = super
+      valid = ids.uniq == ids && ids.all? { |identifier| identifier.match?(/\A[0-9a-f]{64}\z/) }
+      raise Error, 'Docker inventory requires unique full immutable identities' unless valid
+
+      ids
+    end
+
+    # Verify the complete inspected set before deleting any of its immutable identities.
+    # @param ids [Array<String>] freshly inventoried full immutable Docker identities
+    # @return [void]
+    def remove_batch(ids)
+      type = self.class
+      inspected(ids).each { |object| type::RESOURCE.new(object, ownership).verify }
+      command.call('docker', type::KIND, *type::REMOVE, *ids, timeout: 10)
+    end
+
+    # Require an exact one-to-one immutable identity match from kind-specific inspection.
+    # @param ids [Array<String>] freshly inventoried full immutable Docker identities
+    # @return [Array<Hash>]
+    # @raise [Error] inspection is malformed or differs from the complete inventory
+    def inspected(ids)
+      text, = command.call('docker', self.class::KIND, 'inspect', *ids, timeout: 10)
+      objects = parse_inspection(text)
+      raise Error, 'Docker inspection does not match inventory' unless matching_inspection?(objects, ids)
+
+      objects
+    end
+
+    # Preserve a malformed JSON response as a failed inventory comparison.
+    # @param text [String] native kind-specific inspection output
+    # @return [Object, nil] parsed response, or a malformed-response sentinel
+    def parse_inspection(text)
+      JSON.parse(text)
+    rescue JSON::ParserError
+      nil
+    end
+
+    # Compare actual Id fields only; names cannot substitute for immutable removal authority.
+    # @param objects [Object] parsed native inspection response
+    # @param ids [Array<String>] complete immutable inventory
+    # @return [Boolean]
+    def matching_inspection?(objects, ids)
+      return false unless objects.is_a?(Array) && objects.all?(Hash)
+
+      inspected_ids = objects.map { |object| object.fetch('Id', nil) }
+      count = ids.length
+      inspected_ids.length == count && inspected_ids.uniq.length == count &&
+        (inspected_ids - ids).empty?
+    end
+  end
+
   # Lists and removes only freshly verified containers carrying the ownership label.
-  class ContainerCollection < DockerCollection
+  class ContainerCollection < ImmutableDockerCollection
     # Docker resource kind used for live inspection and removal.
     KIND = 'container'
     # Docker argv prefix for listing resources with the exclusive token-label filter.
-    LIST = %w[ps --all --quiet].freeze
+    LIST = %w[ps --all --quiet --no-trunc].freeze
     # Docker argv prefix for removing a freshly inspected and verified resource.
     REMOVE = %w[rm --force].freeze
     # ContainerResource validator required before invoking removal.
@@ -403,11 +475,11 @@ module SmokeConsumer
   end
 
   # Lists and removes only freshly verified networks carrying the ownership label.
-  class NetworkCollection < DockerCollection
+  class NetworkCollection < ImmutableDockerCollection
     # Docker resource kind used for live inspection and removal.
     KIND = 'network'
     # Docker argv prefix for listing resources with the exclusive token-label filter.
-    LIST = %w[network ls --quiet].freeze
+    LIST = %w[network ls --quiet --no-trunc].freeze
     # Docker argv prefix for removing a freshly inspected and verified resource.
     REMOVE = ['rm'].freeze
     # NetworkResource validator required before invoking removal.

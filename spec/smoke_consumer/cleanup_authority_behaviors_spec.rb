@@ -33,23 +33,24 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
                    end
           "#{project}#{suffix}"
         end
+        let(:identifier) { kind == 'volume' ? 'fixture-resource-id' : 'a' * 64 }
         let(:object) do
-          common = { 'Id' => 'fixture-resource-id', 'Name' => name }
+          common = { 'Id' => identifier, 'Name' => name }
           kind == 'container' ? common.merge('Config' => { 'Labels' => labels }) : common.merge('Labels' => labels)
         end
         let(:collection) { collection_type.new(ownership, command) }
         let(:list_arguments) { ['docker', *collection_type::LIST, '--filter', "label=#{SmokeConsumer::LABEL}=#{ownership.token}"] }
-        let(:remove_arguments) { ['docker', kind, *collection_type::REMOVE, 'fixture-resource-id'] }
+        let(:remove_arguments) { ['docker', kind, *collection_type::REMOVE, identifier] }
 
         before do
-          ownership.register_resource(kind, 'fixture-resource-id', name, project)
-          allow(command).to receive(:call).with(*list_arguments, timeout: 10).and_return(["fixture-resource-id\n", nil], ['', nil])
-          allow(command).to receive(:call).with('docker', kind, 'inspect', 'fixture-resource-id', timeout: 10) { [JSON.generate([object]), nil] }
+          ownership.register_resource(kind, identifier, name, project)
+          allow(command).to receive(:call).with(*list_arguments, timeout: 10).and_return(["#{identifier}\n", nil], ['', nil])
+          allow(command).to receive(:call).with('docker', kind, 'inspect', identifier, timeout: 10) { [JSON.generate([object]), nil] }
           allow(command).to receive(:call).with(*remove_arguments, timeout: 10).and_return(['', nil])
         end
 
         it 'removes the registered identity and requires a fresh empty inventory' do
-          expect(collection.remove_all).to eq(['fixture-resource-id'])
+          expect(collection.remove_all).to eq([identifier])
           expect(command).to have_received(:call).with(*remove_arguments, timeout: 10).once
           expect(command).to have_received(:call).with(*list_arguments, timeout: 10).twice
         end
@@ -66,13 +67,13 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
             reads += 1
             raise SmokeConsumer::Error, 'daemon unavailable' if reads > 1
 
-            ["fixture-resource-id\n", nil]
+            ["#{identifier}\n", nil]
           end
           expect { collection.remove_all }.to raise_error(SmokeConsumer::Error, 'daemon unavailable')
         end
 
         it 'rejects resources that remain after a successful remove response' do
-          allow(command).to receive(:call).with(*list_arguments, timeout: 10).and_return(["fixture-resource-id\n", nil])
+          allow(command).to receive(:call).with(*list_arguments, timeout: 10).and_return(["#{identifier}\n", nil])
           expect { collection.remove_all }.to raise_error(SmokeConsumer::Error, "Owned #{kind} remains")
         end
       end
