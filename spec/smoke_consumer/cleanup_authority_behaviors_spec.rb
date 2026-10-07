@@ -437,9 +437,23 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       SmokeConsumer::DirectChild.new(pid).terminate if pid
     end
 
+    def finish_with_failure_diagnostic(pid)
+      described_class.finish(ownership, pid)
+    rescue SmokeConsumer::Error
+      warn cleanup_failure_diagnostic
+      raise
+    end
+
+    def cleanup_failure_diagnostic
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      JSON.generate(receipt.slice('failure'))
+    rescue SystemCallError, JSON::ParserError
+      JSON.generate('failure_receipt_unavailable' => true)
+    end
+
     it 'arms a genuine separate authority and reaps it after empty owned cleanup' do
       with_cleanup_authority do |pid|
-        receipt = described_class.finish(ownership, pid)
+        receipt = finish_with_failure_diagnostic(pid)
         expect(receipt.fetch('clean')).to be(true)
         expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
       end
