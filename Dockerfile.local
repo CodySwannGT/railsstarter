@@ -47,10 +47,16 @@ RUN apt-get update -qq && \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER rails:rails
+# Match the checkout owner so private bind mounts remain readable and writable.
+# Defaults retain the existing local identity; an existing host GID is reused.
+ARG LOCAL_UID=1000
+ARG LOCAL_GID=1000
+RUN case "$LOCAL_UID:$LOCAL_GID" in *[!0-9:]*|:*|*:) exit 1 ;; esac && \
+    test "$LOCAL_UID" -gt 0 && test "$LOCAL_GID" -gt 0 && \
+    (getent group "$LOCAL_GID" >/dev/null || groupadd --gid "$LOCAL_GID" rails) && \
+    useradd rails --uid "$LOCAL_UID" --gid "$LOCAL_GID" --no-log-init --create-home --shell /bin/bash && \
+    chown -R "$LOCAL_UID:$LOCAL_GID" db log storage tmp
+USER rails
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

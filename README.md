@@ -83,9 +83,10 @@ Compose reads `.env`; host Rails does not. Export matching base/user and TCP set
 ```sh
 export DATABASE_NAME=acme_portal DATABASE_USER=root DATABASE_PORT=3306
 export PRIMARY_DB_HOST=127.0.0.1 AWS_BOOTSTRAP_ENABLED=false RAILS_ENV=development
+export LOCAL_UID=$(id -u) LOCAL_GID=$(id -g)
 ```
 
-Inside Compose use `db`; on the host use `127.0.0.1`/3306. `localhost` can select a Unix socket Docker does not expose. Resolve private passwords/keys separately without printing them or sourcing an arbitrary `.env` as shell code. A non-root `DATABASE_USER` must actually exist and have grants to create/use all development and test databases; changing `.env` does not create that user.
+The shared local image runs as your non-root UID/GID so it can traverse a private checkout and write its runtime files through the bind mount. Rebuild it after changing these values. Inside Compose use `db`; on the host use `127.0.0.1`/3306. `localhost` can select a Unix socket Docker does not expose. Resolve private passwords/keys separately without printing them or sourcing an arbitrary `.env` as shell code. A non-root `DATABASE_USER` must actually exist and have grants to create/use all development and test databases; changing `.env` does not create that user.
 
 ### 5. Install dependencies, hooks and databases
 

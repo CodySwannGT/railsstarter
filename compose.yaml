@@ -4,6 +4,12 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.local
+      args:
+        LOCAL_UID: "${LOCAL_UID:-1000}"
+        LOCAL_GID: "${LOCAL_GID:-1000}"
+      labels:
+        com.docker.compose.project: "${COMPOSE_PROJECT_NAME:-railsstarter}"
+        com.docker.compose.service: web
     command: >
       bash -c "rm -f tmp/pids/server.pid && ./bin/thrust ./bin/rails server -p 3000 -b '0.0.0.0'"
     volumes:
