@@ -109,13 +109,19 @@ module SmokeConsumer
       @limit = Deadline.new(10)
     end
 
-    # Freeze each observed root under the shared cleanup deadline.
+    # One fresh census skips positively absent roots; it never authorizes a signal.
+    # Validate every group first, then retain each present root's independent signal checks.
     # @param roots [Array<Hash>] owned observed root identities
     # @return [void]
     def freeze_roots(roots)
+      census = ProcessCensus.observe
       roots.each do |row|
         @limit.check('Process tree deadline exceeded')
-        freeze_root(Ownership.process_identity(row))
+        identity = Ownership.process_identity(row)
+        GroupAuthority.new(identity).validate if identity.key?('pgid')
+        next if census.process(identity.fetch('pid')).absent?
+
+        freeze_root(identity)
       end
     end
 
