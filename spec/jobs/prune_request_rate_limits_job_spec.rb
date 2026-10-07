@@ -11,7 +11,7 @@ RSpec.describe 'PruneRequestRateLimitsJob' do
     harness.start
     key = "#{harness.token}/active"
     harness.command('increment', 'REQUEST_RATE_KEY' => key, 'REQUEST_RATE_OPERATIONS' => '3')
-    result = harness.command('housekeeping', 'REQUEST_RATE_KEY' => key)
+    result = harness.command('housekeeping', 'REQUEST_RATE_KEY' => key, 'REQUEST_RATE_CACHE_ESTIMATE' => 'true')
     expect(result.fetch('pressure')).to eq('class' => 'SolidCache::Store', 'entries_before' => 10, 'entries_after' => 0)
     expect(result.fetch('after')).to eq(result.fetch('before'))
     expect(result.fetch('after').fetch('count')).to eq(3)

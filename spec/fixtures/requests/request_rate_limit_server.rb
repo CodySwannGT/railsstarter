@@ -165,11 +165,18 @@ class RateLimitCounterCommands
 
   def self.cache_pressure
     SolidCache::Record.connects_to(database: { writing: :cache })
-    general_cache = SolidCache::Store.new
-    10.times { |number| general_cache.write("pressure/#{number}", 'x' * 1024) }
-    entries_before = SolidCache::Entry.count
+    SolidCache::Entry.estimated_size if ENV['REQUEST_RATE_CACHE_ESTIMATE'] == 'true'
+    # Count this fixture's values, excluding Solid Cache's internal size estimates.
+    # Native transient SQL failures must raise rather than look like cache absence.
+    general_cache = SolidCache::Store.new(error_handler: ->(exception:, **) { raise exception })
+    keys = Array.new(10) { |number| "pressure/#{number}" }
+    keys.each { |key| general_cache.write(key, 'x' * 1024) }
+    values = general_cache.read_multi(*keys)
+    raise 'Unexpected cache pressure payload' unless values.values.all?('x' * 1024)
+
+    entries_before = values.length
     general_cache.clear
-    { class: general_cache.class.name, entries_before: entries_before, entries_after: SolidCache::Entry.count }
+    { class: general_cache.class.name, entries_before: entries_before, entries_after: general_cache.read_multi(*keys).length }
   end
 end
 
