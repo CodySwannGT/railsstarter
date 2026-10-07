@@ -83,31 +83,63 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
   context 'with an image protocol fixture' do
     let(:tag) { "#{project}-app:local" }
     let(:image) { SmokeConsumer::OwnedImage.new(ownership, command, project) }
-    let(:object) { { 'Id' => 'fixture-image-id', 'Config' => { 'Labels' => labels } } }
+    let(:identifier) { "sha256:#{'a' * 64}" }
+    let(:object) { { 'Id' => identifier, 'RepoTags' => [tag], 'RepoDigests' => [], 'Config' => { 'Labels' => labels } } }
     let(:success) { instance_double(Process::Status, success?: true) }
-    let(:failure) { instance_double(Process::Status, success?: false) }
+    let(:failure) { instance_double(Process::Status, success?: false, exitstatus: 1) }
 
-    before do
-      ownership.register_resource('image', 'fixture-image-id', tag, project)
-      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10)
-                                         .and_return([JSON.generate([object]), success], ['No such image', failure])
-      allow(command).to receive(:call).with('docker', 'image', 'rm', tag, timeout: 10).and_return(['', nil])
+    def image_absence(target)
+      "[]\nError response from daemon: No such image: #{target}\n"
     end
 
-    it 'removes only the owned tag and independently observes its absence' do
+    before do |example|
+      ownership.register_resource('image', identifier, tag, project) unless example.metadata[:unregistered_image]
+      inspections = 0
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10) do
+        inspections += 1
+        inspections == 1 ? [JSON.generate([object]), success] : [image_absence(tag), failure]
+      end
+      allow(command).to receive(:call).with('docker', 'image', 'rm', tag, timeout: 10).and_return(['', nil])
+      allow(command).to receive(:call).with('docker', 'image', 'rm', '--no-prune', identifier, timeout: 10).and_return(['', nil])
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10)
+                                         .and_return([image_absence(identifier), failure])
+    end
+
+    it 'removes the immutable image without pruning parents and observes tag and ID absence' do
       expect { image.remove }.not_to raise_error
-      expect(command).to have_received(:call).with('docker', 'image', 'rm', tag, timeout: 10).once
-      expect(command).to have_received(:capture).twice
+      expect(command).to have_received(:call).with('docker', 'image', 'rm', '--no-prune', identifier, timeout: 10).once
+      expect(command).to have_received(:capture).with('docker', 'image', 'inspect', tag, timeout: 10).twice
+      expect(command).to have_received(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10).once
     end
 
     it 'accepts explicit absence without issuing a remove command' do
-      allow(command).to receive(:capture).and_return(['No such image', failure])
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10)
+                                         .and_return([image_absence(tag), failure])
       expect { image.remove }.not_to raise_error
+      expect(command).not_to have_received(:call)
+      expect(command).to have_received(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10).once
+    end
+
+    it 'refuses initial tag absence when the registered immutable image remains' do
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10)
+                                         .and_return([image_absence(tag), failure])
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10)
+                                         .and_return([JSON.generate([object]), success])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image ID remains or inventory failed')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses initial tag absence when registered image inventory is unknown' do
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10)
+                                         .and_return([image_absence(tag), failure])
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10)
+                                         .and_return(['daemon unavailable', failure])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Image inventory unavailable')
       expect(command).not_to have_received(:call)
     end
 
     it 'preserves an image when its registered immutable identity changes' do
-      object['Id'] = 'substituted-image-id'
+      object['Id'] = "sha256:#{'b' * 64}"
       allow(command).to receive(:capture).and_return([JSON.generate([object]), success])
       expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Registered image identity changed')
       expect(command).not_to have_received(:call)
@@ -129,6 +161,95 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
     it 'requires disappearance after removing the owned tag' do
       allow(command).to receive(:capture).and_return([JSON.generate([object]), success])
       expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image tag remains or inventory failed')
+    end
+
+    it 'preserves an image with another tag alias' do
+      object['RepoTags'] << 'foreign-app:local'
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image aliases are not exclusively owned')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'preserves an image with a foreign digest alias' do
+      object['RepoDigests'] << "foreign-app@sha256:#{'b' * 64}"
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image aliases are not exclusively owned')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses duplicate owned digest aliases' do
+      digest = "#{tag.delete_suffix(':local')}@sha256:#{'b' * 64}"
+      object['RepoDigests'] = [digest, digest]
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image aliases are not exclusively owned')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses malformed alias metadata instead of removing the image' do
+      object['RepoDigests'] = nil
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image aliases are not exclusively owned')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'requires the project to have been allocated before observing or removing its image' do
+      unallocated = SmokeConsumer::OwnedImage.new(ownership, command, "smoke-#{ownership.token}-unallocated")
+      allow(command).to receive(:capture).and_return([JSON.generate([object]), success], [image_absence(tag), failure])
+      allow(command).to receive(:call).and_return(['', nil])
+      expect { unallocated.remove }.to raise_error(SmokeConsumer::Error, 'Image outside registered project')
+      expect(command).not_to have_received(:call)
+      expect(command).not_to have_received(:capture)
+    end
+
+    it 'cleans a positively owned built image when build failure precedes ID registration', :unregistered_image do
+      expect { image.remove }.not_to raise_error
+      expect(command).to have_received(:call).with('docker', 'image', 'rm', '--no-prune', identifier, timeout: 10).once
+      expect(ownership.read.fetch('resources')).to be_empty
+    end
+
+    it 'refuses a malformed native inspection without selecting its first object' do
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', tag, timeout: 10)
+                                         .and_return([JSON.generate([object, object]), success])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Malformed image inventory')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses a noncanonical image ID before any removal', :unregistered_image do
+      object['Id'] = 'short-image-id'
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Invalid immutable app image ID')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses duplicate registered identities instead of choosing the first one' do
+      ownership.register_resource('image', identifier, tag, project)
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Registered image identity changed')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'refuses a present registration with a missing ID', :unregistered_image do
+      ownership.register_resource('image', nil, tag, project)
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Registered image identity changed')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'does not accept an absence diagnostic naming another image' do
+      allow(command).to receive(:capture).and_return([image_absence('foreign-app:local'), failure])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Image inventory unavailable')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'does not accept absence mixed with another daemon failure' do
+      allow(command).to receive(:capture).and_return(["#{image_absence(tag)}daemon unavailable\n", failure])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Image inventory unavailable')
+      expect(command).not_to have_received(:call)
+    end
+
+    it 'requires a fresh ID-absence check even when the tag disappeared' do
+      allow(command).to receive(:capture).with('docker', 'image', 'inspect', identifier, timeout: 10)
+                                         .and_return([JSON.generate([object]), success])
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'App image ID remains or inventory failed')
+    end
+
+    it 'retains an actual removal deadline failure even if a later probe could find absence' do
+      allow(command).to receive(:call).and_raise(SmokeConsumer::Error, 'Operation deadline exceeded')
+      expect { image.remove }.to raise_error(SmokeConsumer::Error, 'Operation deadline exceeded')
+      expect(command).to have_received(:capture).once
     end
   end
 
@@ -294,7 +415,10 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
     it 'acknowledges cleanup only after empty Docker inventories and actual directory removal' do
       Dir.mkdir(consumer_path, 0o700)
       allow(SmokeConsumer::Command).to receive(:new).with(timeout: 60).and_return(command)
-      allow(command).to receive_messages(call: ['', nil], capture: ['No such image', instance_double(Process::Status, success?: false)])
+      allow(command).to receive(:call).and_return(['', nil])
+      allow(command).to receive(:capture) do |_executable, _kind, _operation, target, **_options|
+        ["[]\nError response from daemon: No such image: #{target}\n", instance_double(Process::Status, success?: false, exitstatus: 1)]
+      end
       ownership.request_cleanup
       described_class.new(ownership).watch
       receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))

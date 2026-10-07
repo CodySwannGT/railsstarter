@@ -492,7 +492,98 @@ module SmokeConsumer
     RESOURCE = NetworkResource
   end
 
-  # Removes the project image tag only after verifying ownership and any recorded image ID.
+  # Authorizes one immutable image without adopting foreign aliases or losing failed-build cleanup.
+  class OwnedImageIdentity
+    # Retain the exclusive owner and its derived project/tag intent.
+    # @param ownership [Ownership] validated private ownership scope
+    # @param project [String] preregistered token-bound project
+    # @param tag [String] derived local app-image tag
+    def initialize(ownership, project, tag)
+      @ownership = ownership
+      @project = project
+      @tag = tag
+    end
+
+    # Revalidate allocation before inventory or destructive work.
+    # @return [Hash] current validated ownership manifest
+    # @raise [Error] project was not allocated by this owner
+    def manifest
+      data = @ownership.read
+      raise Error, 'Image outside registered project' unless data.fetch('projects').include?(@project)
+
+      data
+    end
+
+    # Return the canonical fresh ID only after all ownership and alias checks.
+    # A build may fail before ID registration; the preregistered project still owns its labelled image.
+    # @param object [Hash] freshly observed single Docker image
+    # @return [String] full immutable image ID
+    def verify(object)
+      identifier = object['Id']
+      raise Error, 'Invalid immutable app image ID' unless identifier.is_a?(String) && identifier.match?(/\Asha256:[a-f0-9]{64}\z/)
+
+      verify_label(object)
+      registered = registered_identifier
+      raise Error, 'Registered image identity changed' if registered && registered != identifier
+
+      verify_aliases(object)
+      identifier
+    end
+
+    # Validate any registration before an absent tag can be considered cleaned.
+    # @return [String, nil] canonical registered ID, or none for an unfinished build
+    # @raise [Error] registration is duplicated, malformed or bound to another project
+    def registered_identifier
+      entry = registered_entry(manifest)
+      return unless entry
+
+      identifier = entry['id']
+      valid = identifier.is_a?(String) && identifier.match?(/\Asha256:[a-f0-9]{64}\z/)
+      raise Error, 'Registered image identity changed' unless valid && entry['project'] == @project
+
+      identifier
+    end
+
+    private
+
+    # Require a typed actual token label, never a name-based ownership guess.
+    # @param object [Hash] fresh Docker image object
+    # @return [void]
+    def verify_label(object)
+      config = object['Config']
+      labels = config.is_a?(Hash) ? config['Labels'] : nil
+      raise Error, 'Unowned app image' unless labels.is_a?(Hash) && labels[LABEL] == @ownership.token
+    end
+
+    # An existing registration must be unique and match both ID and project.
+    # @param data [Hash] current validated manifest
+    # @return [Hash, nil] unique registration, or none when the build failed before registration
+    def registered_entry(data)
+      entries = data.fetch('resources').select { |entry| entry.values_at('kind', 'name') == ['image', @tag] }
+      case entries
+      in []
+        nil
+      in [Hash => entry]
+        entry
+      else
+        raise Error, 'Registered image identity changed'
+      end
+    end
+
+    # Refuse shared tags and foreign or malformed repository-digest references.
+    # @param object [Hash] fresh Docker image object
+    # @return [void]
+    def verify_aliases(object)
+      digests = object['RepoDigests']
+      repository = @tag.delete_suffix(':local')
+      own_digests = digests.is_a?(Array) && digests.uniq == digests && digests.all? do |digest|
+        digest.is_a?(String) && digest.match?(/\A#{Regexp.escape(repository)}@sha256:[a-f0-9]{64}\z/)
+      end
+      raise Error, 'App image aliases are not exclusively owned' unless object['RepoTags'] == [@tag] && own_digests
+    end
+  end
+
+  # Removes only a freshly authorized immutable image, preserving untagged parents.
   class OwnedImage
     # Derive the local image tag from the registered project and retain cleanup authority.
     # @param ownership [Ownership] exclusive validated ownership scope
@@ -501,49 +592,89 @@ module SmokeConsumer
     def initialize(ownership, command, project)
       @ownership = ownership
       @command = command
+      @project = project
       @tag = "#{project}-app:local"
     end
 
-    # Remove an existing owned image tag only after checking labels/ID and then verify absence.
+    # Remove the exact inspected image without force/pruning, then observe tag and ID absence.
     # @return [void]
     def remove
+      identity = OwnedImageIdentity.new(@ownership, @project, @tag)
+      registered = identity.registered_identifier
       object = inspect_image
-      return unless object
+      unless object
+        verify_id_absent(registered) if registered
+        return
+      end
 
-      verify(object)
-      @command.call('docker', 'image', 'rm', @tag, timeout: 10)
-      verify_absent
+      identifier = identity.verify(object)
+      @command.call('docker', 'image', 'rm', '--no-prune', identifier, timeout: 10)
+      verify_absent(identifier)
     end
 
     private
 
     # Return the actual inspected image or nil only for Docker's explicit no-such-image response.
+    # @param target [String] exact tag or immutable image ID to inspect
     # @return [Hash, nil]
     # @raise [Error] Docker failure is not explicit image absence
-    def inspect_image
-      text, status = @command.capture('docker', 'image', 'inspect', @tag, timeout: 10)
-      return JSON.parse(text).fetch(0) if status.success?
-      return nil if text.include?('No such image')
+    def inspect_image(target = @tag)
+      text, status = @command.capture('docker', 'image', 'inspect', target, timeout: 10)
+      return parse_image(text) if status.success?
+      return nil if explicit_absence?(text, status, target)
 
       raise Error, 'Image inventory unavailable'
     end
 
-    # Require the image token label and any recorded image ID to match ownership.
-    # @param object [Hash] fresh Docker inspection object
-    # @return [void]
-    # @raise [Error] image label or registered ID does not match
-    def verify(object)
-      raise Error, 'Unowned app image' unless object.fetch('Config').fetch('Labels', {})[LABEL] == @ownership.token
-
-      registered = @ownership.read.fetch('resources').find { |entry| entry.values_at('kind', 'name') == ['image', @tag] }
-      raise Error, 'Registered image identity changed' if registered && registered['id'] != object.fetch('Id')
+    # Accept only the native missing-target response, without other diagnostic lines.
+    # @param text [String] combined native stdout/stderr
+    # @param status [CommandExit] actual command exit observation
+    # @param target [String] exact inspected tag or ID
+    # @return [Boolean] positive native absence
+    def explicit_absence?(text, status, target)
+      expected = ['[]', "Error response from daemon: No such image: #{target}"]
+      lines = text.lines.map(&:strip).reject(&:empty?)
+      status.exitstatus == 1 && lines.sort == expected.sort
     end
 
-    # Require a fresh image inspection to report absence.
+    # A one-target native query cannot legitimately return two objects or an untyped value.
+    # @param text [String] successful Docker inspection output
+    # @return [Hash] exactly one image object
+    # @raise [Error] malformed JSON or unexpected object count/type
+    def parse_image(text)
+      case decode_image(text)
+      in [Hash => object]
+        object
+      else
+        raise Error, 'Malformed image inventory'
+      end
+    end
+
+    # Decode native JSON without converting a parser failure into absence.
+    # @param text [String] successful Docker inspection output
+    # @return [Object] parsed response, validated by parse_image
+    def decode_image(text)
+      JSON.parse(text)
+    rescue JSON::ParserError
+      raise Error, 'Malformed image inventory'
+    end
+
+    # Require separate fresh tag and ID inspections to report absence.
+    # @param identifier [String] exact immutable ID used for removal
     # @return [void]
     # @raise [Error] owned image tag remains
-    def verify_absent
+    def verify_absent(identifier)
       raise Error, 'App image tag remains or inventory failed' if inspect_image
+
+      verify_id_absent(identifier)
+    end
+
+    # An absent tag does not prove that its immutable registered image disappeared.
+    # @param identifier [String] validated immutable image ID
+    # @return [void]
+    # @raise [Error] registered image remains or its inventory cannot be read
+    def verify_id_absent(identifier)
+      raise Error, 'App image ID remains or inventory failed' if inspect_image(identifier)
     end
   end
 
