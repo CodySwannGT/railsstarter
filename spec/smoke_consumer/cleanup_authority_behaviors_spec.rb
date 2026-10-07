@@ -510,5 +510,22 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect(failure.fetch('cause_chain_truncated')).to be(false)
       expect(JSON.generate(failure)).not_to include('synthetic-private-original')
     end
+
+    it 'identifies destination cleanup when its native manifest becomes malformed after network cleanup' do
+      allow(SmokeConsumer::Command).to receive(:new).with(timeout: 60).and_return(command)
+      allow(command).to receive(:call).and_return(['', nil])
+      allow(SmokeConsumer::NetworkCollection).to receive(:new).and_wrap_original do |original, *arguments|
+        collection = original.call(*arguments)
+        allow(collection).to receive(:remove_all).and_wrap_original do |remove|
+          remove.call.tap { File.write(File.join(ownership.root, 'manifest.json'), '{') }
+        end
+        collection
+      end
+      ownership.request_cleanup
+      described_class.new(ownership).watch
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt).to include('clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt.fetch('failure').fetch('stage')).to eq('images')
+    end
   end
 end

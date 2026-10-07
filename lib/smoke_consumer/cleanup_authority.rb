@@ -948,8 +948,8 @@ module SmokeConsumer
     # Remove verified owned image tags and consumer directories.
     # @return [void]
     def remove_destinations
-      data = @ownership.read
       @stage = 'images'
+      data = @ownership.read
       data.fetch('projects').each { |project| OwnedImage.new(@ownership, @command, project).remove }
       @stage = 'consumer_roots'
       data.fetch('consumers').each { |path| OwnedConsumerPath.new(@ownership, path).remove }

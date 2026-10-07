@@ -35,7 +35,7 @@ class BrowserStartupDiagnostics
     write_private(File.join(directory, 'chromedriver-startup.log'), bytes)
     write_private(File.join(directory, 'startup.json'), JSON.pretty_generate(record))
     warn "Browser startup diagnostics: #{JSON.generate(record.except(:browser, :driver))}"
-    native_errors(bytes).each { |line| warn "Browser native startup: #{line}" }
+    native_errors(bytes).each { |fingerprint| warn "Browser native startup: sha256=#{fingerprint}" }
   rescue StandardError => error
     warn "Browser startup diagnostics retention failed: #{error.class}"
   ensure
@@ -69,7 +69,7 @@ class BrowserStartupDiagnostics
     raise 'Browser diagnostic log changed' unless stat.file? && [stat.dev, stat.ino] == [descriptor.dev, descriptor.ino] && (stat.mode & 0o777) == 0o600
 
     @log.flush
-    @log.rewind
+    @log.seek([@log.stat.size - LOG_BYTES, 0].max)
     @log.read(LOG_BYTES) || ''.b
   end
 
@@ -86,7 +86,7 @@ class BrowserStartupDiagnostics
 
   def native_errors(bytes)
     bytes.encode(Encoding::UTF_8, invalid: :replace, undef: :replace).lines.filter_map do |line|
-      line.strip.byteslice(0, 512) if line.match?(NATIVE_ERROR) && !line.match?(/Authorization|Bearer|Cookie|password|token|secret|https?:/i)
+      Digest::SHA256.hexdigest(line) if line.match?(NATIVE_ERROR)
     end.first(20)
   end
 end

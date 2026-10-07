@@ -137,3 +137,23 @@ The tiny native probes removed only their positively owned images/containers and
 proved foreign baseline preservation. Full candidate and later published-main
 literal walkthroughs remain required before closing #76. This follow-up is based
 on merged PR87 main, with the current four-comment #76 context read privately.
+
+## Hosted cold-start health request
+
+The candidate walkthrough at `285901f` in run 37652369397 built its image and
+passed the native Linux supervision/command controls, then failed with curl
+status 56. Its native failing-command SHA-256 matches the exact first `/up`
+request after background web startup. Owned runtime and checkout cleanup and
+foreign preservation all passed. The report does not prove whether that Rails
+process would subsequently become ready.
+
+The literal README had no HTTP readiness wait. A private native loopback
+cold-start control reproduced status 56 with the same curl command and a real
+TCP reset. The bounded corrected curl succeeded after actual readiness; the
+same command against a never-ready endpoint retained status 56 after 30.23
+seconds. Both owned server threads and sockets were positively closed.
+This qualifies curl startup/failure behavior, not hosted Rails acceptance.
+Step 6 now uses a 60-second retry window, 30 retries at one-second intervals and
+a five-second request limit; the following home request remains required.
+Existing walkthrough, setup and resource-cleanup deadlines are unchanged.
+Fresh candidate and published-main walkthroughs remain required.

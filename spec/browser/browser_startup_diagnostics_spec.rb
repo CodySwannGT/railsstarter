@@ -72,13 +72,15 @@ RSpec.describe BrowserStartupDiagnostics do
     end
 
     it('bounds retained startup output and preserves private file and directory permissions') do
-      diagnostics.service.log.write('x' * (BrowserStartupDiagnostics::LOG_BYTES + 1))
+      bytes = "head-marker#{'x' * BrowserStartupDiagnostics::LOG_BYTES}tail-marker\n"
+      diagnostics.service.log.write(bytes)
       diagnostics.retain(original_error)
       retained = Dir.glob(File.join(ENV.fetch('BROWSER_STARTUP_ARTIFACT_DIR'), '*')).fetch(0)
       files = Dir.children(retained).map { |name| File.join(retained, name) }
       expect(File.stat(retained).mode & 0o777).to eq(0o700)
       expect(files.map { |file| File.stat(file).mode & 0o777 }).to eq([0o600, 0o600])
       expect(File.size(File.join(retained, 'chromedriver-startup.log'))).to eq(described_class::LOG_BYTES)
+      expect(File.binread(File.join(retained, 'chromedriver-startup.log'))).to eq(bytes.byteslice(-described_class::LOG_BYTES, described_class::LOG_BYTES))
       expect(JSON.parse(File.read(File.join(retained, 'startup.json')))).to include('truncated' => true)
     end
 
@@ -114,13 +116,16 @@ RSpec.describe BrowserStartupDiagnostics do
 
     it('prints only bounded native errors without protocol or credential-shaped lines') do
       lines = ["[123:ERROR:startup.cc:1] native refusal\n", "[123:ERROR:startup.cc:1] token=synthetic-marker\n",
+               "[123:ERROR:startup.cc:1] api_key=synthetic-api-key\n", "[123:ERROR:startup.cc:1] unfamiliar_credential=synthetic-unknown\n",
                "[123:ERROR:startup.cc:1] https://fixture.invalid\n", "[DEBUG] protocol ERROR: synthetic-payload\n"]
       diagnostics.service.log.write(lines.join)
       observation = StringIO.new
       allow(diagnostics).to receive(:warn) { |line| observation.puts(line) }
       diagnostics.retain(original_error)
-      expect(observation.string).to include('Browser native startup: [123:ERROR:startup.cc:1] native refusal')
-      expect(observation.string).not_to include('synthetic-marker', 'https://fixture.invalid', 'synthetic-payload')
+      expect(observation.string).not_to include('synthetic-api-key', 'synthetic-unknown')
+      expected = lines.first(5).map { |line| "Browser native startup: sha256=#{Digest::SHA256.hexdigest(line)}" }
+      expect(observation.string.lines.grep(/\ABrowser native startup:/).map(&:strip)).to eq(expected)
+      expect(observation.string).not_to include('native refusal', 'synthetic-marker', 'https://fixture.invalid', 'synthetic-payload')
       log = File.join(ENV.fetch('BROWSER_STARTUP_ARTIFACT_DIR'), '*', 'chromedriver-startup.log')
       expect(File.read(Dir.glob(log).fetch(0))).to eq(lines.join)
     end

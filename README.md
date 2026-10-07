@@ -110,9 +110,11 @@ Build the shared local image, run its one-shot preparation and start web:
 docker compose build web
 docker compose run --rm db-prepare
 docker compose up -d web
-curl --fail --silent --show-error http://127.0.0.1:3000/up
+curl --fail --silent --show-error --retry 30 --retry-delay 1 --retry-max-time 60 --max-time 5 --retry-all-errors http://127.0.0.1:3000/up
 curl --fail --silent --show-error http://127.0.0.1:3000/
 ```
+
+The health request waits through transient startup failures with a 60-second retry window and a five-second limit per request. If web never becomes ready, curl still exits unsuccessfully; inspect `docker compose logs web` before continuing.
 
 Compose pins MySQL 8.4.11 by digest. Web, worker and `db-prepare` share the local image. Preparation waits for healthy MySQL; both application services depend on its successful completion. Entry points do not independently migrate.
 
