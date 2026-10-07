@@ -806,6 +806,33 @@ module SmokeConsumer
     end
   end
 
+  # Retains bounded failure fingerprints without exposing private exception messages.
+  class CleanupFailure
+    # Retain the fixed cleanup stage and the actual rescued exception.
+    # @param stage [String] fixed stage assigned by the cleanup authority
+    # @param error [Exception] original observed failure, including its cause chain
+    def initialize(stage, error)
+      @stage = stage
+      @error = error
+      @current = nil
+    end
+
+    # Fingerprint at most four distinct exceptions, explicitly disclosing truncation.
+    # @return [Hash] stage and bounded class/message-digest observations
+    def to_h
+      causes = []
+      seen = {}.compare_by_identity
+      @current = @error
+      while @current && causes.length < 4 && !seen.key?(@current)
+        seen[@current] = true
+        causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
+                    'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
+        @current = @current.cause
+      end
+      { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_chain_truncated' => @current ? true : false }
+    end
+  end
+
   # Runs a detached cleanup watcher armed before consumer or Docker allocations.
   class CleanupAuthority
     # Fork the detached watcher and verify its armed identity before returning its PID.
@@ -844,16 +871,19 @@ module SmokeConsumer
     def initialize(ownership)
       @ownership = ownership
       @command = nil
+      @stage = 'arming'
     end
 
     # Acknowledge arming, wait for cleanup triggers, and record only the exception class on failure.
     # @return [void]
     def watch
       acknowledge
+      @stage = 'waiting'
       sleep 0.1 until cleanup_due?
       cleanup
     rescue StandardError => error
-      @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => false, 'error' => error.class.name)
+      @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => false,
+                                            'error' => error.class.name, 'failure' => CleanupFailure.new(@stage, error).to_h)
     end
 
     private
@@ -884,28 +914,44 @@ module SmokeConsumer
     # @return [void]
     def cleanup
       @command = Command.new(timeout: 60)
-      GuardianDeparture.new(@ownership).settle
-      stopped = ProcessTree.stop(@ownership.read.fetch('processes'))
-      process_result = verify_processes_nonrunning(stopped)
+      process_result = remove_processes
       removed = remove_collections
       remove_destinations
+      @stage = 'acknowledgement'
       @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => true, 'removed' => removed,
                                             'consumer_roots_absent' => true, **process_result)
+    end
+
+    # Preserve each native process-cleanup step and identify its actual failure stage.
+    # @return [Hash{String => Boolean}] positive registered-process observations
+    def remove_processes
+      @stage = 'guardian_settle'
+      GuardianDeparture.new(@ownership).settle
+      @stage = 'process_stop'
+      stopped = ProcessTree.stop(@ownership.read.fetch('processes'))
+      @stage = 'process_verify'
+      verify_processes_nonrunning(stopped)
     end
 
     # Remove and verify absence of each owned container, volume, and network collection.
     # @return [Hash{String => Array<String>}]
     def remove_collections
-      { 'container' => ContainerCollection.new(@ownership, @command).remove_all,
-        'volume' => VolumeCollection.new(@ownership, @command).remove_all,
-        'network' => NetworkCollection.new(@ownership, @command).remove_all }
+      @stage = 'containers'
+      containers = ContainerCollection.new(@ownership, @command).remove_all
+      @stage = 'volumes'
+      volumes = VolumeCollection.new(@ownership, @command).remove_all
+      @stage = 'networks'
+      networks = NetworkCollection.new(@ownership, @command).remove_all
+      { 'container' => containers, 'volume' => volumes, 'network' => networks }
     end
 
     # Remove verified owned image tags and consumer directories.
     # @return [void]
     def remove_destinations
       data = @ownership.read
+      @stage = 'images'
       data.fetch('projects').each { |project| OwnedImage.new(@ownership, @command, project).remove }
+      @stage = 'consumer_roots'
       data.fetch('consumers').each { |path| OwnedConsumerPath.new(@ownership, path).remove }
     end
 

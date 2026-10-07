@@ -378,8 +378,91 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       ownership.write_once('cleanup-request.json', 'token' => 'foreign-token')
       described_class.new(ownership).watch
       receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
-      expect(receipt).to eq('token' => ownership.token, 'clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt).to include('token' => ownership.token, 'clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt.fetch('failure')).to include(
+        'stage' => 'waiting',
+        'causes' => [{ 'class' => 'SmokeConsumer::Error',
+                       'message_sha256' => Digest::SHA256.hexdigest('Invalid cleanup request') }]
+      )
       expect(File.exist?(File.join(ownership.root, 'armed.json'))).to be(true)
+    end
+
+    it 'retains the failed cleanup stage and native child failure without publishing command output' do
+      fail_cleanup_with_native_child
+      with_cleanup_authority do |pid|
+        expect { described_class.finish(ownership, pid) }
+          .to raise_error(SmokeConsumer::Error, 'Owned cleanup failed; inspect private cleanup receipt')
+      end
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt.fetch('failure')).to include(
+        'stage' => 'containers',
+        'causes' => [{ 'class' => 'SmokeConsumer::Error',
+                       'message_sha256' => Digest::SHA256.hexdigest('ruby failed (exit 17)') }]
+      )
+      expect(JSON.generate(receipt)).not_to include('synthetic-private-output', RbConfig.ruby)
+    end
+
+    it 'bounds cleanup exception causes and fingerprints private messages without publishing them' do
+      error = private_cause_chain
+      failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated')]).to eq([4, true])
+      expect(failure.fetch('causes').first).to eq(
+        'class' => 'SmokeConsumer::Error', 'message_sha256' => Digest::SHA256.hexdigest('synthetic-private-message-5')
+      )
+      expect(JSON.generate(failure)).not_to include('synthetic-private-message')
+      allow(error).to receive(:cause).and_return(error)
+      cyclic_failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated')]).to eq([1, true])
+    end
+
+    it 'retains an original cleanup failure when native descriptor closure raises another exception' do
+      failure = SmokeConsumer::CleanupFailure.new('containers', native_descriptor_failure).to_h
+      expect(failure.fetch('causes').map { |cause| cause.fetch('class') }).to eq(['Errno::EBADF', 'SmokeConsumer::Error'])
+      expect(failure.fetch('causes').last.fetch('message_sha256')).to eq(Digest::SHA256.hexdigest('synthetic-private-original'))
+      expect(failure.fetch('cause_chain_truncated')).to be(false)
+      expect(JSON.generate(failure)).not_to include('synthetic-private-original')
+    end
+
+    def fail_cleanup_with_native_child
+      native_command = SmokeConsumer::Command.new(timeout: 60)
+      collection = instance_double(SmokeConsumer::ContainerCollection)
+      allow(collection).to receive(:remove_all) do
+        native_command.call(RbConfig.ruby, '-e', "warn 'synthetic-private-output'; exit 17", timeout: 10)
+      end
+      allow(SmokeConsumer::ContainerCollection).to receive(:new).and_return(collection)
+    end
+
+    def private_cause_chain
+      error = nil
+      6.times do |index|
+        raise error if error
+      rescue StandardError
+        begin
+          raise SmokeConsumer::Error, "synthetic-private-message-#{index}"
+        rescue StandardError => nested
+          error = nested
+        end
+      else
+        error = SmokeConsumer::Error.new("synthetic-private-message-#{index}")
+      end
+      error
+    end
+
+    def native_descriptor_failure
+      reader, writer = IO.pipe
+      IO.for_fd(writer.fileno).close
+      begin
+        raise SmokeConsumer::Error, 'synthetic-private-original'
+      rescue StandardError
+        begin
+          writer.close
+        rescue Errno::EBADF => error
+          error
+        end
+      end
+    ensure
+      reader&.close unless reader&.closed?
+      writer&.close unless writer&.closed?
     end
 
     def with_cleanup_authority
