@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "asOf": "2026-10-05",
+  "asOf": "2026-10-07",
   "scenarios": {
     "declared": 11,
     "required": 11,
@@ -49,8 +49,8 @@
       "spec/browser",
       "spec/fixtures/browser"
     ],
-    "discovered": 25,
-    "disclosed": 25,
+    "discovered": 32,
+    "disclosed": 32,
     "dynamicTitles": 0,
     "undisclosed": [],
     "exclusions": [
@@ -68,6 +68,11 @@
         "file": "spec/browser/request_security_spec.rb",
         "evidence": "bounds TERM refusal, escalates only its captured child and proves reaping and absence",
         "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "cleans a verified later cross-site Chrome child while its captured root is suspended",
+        "reason": "Owned browser teardown regression for verified later native descendants; validates process lifecycle rather than a product request or CSP requirement."
       },
       {
         "file": "spec/browser/request_security_spec.rb",
@@ -101,8 +106,23 @@
       },
       {
         "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses a coherent replacement birth after a late child was captured",
+        "reason": "Harness owner-callback identity binding control for a coherent replacement birth after capture; validates signal safety rather than a product request or CSP requirement."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
         "evidence": "refuses a directory and a nonexecutable driver with clear prerequisite errors",
         "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses a live foreign process copying the exact owned Chrome profile",
+        "reason": "Native harness ownership refusal control for a live foreign process with a copied profile flag; validates teardown signal safety rather than a product request or CSP requirement."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses a matching-profile child whose ancestry belongs to another owner",
+        "reason": "Harness process-ownership validation control for foreign ancestry; does not exercise a product host or CSP behavior."
       },
       {
         "file": "spec/browser/request_security_spec.rb",
@@ -111,8 +131,23 @@
       },
       {
         "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses a reused captured root and a changed driver before child admission",
+        "reason": "Harness process-ownership validation control for stale identities; does not exercise a product host or CSP behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses foreign UID and process group even when profile and parent match",
+        "reason": "Harness process-ownership validation control for foreign identity metadata; does not exercise a product host or CSP behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
         "evidence": "refuses lost profile ownership before signalling an otherwise matching PID",
         "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses missing metadata and malformed or duplicate profile identities",
+        "reason": "Harness process-ownership validation control for unavailable or malformed observations; does not exercise a product host or CSP behavior."
       },
       {
         "file": "spec/browser/request_security_spec.rb",
