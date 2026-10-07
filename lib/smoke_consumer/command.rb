@@ -205,7 +205,14 @@ module SmokeConsumer
     # @param ends [Hash{Symbol => Symbol}] channel names and endpoint close actions
     # @return [void]
     def close_ends(ends)
-      ends.each { |role, action| channel(role).public_send(action) }
+      ends.each do |role, action|
+        endpoint = channel(role)
+        case action
+        when :close_reader then endpoint.close_reader
+        when :close_writer then endpoint.close_writer
+        else raise Error, 'Unknown pipe close action'
+        end
+      end
     end
   end
 
