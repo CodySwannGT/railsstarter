@@ -7,6 +7,11 @@
   "harness": "fleet",
   "tracker": "github",
   "source": "github",
+  "deploy": {
+    "branches": {
+      "production": "main"
+    }
+  },
   "github": {
     "org": "CodySwannGT",
     "repo": "railsstarter",
@@ -29,6 +34,71 @@
         "ticketed": "prd-ticketed",
         "shipped": "prd-shipped",
         "sentinel": "prd-intake-feedback"
+      }
+    },
+    "rulesets": {
+      "requiredChecks": {
+        "quality checks": [
+          {
+            "context": "Quality Checks / Lint",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / Code Quality",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / Security",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / 🔗 Work-Item Traceability",
+            "integration_id": 15368
+          },
+          {
+            "context": "Quality Checks / History Secrets / 🔐 Introduced History Credential Leakage",
+            "integration_id": 15368
+          },
+          {
+            "context": "Behavior Checks / 🧾 BDD Behavior Contract",
+            "integration_id": 15368
+          },
+          {
+            "context": "recurring-worker-runtime",
+            "integration_id": 15368
+          }
+        ]
+      }
+    }
+  },
+  "gates": {
+    "introduced-history-credential-leakage": {
+      "push": "required",
+      "pull-request": {
+        "level": "required",
+        "caller_chain": [
+          "Quality Checks",
+          "History Secrets"
+        ]
+      }
+    },
+    "traceability": {
+      "pull-request": {
+        "level": "required",
+        "caller_chain": [
+          "Quality Checks"
+        ]
+      }
+    },
+    "behavior-contract": {
+      "pull-request": {
+        "level": "required",
+        "run": [
+          "bdd:coverage"
+        ],
+        "caller_chain": [
+          "Behavior Checks"
+        ]
       }
     }
   }

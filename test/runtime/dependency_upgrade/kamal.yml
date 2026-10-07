@@ -1,0 +1,14 @@
+service: dependency80
+image: synthetic/dependency80
+servers:
+  web:
+    - 127.0.0.1
+registry:
+  server: registry.invalid
+  username: synthetic
+  password: synthetic
+env:
+  clear:
+    RAILS_ENV: test
+builder:
+  arch: arm64

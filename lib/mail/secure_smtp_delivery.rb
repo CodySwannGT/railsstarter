@@ -2,12 +2,11 @@
 
 # Ruby Mail library extensions for secure SMTP delivery.
 module Mail
-  # Secure SMTP delivery method for tenant-specific encrypted email.
+  # Named delivery method inheriting the Mail library's standard SMTP behavior.
   #
-  # Inherits standard SMTP behavior with separate credentials
-  # configured per environment for emails marked as secure.
-  # Registered via +ActionMailer::Base.add_delivery_method+ or
-  # selected at runtime by {SecureEmail#apply_secure_delivery}.
+  # This subclass does not add encryption, credentials, or message routing.
+  # Applications can register it via +ActionMailer::Base.add_delivery_method+
+  # and supply their own delivery settings.
   class SecureSmtpDelivery < ::Mail::SMTP
   end
 end

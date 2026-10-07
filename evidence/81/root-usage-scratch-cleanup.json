@@ -1,0 +1,17 @@
+{
+  "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+  "owned_scratch": "/var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-usage-yt7m4yz8",
+  "identity": "Unique root-created scratch, same user, expected exact files and root session/cwd in adapter",
+  "files": [
+    {
+      "name": "effectiveness-input.json",
+      "sha256": "8191709485a7b221bc4df571693f029ddd8452e652e51a2c0308456eb9bc2710"
+    },
+    {
+      "name": "usage.mjs",
+      "sha256": "05adc1120a07bbf11ceac6673b7c6d0f61eb25bf15861e683d22e490e4053dfd"
+    }
+  ],
+  "sibling_deleted": false,
+  "removed": true
+}

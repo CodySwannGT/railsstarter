@@ -1,0 +1,125 @@
+{
+  "work_item_ref": "CodySwannGT/railsstarter#74",
+  "coordinator_uuid": "01a1093f-be11-7262-9197-193444dff09a",
+  "captured_at": "2026-10-05T00:31:24.891550+00:00",
+  "semantics": "One latest cumulative snapshot per unique native actor; snapshots are not added across time. Measured subset through capture, excluding later commit/reconciliation/final output. Cost unavailable.",
+  "actors": [
+    {
+      "role": "coordinator",
+      "uuid": "01a1093f-be11-7262-9197-193444dff09a",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-05T00:30:49.258Z",
+        "cumulative_tokens": {
+          "input_tokens": 10739208,
+          "cached_input_tokens": 10493312,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 29347,
+          "reasoning_output_tokens": 10354,
+          "total_tokens": 10768555
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T19-28-55-01a1093f-be11-7262-9197-193444dff09a.jsonl"
+      },
+      "source": "measured-subset"
+    },
+    {
+      "role": "input_resolver",
+      "uuid": "01a10940-6a48-7ce0-a33b-26d1177c3831",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-04T23:56:47.540Z",
+        "cumulative_tokens": {
+          "input_tokens": 3071785,
+          "cached_input_tokens": 2968704,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 20836,
+          "reasoning_output_tokens": 2836,
+          "total_tokens": 3092621
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T19-29-38-01a10940-6a48-7ce0-a33b-26d1177c3831.jsonl"
+      },
+      "source": "measured-subset"
+    },
+    {
+      "role": "research",
+      "uuid": "01a1095f-eacf-7842-88b5-9dbd3d62249b",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-05T00:09:13.549Z",
+        "cumulative_tokens": {
+          "input_tokens": 1151457,
+          "cached_input_tokens": 1064960,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 8702,
+          "reasoning_output_tokens": 1256,
+          "total_tokens": 1160159
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T20-04-03-01a1095f-eacf-7842-88b5-9dbd3d62249b.jsonl"
+      },
+      "source": "measured-subset"
+    },
+    {
+      "role": "builder",
+      "uuid": "01a10965-dbb8-7b40-a204-d3081a92b3f0",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-05T00:25:25.598Z",
+        "cumulative_tokens": {
+          "input_tokens": 3151727,
+          "cached_input_tokens": 3062528,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 23815,
+          "reasoning_output_tokens": 4040,
+          "total_tokens": 3175542
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T20-10-32-01a10965-dbb8-7b40-a204-d3081a92b3f0.jsonl"
+      },
+      "source": "measured-subset"
+    },
+    {
+      "role": "source_security_review",
+      "uuid": "01a10971-7ed5-7373-af42-0c7711c42dde",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-05T00:26:57.372Z",
+        "cumulative_tokens": {
+          "input_tokens": 1434175,
+          "cached_input_tokens": 1355904,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5842,
+          "reasoning_output_tokens": 1492,
+          "total_tokens": 1440017
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T20-23-15-01a10971-7ed5-7373-af42-0c7711c42dde.jsonl"
+      },
+      "source": "measured-subset"
+    },
+    {
+      "role": "empirical_verifier",
+      "uuid": "01a10971-e414-78f1-a1e9-a348c1935a4a",
+      "model": "gpt-6.1-sol",
+      "snapshot": {
+        "timestamp": "2026-10-05T00:30:44.894Z",
+        "cumulative_tokens": {
+          "input_tokens": 1445929,
+          "cached_input_tokens": 1372416,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 11965,
+          "reasoning_output_tokens": 1194,
+          "total_tokens": 1457894
+        },
+        "source_file": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T20-23-41-01a10971-e414-78f1-a1e9-a348c1935a4a.jsonl"
+      },
+      "source": "measured-subset"
+    }
+  ],
+  "measured_subset_totals": {
+    "input_tokens": 20994281,
+    "cached_input_tokens": 20317824,
+    "cache_write_tokens": 0,
+    "output_tokens": 100507,
+    "reasoning_output_tokens": 21172,
+    "total_tokens": 21094788
+  },
+  "cost": null
+}

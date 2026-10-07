@@ -1,0 +1,1 @@
+[bdd-coverage] bdd-coverage: completed; 3 scenarios declared, traceability 3/3 (100%), 3/3 mapped tests executed, 3 passed / 0 failed / 0 skipped, 0 waived, 0 findings

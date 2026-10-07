@@ -1,6 +1,6 @@
 ---
 name: ops-deploy
-description: Deploy Rails applications via Kamal or CI/CD branch push to staging or production environments.
+description: "Deploy Rails applications via…"
 allowed-tools:
   - Bash
   - Read

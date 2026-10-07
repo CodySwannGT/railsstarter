@@ -1,0 +1,115 @@
+[codex/81-bootstrap-cdn-sri 4956916] docs(frontend): retain Bootstrap browser and SRI evidence
+ 82 files changed, 6642 insertions(+)
+ create mode 100644 .lisa/handoff-81.md
+ create mode 100644 .lisa/implementation-81.md
+ create mode 100644 .lisa/learnings-81.md
+ create mode 100644 .lisa/plan-81.md
+ create mode 100644 .lisa/research-81.md
+ create mode 100644 .lisa/roster/CodySwannGT-railsstarter-81.md
+ create mode 100644 .lisa/usage-81.json
+ create mode 100644 .lisa/usage-81.md
+ create mode 100644 .lisa/verification-81.md
+ create mode 100644 evidence/81/baseline-and-success.txt
+ create mode 100644 evidence/81/baseline-console.txt
+ create mode 100644 evidence/81/baseline-css-headers.txt
+ create mode 100644 evidence/81/baseline-network.txt
+ create mode 100644 evidence/81/baseline-snapshot.yml
+ create mode 100644 evidence/81/baseline-state.txt
+ create mode 100644 evidence/81/baseline.png
+ create mode 100644 evidence/81/bdd-commands.json
+ create mode 100644 evidence/81/bdd-execution.json
+ create mode 100644 evidence/81/bdd-gate.json
+ create mode 100644 evidence/81/browser-observations.json
+ create mode 100644 evidence/81/browser-scratch-cleanup.json
+ create mode 100644 evidence/81/browser-source-manifest.json
+ create mode 100644 evidence/81/builder-final-source-diff.patch
+ create mode 100644 evidence/81/builder-final-source-manifest.json
+ create mode 100644 evidence/81/builder-native-usage.json
+ create mode 100644 evidence/81/codification-runs.json
+ create mode 100644 evidence/81/codification-source-manifest.json
+ create mode 100644 evidence/81/codified-green.json
+ create mode 100644 evidence/81/codified-red-boundary-checkers.json
+ create mode 100644 evidence/81/codified-red-css.json
+ create mode 100644 evidence/81/codified-red-js.json
+ create mode 100644 evidence/81/control-identity.json
+ create mode 100644 evidence/81/discovery-after.json
+ create mode 100644 evidence/81/discovery-before.json
+ create mode 100644 evidence/81/discovery-summary.json
+ create mode 100644 evidence/81/donor-current-proof-review.json
+ create mode 100644 evidence/81/donor-source-attempt.json
+ create mode 100644 evidence/81/donor-source-identity.json
+ create mode 100644 evidence/81/final-file-manifest.json
+ create mode 100644 evidence/81/final-source-diff.patch
+ create mode 100644 evidence/81/final-source-hashes.json
+ create mode 100644 evidence/81/independent-bdd-gate.json
+ create mode 100644 evidence/81/independent-final-review.json
+ create mode 100644 evidence/81/independent-final-review.txt
+ create mode 100644 evidence/81/independent-final-source-manifest.json
+ create mode 100644 evidence/81/independent-input-scope-readback.txt
+ create mode 100644 evidence/81/independent-verdict.json
+ create mode 100644 evidence/81/input-identity-readback.json
+ create mode 100644 evidence/81/negative-css-console.txt
+ create mode 100644 evidence/81/negative-css-network.txt
+ create mode 100644 evidence/81/negative-css-state.txt
+ create mode 100644 evidence/81/negative-css.png
+ create mode 100644 evidence/81/negative-js-after-clicks.txt
+ create mode 100644 evidence/81/negative-js-console.txt
+ create mode 100644 evidence/81/negative-js-initial-state.txt
+ create mode 100644 evidence/81/negative-js-network.txt
+ create mode 100644 evidence/81/negative-js-snapshot.yml
+ create mode 100644 evidence/81/negative-js.png
+ create mode 100644 evidence/81/restored-console.txt
+ create mode 100644 evidence/81/restored-network.txt
+ create mode 100644 evidence/81/restored-snapshot.yml
+ create mode 100644 evidence/81/restored-state.txt
+ create mode 100644 evidence/81/restored.png
+ create mode 100644 evidence/81/root-review.json
+ create mode 100644 evidence/81/root-usage-scratch-cleanup.json
+ create mode 100644 evidence/81/runtime-cleanup.json
+ create mode 100644 evidence/81/standard-discovery.json
+ create mode 100644 evidence/81/success-console.txt
+ create mode 100644 evidence/81/success-dismissed-state.txt
+ create mode 100644 evidence/81/success-dismissed.png
+ create mode 100644 evidence/81/success-expanded-snapshot.yml
+ create mode 100644 evidence/81/success-expanded-state.txt
+ create mode 100644 evidence/81/success-expanded.png
+ create mode 100644 evidence/81/success-home.png
+ create mode 100644 evidence/81/success-importmap-navigation.txt
+ create mode 100644 evidence/81/success-initial-state.txt
+ create mode 100644 evidence/81/success-initial.png
+ create mode 100644 evidence/81/success-network.json
+ create mode 100644 evidence/81/success-network.txt
+ create mode 100644 evidence/81/test-cleanup.jsonl
+ create mode 100644 evidence/81/usage-mirror-readback.json
+ create mode 100644 evidence/81/verifier-usage-snapshot.json
+╭──────────────────────────────────────╮
+│ 🥊 lefthook v2.1.1  hook: pre-commit │
+╰──────────────────────────────────────╯
+│  rubocop (skip) no files for inspection
+┃  bundler-audit ❯ 
+
+Updating ruby-advisory-db ...
+From https://github.com/rubysec/ruby-advisory-db
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+Updated ruby-advisory-db
+ruby-advisory-db:
+  advisories:	1252 advisories
+  last updated:	2026-10-02 16:20:52 -0400
+  commit:	97659622944c19d42961c03813666f4196457229
+No vulnerabilities found
+
+                                      
+  ────────────────────────────────────
+summary: (done in 0.98 seconds)       
+✔️ bundler-audit (0.95 seconds)
+╭──────────────────────────────────────╮
+│ 🥊 lefthook v2.1.1  hook: commit-msg │
+╰──────────────────────────────────────╯
+┃  conventional-commit ❯ 
+
+
+                                      
+  ────────────────────────────────────
+summary: (done in 0.01 seconds)       
+✔️ conventional-commit (0.01 seconds)

@@ -12,8 +12,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 1) do
-  create_table 'solid_cache_entries', charset: 'utf8mb3', force: :cascade do |t|
+ActiveRecord::Schema[8.1].define(version: 20_261_005_000_000) do
+  create_table 'request_rate_limit_counters', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
+    t.string 'counter_key', limit: 64, null: false, collation: 'ascii_bin'
+    t.bigint 'count', default: 0, null: false
+    t.bigint 'expires_at', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['counter_key'], name: 'index_request_rate_limit_counters_on_counter_key', unique: true
+    t.index ['expires_at'], name: 'index_request_rate_limit_counters_on_expires_at'
+  end
+
+  create_table 'solid_cache_entries', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.integer 'byte_size', null: false
     t.datetime 'created_at', null: false
     t.binary 'key', limit: 1024, null: false

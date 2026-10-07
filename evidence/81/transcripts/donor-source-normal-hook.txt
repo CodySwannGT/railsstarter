@@ -1,0 +1,55 @@
+[codex/81-bootstrap-cdn-sri ab4ca2c] fix(frontend): align Bootstrap CDN assets with verified SRI
+ 9 files changed, 624 insertions(+), 4 deletions(-)
+ create mode 100644 bdd/coverage-map.json
+ create mode 100644 bdd/coverage-report.json
+ create mode 100644 bdd/features/bootstrap-assets.feature
+ create mode 100644 docs/bdd-scenario-matrix.md
+ create mode 100644 docs/e2e-bdd-coverage.md
+ create mode 100644 spec/browser/bootstrap_assets_spec.rb
+ create mode 100644 spec/fixtures/browser/bootstrap_harness.rb
+ create mode 100644 spec/fixtures/browser/bootstrap_server.rb
+╭──────────────────────────────────────╮
+│ 🥊 lefthook v2.1.1  hook: pre-commit │
+╰──────────────────────────────────────╯
+┃  bundler-audit ❯ 
+
+Updating ruby-advisory-db ...
+From https://github.com/rubysec/ruby-advisory-db
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+Updated ruby-advisory-db
+ruby-advisory-db:
+  advisories:	1252 advisories
+  last updated:	2026-10-02 16:20:52 -0400
+  commit:	97659622944c19d42961c03813666f4196457229
+No vulnerabilities found
+
+┃  rubocop ❯ 
+
+Inspecting 3 files
+...
+
+3 files inspected, no offenses detected
+
+Tip: Based on detected gems, the following RuboCop extension libraries might be helpful:
+  * rubocop-rspec_rails (https://rubygems.org/gems/rubocop-rspec_rails)
+
+You can opt out of this message by adding the following to your config (see https://docs.rubocop.org/rubocop/extensions.html#extension-suggestions for more options):
+  AllCops:
+    SuggestExtensions: false
+
+                                      
+  ────────────────────────────────────
+summary: (done in 1.85 seconds)       
+✔️ bundler-audit (1.06 seconds)
+✔️ rubocop (1.82 seconds)
+╭──────────────────────────────────────╮
+│ 🥊 lefthook v2.1.1  hook: commit-msg │
+╰──────────────────────────────────────╯
+┃  conventional-commit ❯ 
+
+
+                                      
+  ────────────────────────────────────
+summary: (done in 0.01 seconds)       
+✔️ conventional-commit (0.01 seconds)

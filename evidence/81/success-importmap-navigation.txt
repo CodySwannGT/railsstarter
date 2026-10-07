@@ -1,0 +1,8 @@
+{
+  "url": "http://127.0.0.1:63736/",
+  "stimulus": true,
+  "turbo": true,
+  "bootstrap": "5.3.8",
+  "cssLoaded": true,
+  "heading": "Welcome to Your Project"
+}

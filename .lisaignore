@@ -5,3 +5,10 @@
 #   - Exact file names: eslint.config.mjs
 #   - Directory patterns: .claude/hooks/
 #   - Glob patterns: *.example.json, **/*.custom.ts
+
+# The starter uses bin/deploy; preserve intentional retirement of the seeded workflow.
+.github/workflows/deploy.yml
+
+# Keep the starter free of default autonomous workflow schedules.
+.github/workflows/continuous-gates.yml
+.github/workflows/workflow-load-failure-sweep.yml

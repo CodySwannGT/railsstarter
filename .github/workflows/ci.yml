@@ -1,5 +1,5 @@
-# This file is managed by Lisa.
-# Do not edit directly — changes will be overwritten on the next `lisa` run.
+# Seeded by Lisa on first setup — this caller belongs to the starter.
+# Lisa's create-only delivery preserves its application-specific database inputs.
 
 name: CI
 
@@ -19,12 +19,23 @@ permissions:
 jobs:
   quality:
     name: Quality Checks
-    uses: CodySwannGT/lisa/.github/workflows/quality-rails.yml@main
+    # A reusable workflow may only DOWNGRADE the caller's grant, so the
+    # work-item traceability job can enforce nothing the caller does not
+    # hold. With no block here the job received contents+metadata read
+    # only, and its `gh pr view` / `gh issue view` calls failed (#2476).
+    permissions:
+      contents: read
+      checks: write
+      issues: read
+      pull-requests: write
+    uses: CodySwannGT/lisa/.github/workflows/quality-rails.yml@022afbaf9e08fb04779177db5e43d8570e82de41 # v4.71.2
     # railsstarter runs on MySQL (config/database.yml uses the mysql2 adapter).
     # Without this the reusable defaults to PostgreSQL and `bin/rails db:prepare`
     # fails. database_name matches the app's DATABASE_NAME default.
     with:
+      expected_workflow_contract_major: '1'
       database_type: mysql
+      database_version: '8.4.11'
       database_name: railsdb
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}

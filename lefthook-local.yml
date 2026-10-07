@@ -10,4 +10,8 @@ pre-push:
     flay:
       run: bundle exec flay app/ lib/
     yard-stats:
-      run: "bundle exec yard stats app/**/*.rb lib/**/*.rb | grep -q '100.00% documented' || (echo 'YARD documentation is not 100%' && exit 1)"
+      run: >-
+        bash -o pipefail -c 'bundle exec yard stats --no-save --no-cache --fail-on-warning "app/**/*.rb" "lib/**/*.rb" | grep -q "100.00% documented"'
+    behavior-contract:
+      run: >-
+        BDD_BASE_SHA=$(git merge-base HEAD origin/main) && export BDD_BASE_SHA && npm run bdd:coverage

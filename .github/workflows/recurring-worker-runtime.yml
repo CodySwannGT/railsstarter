@@ -1,0 +1,49 @@
+# Host-owned required runtime caller; retained alongside Lisa's create-only CI starter.
+name: Recurring Worker Runtime
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recurring-worker-runtime:
+    name: recurring-worker-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install MySQL native build headers
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libmysqlclient-dev
+          mysql_config --version
+      # Defaults read .ruby-version and Gemfile.lock; keep one toolchain declaration.
+      - name: Install project Ruby and locked dependencies
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
+        with:
+          bundler-cache: true
+      - name: Install Python 3
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Prepare tested MySQL and local Docker
+        run: |
+          set -euo pipefail
+          python3 --version
+          docker info
+          docker pull mysql:8.4.11@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242
+          # The standalone driver inspects this compatibility tag before provisioning.
+          docker tag mysql:8.4.11@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242 mysql:8.4
+      - name: Execute required recurring worker acceptance
+        run: bin/test-recurring-worker
+      - name: Retain required runtime evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: recurring-worker-runtime-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tmp/recurring-worker-results/*.json
+          if-no-files-found: error

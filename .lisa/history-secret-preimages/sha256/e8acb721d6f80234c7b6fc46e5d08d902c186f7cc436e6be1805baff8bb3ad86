@@ -1,0 +1,49 @@
+{
+  "container_id": "4405b84ff659e423d76f3070444ae3a89608022197a6a3b1f24c4047977a2900",
+  "container_name": "railsstarter-65-62-app-0531c19ec9",
+  "image_id": "sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242",
+  "owner": "nativeUUID01a103db-d315-7e12-887a-3a67d75d920d-65-62-integration",
+  "loopback_port": 50917,
+  "volume": "railsstarter-65-62-app-0531c19ec9-data",
+  "exclusive_volume": true,
+  "server_version": "8.4.11",
+  "server_uuid": "7da5c33e-c04d-11f1-861b-3e1e699ca952",
+  "server_hostname": "4405b84ff659",
+  "database_checks": [
+    {
+      "database": "railsstarter_63_smoke_65_62_0531c19ec9_test",
+      "empty": true,
+      "server_uuid": "7da5c33e-c04d-11f1-861b-3e1e699ca952",
+      "current_user": "owned65_0531c19ec9@%"
+    },
+    {
+      "database": "railsstarter_63_smoke_65_62_0531c19ec9_queue_test",
+      "empty": true,
+      "server_uuid": "7da5c33e-c04d-11f1-861b-3e1e699ca952",
+      "current_user": "owned65_0531c19ec9@%"
+    },
+    {
+      "database": "railsstarter_63_smoke_65_62_0531c19ec9_cache_test",
+      "empty": true,
+      "server_uuid": "7da5c33e-c04d-11f1-861b-3e1e699ca952",
+      "current_user": "owned65_0531c19ec9@%"
+    },
+    {
+      "database": "railsstarter_63_smoke_65_62_0531c19ec9_cable_test",
+      "empty": true,
+      "server_uuid": "7da5c33e-c04d-11f1-861b-3e1e699ca952",
+      "current_user": "owned65_0531c19ec9@%"
+    }
+  ],
+  "grants_restricted_to_four_databases": true,
+  "rendered_roles": [
+    "primary",
+    "primary_replica",
+    "queue",
+    "cache",
+    "cable"
+  ],
+  "driver_loaded_preflight": false,
+  "unsafe_synthetic_inputs_rejected": 10,
+  "empty_volume_entrypoint_guard": true
+}

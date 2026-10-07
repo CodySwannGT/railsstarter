@@ -1,0 +1,37 @@
+{
+  "connector": "docs",
+  "profile": "onboarding",
+  "lastSuccessfulRunAt": "2026-10-06T18:07:54.865433+00:00",
+  "cursor": {
+    "input": "README.md",
+    "inputSha256": "815bf3e982d5e2cbba5d8adf97f6f21c773d3dd5a81974f26ae13919b769d513",
+    "sourceBase": "ba30a778702177dd78c970a7d46de0b26d8ed91a",
+    "sourceStatus": "uncommitted-source-aligned-instructions",
+    "scope": "verified-documentation-ingestion-only",
+    "sourceNoteSha256": "70325f49963790f3b838c4985ab23fb51afa8e0ad236a2d8b116167f001aa183",
+    "synthesisSha256": "c2dd880d7d5d73bc4da58dbbbe05e8299d85323b887449ff47ef3d7d7056829e",
+    "verifiedAt": "2026-10-06T18:07:54.865433+00:00",
+    "kernelVersion": "4.70.2",
+    "finalOnboardingAcceptance": "independent-command-and-functional-provider-hook-walkthrough-pending",
+    "previousVerifiedCursor": {
+      "input": "README.md",
+      "inputSha256": "ab2befc45d8f94bb5deb8c69d25f6ea9df6b5957b28f6fac6f0a8690795711b7",
+      "sourceBase": "fb07c214ed1151c01e1ec93a00bddc581dcd68e9",
+      "sourceStatus": "uncommitted-reviewed-provisional-draft",
+      "scope": "accepted-documentation-facts-only",
+      "sourceNoteSha256": "95514ef941036d650409b59dc65f984614400d9560ae450a32ae7ae1c09276b7",
+      "synthesisSha256": "72263103039dfd0d137b417de6d39f04213d7fdc2ae6d1a0e5b6744bf77ae1ff",
+      "verifiedAt": "2026-10-05T13:54:42.955708+00:00",
+      "kernelVersion": "4.67.0",
+      "finalOnboardingAcceptance": "pending"
+    }
+  },
+  "sourceNotes": [
+    "wiki/sources/docs/2026-10-05-onboarding.md",
+    "wiki/sources/docs/2026-10-06-onboarding.md"
+  ],
+  "synthesisPages": [
+    "wiki/playbooks/onboarding.md"
+  ],
+  "schemaVersion": "1.0.0"
+}

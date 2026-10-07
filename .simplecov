@@ -1,20 +1,24 @@
 # frozen_string_literal: true
 
-SimpleCov.start 'rails' do
-  enable_coverage :branch
+SimpleCov.load_profile 'rails'
 
-  minimum_coverage line: 0, branch: 0
+SimpleCov.configure do
+  deprecations :raise
+  coverage :line, minimum: 80
+  coverage :branch, minimum: 70
+  merging false
+  formats :html, :json
 
-  add_group 'Models', 'app/models'
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Services', 'app/services'
-  add_group 'Jobs', 'app/jobs'
-  add_group 'Mailers', 'app/mailers'
-  add_group 'Serializers', 'app/serializers'
-  add_group 'Libraries', 'lib'
+  group 'Models', 'app/models'
+  group 'Controllers', 'app/controllers'
+  group 'Services', 'app/services'
+  group 'Jobs', 'app/jobs'
+  group 'Mailers', 'app/mailers'
+  group 'Serializers', 'app/serializers'
+  group 'Libraries', 'lib'
 
-  add_filter '/spec/'
-  add_filter '/config/'
-  add_filter '/db/'
-  add_filter '/vendor/'
+  skip '/spec/'
+  skip '/config/'
+  skip '/db/'
+  skip '/vendor/'
 end

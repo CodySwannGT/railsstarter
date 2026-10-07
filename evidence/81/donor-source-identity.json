@@ -1,0 +1,66 @@
+{
+  "captured_at": "2026-10-04T18:11:21.546+00:00",
+  "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+  "source_donor_sha": "ab4ca2c35b5de2c98a3b602f1fd9d2fc6dd47720",
+  "parent_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "scoped_file_count": 9,
+  "source_files": [
+    {
+      "path": "app/views/layouts/application.html.erb",
+      "bytes": 2558,
+      "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    {
+      "path": "spec/browser/bootstrap_assets_spec.rb",
+      "bytes": 4180,
+      "sha256": "e64d1acb9bfb8d18aef9506eb0be2df60d1ebce238d5102752b8f5de351f1d32"
+    },
+    {
+      "path": "spec/fixtures/browser/bootstrap_harness.rb",
+      "bytes": 4902,
+      "sha256": "cad89380186df863c1fac5a962babab42feaf1b191f9bb53d8ab61d6fbb8460d"
+    },
+    {
+      "path": "spec/fixtures/browser/bootstrap_server.rb",
+      "bytes": 2842,
+      "sha256": "bed7cea4343144a9bf1a9d07161f5f54325b230243142d0fbf71d9a8b17bd446"
+    },
+    {
+      "path": "bdd/features/bootstrap-assets.feature",
+      "bytes": 1410,
+      "sha256": "f85373f4aba8f321e10cc6fa24781970a5f847cc89b68bb07c81869b5eb8d92a"
+    },
+    {
+      "path": "bdd/coverage-map.json",
+      "bytes": 1740,
+      "sha256": "e3fa6b805c62675f5765c7e31a39029a631af0eb396bfed958474fd4051cabbf"
+    },
+    {
+      "path": "bdd/coverage-report.json",
+      "bytes": 2518,
+      "sha256": "2b20c54008efcc537d1776311122b5d85384db0391f4da18b4177bacf60102be"
+    },
+    {
+      "path": "docs/e2e-bdd-coverage.md",
+      "bytes": 3593,
+      "sha256": "ba9358f586834a0664f701b7d8dd35f0a69abbe38be7914f3162e2db2507fa2a"
+    },
+    {
+      "path": "docs/bdd-scenario-matrix.md",
+      "bytes": 1541,
+      "sha256": "c06eaf6b8499c5ddd92c69d7a6d661b2db322e6e659ccd694b401987e053267b"
+    }
+  ],
+  "captured_browser_build": "uncommitted-81-703000135175cf6eb214b8b87ffc0db81788d41b06bdca762efed5383ec9d3f8",
+  "identity_mapping": "Every source-donor Git blob and current working file exactly matches the independently reviewed captured empirical/browser/codification bytes; no new runtime observation claimed.",
+  "independent_current_proof": "evidence/81/donor-current-proof-review.json",
+  "independent_current_proof_sha256": "a11d0e726ecf320e1e8e5c31d9827118a1a6bc1169d1d16b057216b870cc4d2b",
+  "normal_work_item_validation": "WORK_ITEM_TRACKING_OK CodySwannGT/railsstarter#81",
+  "normal_hook_result": {
+    "rubocop": "3 inspected, no offenses",
+    "bundler_audit": "No vulnerabilities found; advisory commit97659622944c19d42961c03813666f4196457229",
+    "conventional_commit": "passed"
+  },
+  "force_or_skip_flags": false,
+  "full_delivery_status": "in_progress"
+}

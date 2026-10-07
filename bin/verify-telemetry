@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-DEFAULT_PROFILE="qualis-staging"
-REGION="us-east-1"
-
 usage() {
   echo "Usage: bin/verify-telemetry <command> [profile]"
   echo ""
@@ -15,7 +12,8 @@ usage() {
   echo "  services       Dependency map via service graph"
   echo "  trace <id>     Full trace detail for a specific trace ID"
   echo ""
-  echo "Profile defaults to: $DEFAULT_PROFILE"
+  echo "Required settings: AWS_REGION and exact OTEL_SERVICE_NAME."
+  echo "Supply [profile] or set AWS_PROFILE; trace accepts trace <id> [profile]."
   exit 1
 }
 
@@ -32,10 +30,35 @@ if [ $# -lt 1 ]; then
   usage
 fi
 
-require_tools
-
 COMMAND="$1"
-PROFILE="${2:-$DEFAULT_PROFILE}"
+case "$COMMAND" in
+  health|slow|errors|services)
+    [ $# -le 2 ] || usage
+    PROFILE="${2-${AWS_PROFILE:-}}"
+    ;;
+  trace)
+    [ $# -ge 2 ] && [ $# -le 3 ] && [ -n "$2" ] || usage
+    TRACE_ID="$2"
+    PROFILE="${3-${AWS_PROFILE:-}}"
+    ;;
+  *) usage ;;
+esac
+
+REGION="${AWS_REGION:-}"
+SERVICE_NAME="${OTEL_SERVICE_NAME:-}"
+for setting in PROFILE REGION SERVICE_NAME; do
+  if [[ ! "${!setting}" =~ [^[:space:]] ]]; then
+    case "$setting" in
+      PROFILE) echo "Error: supply a profile argument or set AWS_PROFILE." >&2 ;;
+      REGION) echo "Error: set AWS_REGION for the target environment." >&2 ;;
+      SERVICE_NAME) echo "Error: set OTEL_SERVICE_NAME to the exact runtime service name." >&2 ;;
+    esac
+    exit 1
+  fi
+done
+
+require_tools
+SERVICE_FILTER="service($(jq -cn --arg name "$SERVICE_NAME" '$name'))"
 
 now_epoch=$(date +%s)
 
@@ -52,6 +75,7 @@ case "$COMMAND" in
       --start-time "$start_time" \
       --end-time "$end_time" \
       --no-sampling \
+      --filter-expression "$SERVICE_FILTER" \
       --profile "$PROFILE" \
       --region "$REGION" \
       --output json)
@@ -82,7 +106,7 @@ case "$COMMAND" in
     RESULT=$(aws xray get-trace-summaries \
       --start-time "$start_time" \
       --end-time "$end_time" \
-      --filter-expression 'responsetime > 1' \
+      --filter-expression "$SERVICE_FILTER AND responsetime > 1" \
       --profile "$PROFILE" \
       --region "$REGION" \
       --output json)
@@ -112,7 +136,7 @@ case "$COMMAND" in
     RESULT=$(aws xray get-trace-summaries \
       --start-time "$start_time" \
       --end-time "$end_time" \
-      --filter-expression 'fault' \
+      --filter-expression "$SERVICE_FILTER AND fault" \
       --profile "$PROFILE" \
       --region "$REGION" \
       --output json)
@@ -147,6 +171,14 @@ case "$COMMAND" in
       --region "$REGION" \
       --output json)
 
+    # This API has no filter-expression argument. Restrict the displayed graph
+    # and its edges to nodes with the configured exact service name.
+    RESULT=$(echo "$RESULT" | jq --arg name "$SERVICE_NAME" '
+      .Services |= map(select(.Name == $name)) |
+      [.Services[].ReferenceId] as $ids |
+      .Services |= map(.Edges = [(.Edges // [])[] | select(.ReferenceId as $id | $ids | index($id))])
+    ')
+
     SERVICE_COUNT=$(echo "$RESULT" | jq '.Services | length')
     echo "Services found: $SERVICE_COUNT"
     echo ""
@@ -173,13 +205,6 @@ case "$COMMAND" in
     ;;
 
   trace)
-    if [ $# -lt 2 ]; then
-      echo "Usage: bin/verify-telemetry trace <trace-id> [profile]"
-      exit 1
-    fi
-    TRACE_ID="$2"
-    PROFILE="${3:-$DEFAULT_PROFILE}"
-
     echo "Fetching trace: $TRACE_ID"
     echo ""
 
@@ -189,6 +214,10 @@ case "$COMMAND" in
       --region "$REGION" \
       --output json)
 
+    # A trace can span applications. Display only this service's segments.
+    RESULT=$(echo "$RESULT" | jq --arg name "$SERVICE_NAME" '
+      .Traces |= map(.Segments |= map(select((.Document | fromjson).name == $name)))
+    ')
     SEGMENT_COUNT=$(echo "$RESULT" | jq '[.Traces[].Segments[]] | length')
     echo "Segments in trace: $SEGMENT_COUNT"
     echo ""

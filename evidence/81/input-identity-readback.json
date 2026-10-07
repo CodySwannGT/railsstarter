@@ -1,0 +1,362 @@
+{
+  "captured_at": "2026-10-04T17:38:34.214Z",
+  "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+  "first_child_uuid": "01a1079a-1893-7142-94c8-1c560545d8d1",
+  "cwd": "/Users/cody/.codex/worktrees/769f/railsstarter",
+  "branch": "codex/81-bootstrap-cdn-sri",
+  "remote_base": "31517fd9aa0c4baf3e5eaecc3d9f7b4c5f271a44",
+  "integrated_head": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "provider": "github",
+  "ref": "CodySwannGT/railsstarter#81",
+  "claim": {
+    "state": "open",
+    "labels": [
+      "type:Task",
+      "priority:low",
+      "human-needed",
+      "component:frontend",
+      "status:in-progress"
+    ],
+    "assignees": [
+      "CodySwannGT"
+    ],
+    "comment_id": 5981821084,
+    "url": "https://github.com/CodySwannGT/railsstarter/issues/81#issuecomment-5981821084",
+    "provenance": "Codex automation reports current direct-session operator authorization. Historical trusted-human hold marker was not cleared or impersonated."
+  },
+  "binding": {
+    "version": 1,
+    "branch": "codex/81-bootstrap-cdn-sri",
+    "provider": "github",
+    "ref": "CodySwannGT/railsstarter#81"
+  },
+  "binding_path": "/Users/cody/workspace/railsstarter/.git/worktrees/railsstarter10/lisa/work-item.json",
+  "context": {
+    "path": "/Users/cody/.codex/worktrees/769f/railsstarter/.lisa/work-item-context.md",
+    "bytes": 221581,
+    "mode": "0600",
+    "sha256": "74fb3082cc038bb6b34e66990ad3e42a2506b88273c0ba56b6d82fc7b8858d78",
+    "ignored": "/Users/cody/workspace/railsstarter/.git/info/exclude:8:.lisa/work-item-context.md\t.lisa/work-item-context.md",
+    "original_body_unchanged": true,
+    "original_body_sha256": "9ab65953c9f7b2f77f154d796f9b7138478da583796571304d345a184ca2fdc6",
+    "completeness": [
+      {
+        "ref": "CodySwannGT/railsstarter#81",
+        "comments_collected": 1,
+        "comments_reported": 1,
+        "child_count": 0,
+        "terminal_connections": [
+          {
+            "path": "graph",
+            "hasNextPage": false
+          },
+          {
+            "path": "timeline/closedByPullRequestsReferences",
+            "hasNextPage": false
+          }
+        ],
+        "post_claim_comments_collected": 2,
+        "post_claim_comments_reported": 2,
+        "post_claim_terminal_connections": [
+          {
+            "path": "graph",
+            "hasNextPage": false
+          },
+          {
+            "path": "timeline/closedByPullRequestsReferences",
+            "hasNextPage": false
+          }
+        ]
+      },
+      {
+        "ref": "CodySwannGT/railsstarter#60",
+        "comments_collected": 1,
+        "comments_reported": 1,
+        "child_count": 26,
+        "terminal_connections": [
+          {
+            "path": "graph",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/0/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/0/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/1/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/1/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/2/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/2/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/3/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/3/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/4/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/4/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/5/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/5/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/6/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/6/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/7/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/7/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/8/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/8/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/9/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/9/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/10/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/10/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/11/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/11/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/12/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/12/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/13/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/13/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/14/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/14/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/15/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/15/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/16/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/16/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/17/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/17/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/18/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/18/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/19/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/19/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/20/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/20/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/21/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/21/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/22/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/22/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/23/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/23/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/24/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/24/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/25/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/25/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "timeline/closedByPullRequestsReferences",
+            "hasNextPage": false
+          }
+        ]
+      },
+      {
+        "ref": "CodySwannGT/railsstarter#65",
+        "comments_collected": 3,
+        "comments_reported": 3,
+        "child_count": 0,
+        "terminal_connections": [
+          {
+            "path": "graph",
+            "hasNextPage": false
+          },
+          {
+            "path": "timeline/closedByPullRequestsReferences",
+            "hasNextPage": false
+          }
+        ]
+      },
+      {
+        "ref": "CodySwannGT/lisa#4330",
+        "comments_collected": 1,
+        "comments_reported": 1,
+        "child_count": 4,
+        "terminal_connections": [
+          {
+            "path": "graph",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/0/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/0/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/1/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/1/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/2/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/2/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/3/labels",
+            "hasNextPage": false
+          },
+          {
+            "path": "graph/subIssues/3/assignees",
+            "hasNextPage": false
+          },
+          {
+            "path": "timeline/closedByPullRequestsReferences",
+            "hasNextPage": false
+          }
+        ]
+      }
+    ]
+  },
+  "sibling_preservation": "Only this per-worktree binding was written. No other team binding, source scratch or ambient database was mutated."
+}

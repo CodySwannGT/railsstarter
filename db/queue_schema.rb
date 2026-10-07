@@ -12,8 +12,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 1) do
-  create_table 'solid_queue_blocked_executions', charset: 'utf8mb3', force: :cascade do |t|
+ActiveRecord::Schema[8.1].define(version: 20_261_005_023_123) do
+  create_table 'solid_queue_batch_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.bigint 'batch_id', null: false
+    t.datetime 'created_at', null: false
+    t.index ['batch_id'], name: 'index_solid_queue_batch_executions_on_batch_id'
+    t.index ['job_id'], name: 'index_solid_queue_batch_executions_on_job_id', unique: true
+  end
+
+  create_table 'solid_queue_batches', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
+    t.string 'active_job_batch_id'
+    t.string 'description'
+    t.text 'on_finish'
+    t.text 'on_success'
+    t.text 'on_failure'
+    t.text 'metadata'
+    t.integer 'total_jobs', default: 0, null: false
+    t.integer 'completed_jobs', default: 0, null: false
+    t.integer 'failed_jobs', default: 0, null: false
+    t.datetime 'enqueued_at'
+    t.datetime 'finished_at'
+    t.datetime 'failed_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['active_job_batch_id'], name: 'index_solid_queue_batches_on_active_job_batch_id', unique: true
+    t.index ['finished_at'], name: 'index_solid_queue_batches_on_finished_at'
+  end
+
+  create_table 'solid_queue_blocked_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.string 'concurrency_key', null: false
     t.datetime 'created_at', null: false
     t.datetime 'expires_at', null: false
@@ -25,7 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index ['job_id'], name: 'index_solid_queue_blocked_executions_on_job_id', unique: true
   end
 
-  create_table 'solid_queue_claimed_executions', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_claimed_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.bigint 'job_id', null: false
     t.bigint 'process_id'
@@ -33,14 +60,14 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index %w[process_id job_id], name: 'index_solid_queue_claimed_executions_on_process_id_and_job_id'
   end
 
-  create_table 'solid_queue_failed_executions', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_failed_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.text 'error'
     t.bigint 'job_id', null: false
     t.index ['job_id'], name: 'index_solid_queue_failed_executions_on_job_id', unique: true
   end
 
-  create_table 'solid_queue_jobs', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_jobs', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.string 'active_job_id'
     t.text 'arguments'
     t.string 'class_name', null: false
@@ -51,20 +78,22 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.string 'queue_name', null: false
     t.datetime 'scheduled_at'
     t.datetime 'updated_at', null: false
+    t.bigint 'batch_id'
     t.index ['active_job_id'], name: 'index_solid_queue_jobs_on_active_job_id'
+    t.index ['batch_id'], name: 'index_solid_queue_jobs_on_batch_id'
     t.index ['class_name'], name: 'index_solid_queue_jobs_on_class_name'
     t.index ['finished_at'], name: 'index_solid_queue_jobs_on_finished_at'
     t.index %w[queue_name finished_at], name: 'index_solid_queue_jobs_for_filtering'
     t.index %w[scheduled_at finished_at], name: 'index_solid_queue_jobs_for_alerting'
   end
 
-  create_table 'solid_queue_pauses', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_pauses', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.string 'queue_name', null: false
     t.index ['queue_name'], name: 'index_solid_queue_pauses_on_queue_name', unique: true
   end
 
-  create_table 'solid_queue_processes', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_processes', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.string 'hostname'
     t.string 'kind', null: false
@@ -78,7 +107,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index ['supervisor_id'], name: 'index_solid_queue_processes_on_supervisor_id'
   end
 
-  create_table 'solid_queue_ready_executions', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_ready_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.bigint 'job_id', null: false
     t.integer 'priority', default: 0, null: false
@@ -88,7 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index %w[queue_name priority job_id], name: 'index_solid_queue_poll_by_queue'
   end
 
-  create_table 'solid_queue_recurring_executions', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_recurring_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.bigint 'job_id', null: false
     t.datetime 'run_at', null: false
@@ -97,7 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index %w[task_key run_at], name: 'index_solid_queue_recurring_executions_on_task_key_and_run_at', unique: true
   end
 
-  create_table 'solid_queue_recurring_tasks', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_recurring_tasks', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.text 'arguments'
     t.string 'class_name'
     t.string 'command', limit: 2048
@@ -113,7 +142,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index ['static'], name: 'index_solid_queue_recurring_tasks_on_static'
   end
 
-  create_table 'solid_queue_scheduled_executions', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_scheduled_executions', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.bigint 'job_id', null: false
     t.integer 'priority', default: 0, null: false
@@ -123,7 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index %w[scheduled_at priority job_id], name: 'index_solid_queue_dispatch_all'
   end
 
-  create_table 'solid_queue_semaphores', charset: 'utf8mb3', force: :cascade do |t|
+  create_table 'solid_queue_semaphores', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.datetime 'expires_at', null: false
     t.string 'key', null: false
@@ -134,6 +163,8 @@ ActiveRecord::Schema[8.1].define(version: 1) do
     t.index ['key'], name: 'index_solid_queue_semaphores_on_key', unique: true
   end
 
+  add_foreign_key 'solid_queue_batch_executions', 'solid_queue_batches', column: 'batch_id', on_delete: :cascade
+  add_foreign_key 'solid_queue_batch_executions', 'solid_queue_jobs', column: 'job_id', on_delete: :cascade
   add_foreign_key 'solid_queue_blocked_executions', 'solid_queue_jobs', column: 'job_id', on_delete: :cascade
   add_foreign_key 'solid_queue_claimed_executions', 'solid_queue_jobs', column: 'job_id', on_delete: :cascade
   add_foreign_key 'solid_queue_failed_executions', 'solid_queue_jobs', column: 'job_id', on_delete: :cascade

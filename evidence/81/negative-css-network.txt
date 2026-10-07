@@ -1,0 +1,10 @@
+1. [GET] http://127.0.0.1:63736/__bootstrap_acceptance?control=css => [200] OK
+2. [GET] http://127.0.0.1:63736/assets/application-d4424c66.css => [200] OK
+3. [GET] https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css => [200] 
+4. [GET] http://127.0.0.1:63736/assets/application-bfcdf840.js => [200] OK
+5. [GET] http://127.0.0.1:63736/assets/turbo.min-9fd88cd5.js => [200] OK
+6. [GET] http://127.0.0.1:63736/assets/stimulus.min-4b1e420e.js => [200] OK
+7. [GET] http://127.0.0.1:63736/assets/stimulus-loading-1fc53fe7.js => [200] OK
+8. [GET] http://127.0.0.1:63736/assets/controllers/application-3affb389.js => [200] OK
+9. [GET] http://127.0.0.1:63736/assets/controllers/index-ee64e1f1.js => [200] OK
+10. [GET] https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js => [200] 

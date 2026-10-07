@@ -1,0 +1,42 @@
+Run options: include {full_description: /blocks/}
+
+Randomized with seed 15295
+
+BootstrapAssets
+  blocks corrupt script integrity and cannot expand navigation or dismiss flash (FAILED - 1)
+  blocks a corrupt stylesheet integrity while unrelated importmap initializes (FAILED - 2)
+
+Failures:
+
+  1) BootstrapAssets blocks corrupt script integrity and cannot expand navigation or dismiss flash
+     Failure/Error: expect(page.evaluate_script('typeof window.bootstrap')).to eq('undefined')
+
+       expected: "undefined"
+            got: "object"
+
+       (compared using ==)
+     # ./spec/browser/bootstrap_assets_spec.rb:89:in 'block (2 levels) in <top (required)>'
+     # ./spec/browser/bootstrap_assets_spec.rb:15:in 'block (2 levels) in <top (required)>'
+
+  2) BootstrapAssets blocks a corrupt stylesheet integrity while unrelated importmap initializes
+     Failure/Error: expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet')).to be(false)
+
+       expected false
+            got true
+     # ./spec/browser/bootstrap_assets_spec.rb:80:in 'block (2 levels) in <top (required)>'
+     # ./spec/browser/bootstrap_assets_spec.rb:15:in 'block (2 levels) in <top (required)>'
+
+Finished in 7.11 seconds (files took 0.75141 seconds to load)
+2 examples, 2 failures
+
+Failed examples:
+
+rspec ./spec/browser/bootstrap_assets_spec.rb:86 # BootstrapAssets blocks corrupt script integrity and cannot expand navigation or dismiss flash
+rspec ./spec/browser/bootstrap_assets_spec.rb:78 # BootstrapAssets blocks a corrupt stylesheet integrity while unrelated importmap initializes
+
+Randomized with seed 15295
+
+Coverage report generated for RSpec to /Users/cody/.codex/worktrees/769f/railsstarter/coverage.
+Line Coverage: 0.0% (0 / 120)
+Branch Coverage: 100.0% (0 / 0)
+Stopped processing SimpleCov as a previous error not related to SimpleCov has been detected

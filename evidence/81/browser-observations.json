@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "work_item": "CodySwannGT/railsstarter#81",
+  "verifier_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "delivery_status": "in_progress",
+  "controller": "Playwright MCP interactive",
+  "baseline": {
+    "captured_at": "2026-10-04T16:10:30Z",
+    "url": "http://127.0.0.1:63736/__bootstrap_acceptance",
+    "viewport": {
+      "width": 800,
+      "height": 900
+    },
+    "head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+    "source": {
+      "path": "app/views/layouts/application.html.erb",
+      "bytes": 2065,
+      "sha256": "fbf0f0db2be8ee561cafe6289ef579da95dd62f1e4973208242bc1c9e3f4dfad"
+    },
+    "css": {
+      "version": "5.3.3",
+      "response_status": 200,
+      "sheet_loaded": false,
+      "browser_integrity_block": true,
+      "computed_sha384": "QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    },
+    "js": {
+      "version": "5.3.3",
+      "loaded": true,
+      "real_flash_dismissed": true
+    },
+    "navbar_toggle_present": false,
+    "navbar_computed_display": "block",
+    "stimulus": true,
+    "turbo": true
+  },
+  "events": [
+    {
+      "phase": "success",
+      "captured_at": "2026-10-04T17:21:17.428Z",
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+      "network": "success-network.json",
+      "initial_state": "success-initial-state.txt",
+      "expanded_state": "success-expanded-state.txt",
+      "dismissed_state": "success-dismissed-state.txt",
+      "importmap_navigation": "success-importmap-navigation.txt",
+      "console": "success-console.txt"
+    },
+    {
+      "phase": "negative-css",
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+      "control_source_sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea",
+      "captured_at": "2026-10-04T17:22:25.830Z",
+      "state": "negative-css-state.txt",
+      "console": "negative-css-console.txt",
+      "outcome": "browser SRI resource blocked; stylesheet unavailable and styling absent"
+    },
+    {
+      "phase": "negative-js",
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+      "control_source_sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684",
+      "captured_at": "2026-10-04T17:22:45.770Z",
+      "state": "negative-js-after-clicks.txt",
+      "console": "negative-js-console.txt",
+      "outcome": "browser SRI resource blocked; Bootstrap absent; toggler/flash clicks inert; importmap remains available"
+    },
+    {
+      "phase": "restored",
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+      "captured_at": "2026-10-04T17:23:03.902Z",
+      "state": "restored-state.txt",
+      "console": "restored-console.txt",
+      "outcome": "loaded CSS/JS and navbar/flash/importmap success restored without source mutation"
+    }
+  ]
+}

@@ -8,8 +8,8 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.8
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+ARG RUBY_VERSION=3.4.11
+FROM docker.io/library/ruby:$RUBY_VERSION-slim-trixie@sha256:4677fd16f2b54ef534d18b0e34e20a15726b62c203cb996fd70297a058864c60 AS base
 
 # Rails app lives here
 WORKDIR /rails
@@ -48,21 +48,9 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-ARG S3_BUCKET_NAME
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
-# Install AWS CLI for pushing assets to S3
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y awscli
-
-# Push precompiled assets to S3 using BuildKit secrets
-RUN --mount=type=secret,id=aws_credentials \
-    . /run/secrets/aws_credentials && \
-    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
-    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
-    aws configure set aws_session_token $AWS_SESSION_TOKEN && \
-    aws configure set region $AWS_REGION && \
-    aws s3 sync public/assets s3://$S3_BUCKET_NAME/assets
+# Asset construction must not depend on deployment credentials or remote services.
+# Publish these exact image artifacts with bin/publish-assets before replacing ECS tasks.
+RUN --network=none AWS_EC2_METADATA_DISABLED=true SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
@@ -77,8 +65,10 @@ RUN apt-get update -qq && \
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+# Source archives extracted under a private umask can contain owner-only directories.
+# Grant source read/traverse access, preserving executable bits and runtime-only writes.
+RUN chmod -R a+rX /rails && \
+    useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 USER rails:rails
 

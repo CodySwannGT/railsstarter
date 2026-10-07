@@ -1,0 +1,615 @@
+{
+  "head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+  "head_excludes_81_edits": true,
+  "normal_source_manifest": [
+    {
+      "path": "app/views/layouts/application.html.erb",
+      "bytes": 2558,
+      "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    {
+      "path": "app/views/layouts/_flash_messages.html.erb",
+      "bytes": 530,
+      "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+    },
+    {
+      "path": "app/views/home/index.html.erb",
+      "bytes": 119,
+      "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+    },
+    {
+      "path": "app/helpers/application_helper.rb",
+      "bytes": 553,
+      "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+    },
+    {
+      "path": "app/controllers/home_controller.rb",
+      "bytes": 187,
+      "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+    },
+    {
+      "path": "app/javascript/application.js",
+      "bytes": 157,
+      "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+    },
+    {
+      "path": "app/javascript/controllers/application.js",
+      "bytes": 218,
+      "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+    },
+    {
+      "path": "app/javascript/controllers/index.js",
+      "bytes": 272,
+      "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+    },
+    {
+      "path": "config/importmap.rb",
+      "bytes": 316,
+      "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+    },
+    {
+      "path": "spec/fixtures/runtime/smoke.rb",
+      "bytes": 11371,
+      "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+    },
+    {
+      "path": "spec/fixtures/runtime/acceptance.json",
+      "bytes": 902,
+      "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+    }
+  ],
+  "screenshots": [
+    {
+      "evidence_id": "baseline",
+      "kind": "screenshot",
+      "locator": "evidence/81/baseline.png",
+      "sha256": "05c9258dfe150350b7e839001a8a9c6eb6c528b352214e570ef7e0d661627f1d",
+      "captured_at": "2026-10-04T16:10:47.697629+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2065,
+          "sha256": "fbf0f0db2be8ee561cafe6289ef579da95dd62f1e4973208242bc1c9e3f4dfad"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": false,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "negative-css",
+      "kind": "screenshot",
+      "locator": "evidence/81/negative-css.png",
+      "sha256": "fc15d2539b2507bc8695be1cbd0c842426b3fb42b6fd972a27b1a5daebd1f6af",
+      "captured_at": "2026-10-04T17:22:26.722190+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea"
+    },
+    {
+      "evidence_id": "negative-js",
+      "kind": "screenshot",
+      "locator": "evidence/81/negative-js.png",
+      "sha256": "2156062af19c9d5533914ddfb02560d1acc106f737f0be642cbe7d36ad220a33",
+      "captured_at": "2026-10-04T17:22:46.587449+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684"
+    },
+    {
+      "evidence_id": "restored",
+      "kind": "screenshot",
+      "locator": "evidence/81/restored.png",
+      "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+      "captured_at": "2026-10-04T17:23:04.767462+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "success-dismissed",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-dismissed.png",
+      "sha256": "d27d198e07c35353db7e86f1cc300ee775c9b99b3f333ff9c483c4d5bbd61abb",
+      "captured_at": "2026-10-04T17:22:04.751375+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "success-expanded",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-expanded.png",
+      "sha256": "cd257101bf894405314242a6b4bd6ca5f240fa5bb55dae2c5f5619fc9ba3f241",
+      "captured_at": "2026-10-04T17:22:03.390987+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "success-home",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-home.png",
+      "sha256": "eccb895547df9fd52ed27b71fc0c6316878f52f008bb3c96595415109b3b8ce5",
+      "captured_at": "2026-10-04T17:22:06.799480+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    },
+    {
+      "evidence_id": "success-initial",
+      "kind": "screenshot",
+      "locator": "evidence/81/success-initial.png",
+      "sha256": "730ecae5bc3ed43777d798443572b0076db1ecd986f722c180c93dc541b14ac7",
+      "captured_at": "2026-10-04T17:21:41.765522+00:00",
+      "controller": "Playwright MCP browser_take_screenshot",
+      "controller_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+      "artifact_head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d",
+      "source_manifest": [
+        {
+          "path": "app/views/layouts/application.html.erb",
+          "bytes": 2558,
+          "sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+        },
+        {
+          "path": "app/views/layouts/_flash_messages.html.erb",
+          "bytes": 530,
+          "sha256": "87b08a6f316aeae3cae6ef77731092e91d61f004d77f7791f08c8e2262077eb7"
+        },
+        {
+          "path": "app/views/home/index.html.erb",
+          "bytes": 119,
+          "sha256": "109527edb7725f65d5ad36a4f3325586d6f317664c19c2b62603795a3af8a788"
+        },
+        {
+          "path": "app/helpers/application_helper.rb",
+          "bytes": 553,
+          "sha256": "8552417914b9643721388f63c860760f2adc3ef46cb04802a666bcef182eb9d2"
+        },
+        {
+          "path": "app/controllers/home_controller.rb",
+          "bytes": 187,
+          "sha256": "5e87b5e5bd4858313854685b89ed93c423a8be3ce9b988140164dfa21df99c80"
+        },
+        {
+          "path": "app/javascript/application.js",
+          "bytes": 157,
+          "sha256": "d3f3d1b31962c4112a529e1f9af3760286edaf0969a4367c7ed90a4c96647650"
+        },
+        {
+          "path": "app/javascript/controllers/application.js",
+          "bytes": 218,
+          "sha256": "b5836315bab7b8d055ac3346bf57f933fa8aa8b37e9ea7b704cb2ae2bff129b8"
+        },
+        {
+          "path": "app/javascript/controllers/index.js",
+          "bytes": 272,
+          "sha256": "a2d8f59d301f2f6ac02171ef63c930e00ea0f0bcf3b6cd8bf0c14a0733414058"
+        },
+        {
+          "path": "config/importmap.rb",
+          "bytes": 316,
+          "sha256": "6a9eb320b24efad132cea99ad8a7cf11940f99625695cf0f152583c2b8e9ba34"
+        },
+        {
+          "path": "spec/fixtures/runtime/smoke.rb",
+          "bytes": 11371,
+          "sha256": "9108312af4c8f9bb493f8d7685f2708a77696cc233b382c12044424700bb6a5e"
+        },
+        {
+          "path": "spec/fixtures/runtime/acceptance.json",
+          "bytes": 902,
+          "sha256": "262dbb487e4510d48f5e217bbe78a9a4b724a3087e5247d500ed6f135dfadf91"
+        }
+      ],
+      "source_contains_uncommitted_81_changes": true,
+      "control_copy_sha256": null
+    }
+  ]
+}

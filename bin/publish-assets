@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# Publish the compiled assets in the exact web image selected for deployment.
+# Containers are never started: the image entrypoint must not prepare databases
+# or load runtime AWS secrets just to extract files. Caller credentials remain
+# in the deployment process, and old fingerprints remain available to old tasks.
+set -euo pipefail
+umask 077
+
+IMAGE=""
+BUCKET=""
+PROFILE=""
+REGION="${AWS_REGION:-us-east-1}"
+
+usage() {
+  echo "Usage: bin/publish-assets --image IMAGE --bucket BUCKET [--profile PROFILE] [--region REGION]"
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --image|--bucket|--profile|--region)
+      if [[ $# -lt 2 || -z "$2" || "$2" == --* ]]; then
+        echo "$1 requires a value" >&2
+        exit 1
+      fi
+      case "$1" in
+        --image) IMAGE="$2" ;;
+        --bucket) BUCKET="$2" ;;
+        --profile) PROFILE="$2" ;;
+        --region) REGION="$2" ;;
+      esac
+      shift 2
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 1 ;;
+  esac
+done
+
+if [[ -z "$IMAGE" || ! "$BUCKET" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ || "$BUCKET" == null ]]; then
+  usage >&2
+  echo "A local web image and an S3 bucket name are required" >&2
+  exit 1
+fi
+
+for command in docker aws jq; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    echo "$command is required for asset publication" >&2
+    exit 1
+  fi
+done
+
+# Resolve a mutable caller reference once; every subsequent operation uses this ID.
+IMAGE_ID=$(docker image inspect --format '{{.Id}}' "$IMAGE")
+if [[ ! "$IMAGE_ID" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+  echo "Could not resolve a unique immutable image ID for $IMAGE" >&2
+  exit 1
+fi
+
+TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/rails-assets.XXXXXXXX")
+CONTAINER_NAME="rails-assets-${TEMP_DIR##*/}-$$"
+cleanup() {
+  docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+  rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+
+docker create --name "$CONTAINER_NAME" "$IMAGE_ID" >/dev/null
+mkdir "$TEMP_DIR/assets"
+docker cp "$CONTAINER_NAME:/rails/public/assets/." "$TEMP_DIR/assets"
+
+# A copied absolute symlink could otherwise make sync read the operator's files.
+if [[ -n "$(find "$TEMP_DIR/assets" -type l -print -quit)" ]]; then
+  echo "Compiled assets contain a symlink in $IMAGE_ID" >&2
+  exit 1
+fi
+
+MANIFEST="$TEMP_DIR/assets/.manifest.json"
+if [[ ! -f "$MANIFEST" ]] || ! jq -e '
+  def asset_path: if type == "object" then .digested_path else . end;
+  type == "object" and length > 0 and
+  all(.[]; asset_path | type == "string" and length > 0 and
+    (test("[\\r\\n]") | not) and
+    (split("/") | all(.[]; . != ".." and . != "." and . != "")))
+  ' "$MANIFEST" >/dev/null 2>&1; then
+  echo "Compiled asset manifest is missing, empty or invalid in $IMAGE_ID" >&2
+  exit 1
+fi
+
+while IFS= read -r asset; do
+  if [[ ! -s "$TEMP_DIR/assets/$asset" || -L "$TEMP_DIR/assets/$asset" ]]; then
+    echo "Compiled asset manifest references a missing or empty asset in $IMAGE_ID" >&2
+    exit 1
+  fi
+done < <(jq -r '.[] | if type == "object" then .digested_path else . end' "$MANIFEST")
+
+declare -a AWS_OPTIONS=(--region "$REGION")
+if [[ -n "$PROFILE" ]]; then
+  AWS_OPTIONS+=(--profile "$PROFILE")
+fi
+
+echo "Publishing assets from $IMAGE_ID to s3://$BUCKET/assets"
+aws s3 sync "$TEMP_DIR/assets" "s3://$BUCKET/assets" "${AWS_OPTIONS[@]}" --no-follow-symlinks --only-show-errors

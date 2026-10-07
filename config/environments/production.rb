@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
 require 'active_support/core_ext/integer/time'
-
-require 'aws-sdk-secretsmanager'
-
-def fetch_secret_key_base
-  client = Aws::SecretsManager::Client.new(region: 'us-east-1')
-  secret = client.get_secret_value(secret_id: 'rails_secret_key_base')
-  secret.secret_string
-end
+require_relative '../../lib/deployed_host_policy'
+require_relative '../../lib/upload_storage'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -31,8 +25,8 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   config.action_controller.asset_host = ENV.fetch('CLOUDFRONT_ENDPOINT', nil)
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Durable user uploads are independent of remote bootstrap and asset publication.
+  config.active_storage.service = UploadStorage.service_for(Rails.env)
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -40,8 +34,8 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # Ordinary deployed boot requires explicit hosts; only real dummy asset builds omit them.
+  DeployedHostPolicy.configure(config)
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [:request_id]
@@ -88,14 +82,5 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [:id]
-  config.secret_key_base = ENV['SECRET_KEY_BASE_DUMMY'] ? 'dummy' : fetch_secret_key_base
-
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.secret_key_base = ENV['SECRET_KEY_BASE_DUMMY'] ? 'dummy' : ENV.fetch('SECRET_KEY_BASE', nil)
 end

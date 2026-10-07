@@ -1,0 +1,6 @@
+{
+  "expanded": "true",
+  "collapseClasses": "navbar-collapse collapse show",
+  "collapseDisplay": "block",
+  "homeVisible": true
+}

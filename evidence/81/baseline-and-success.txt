@@ -1,0 +1,22 @@
+CLI source/hash readback only. Browser behavior is independently captured in screenshots, state and console artifacts.
+Repository: CodySwannGT/railsstarter
+Observed committed HEAD: 2b7af50617a8e3758ac1523e7e29b8d369db347d (excludes uncommitted #81 edits)
+Baseline layout: 2065 bytes SHA256 fbf0f0db2be8ee561cafe6289ef579da95dd62f1e4973208242bc1c9e3f4dfad
+Current layout: 2558 bytes SHA256 7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d
+Source has two selected Bootstrap URLs: True
+Source has two anonymous crossorigin attributes: True
+Actual browser navigation response: https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css status 200 decoded_bytes 232111 SHA256 d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede SRI sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB
+Actual browser navigation response: https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js status 200 decoded_bytes 80496 SHA256 e4fd49181388c48ec5040bd3fe66f57c29c8e67fcd8502b3354b96ec7ab47cc7 SRI sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI
+Restored browser state: {
+  "url": "http://127.0.0.1:63736/__bootstrap_acceptance",
+  "cssLoaded": true,
+  "bootstrap": "5.3.8",
+  "expanded": "true",
+  "collapseClasses": "navbar-collapse collapse show",
+  "collapseDisplay": "block",
+  "flashCount": 0,
+  "stimulus": true,
+  "turbo": true
+}
+Restored browser console: Total messages: 0 (Errors: 0, Warnings: 0)
+

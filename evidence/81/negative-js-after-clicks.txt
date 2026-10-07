@@ -1,0 +1,9 @@
+{
+  "expanded": "false",
+  "collapseDisplay": "none",
+  "collapseClasses": "collapse navbar-collapse",
+  "flashCount": 1,
+  "bootstrap": "undefined",
+  "stimulus": true,
+  "turbo": true
+}

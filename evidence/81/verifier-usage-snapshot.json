@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "stable_entry_id": "lisa-implement:81:01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "native_session_uuid": "01a107a7-2f40-7fb1-afde-1f1ce3f3b616",
+  "agent_path": "/root/browser_verifier",
+  "source": "native Codex token_count cumulative total_token_usage",
+  "observed_at": "2026-10-04T17:51:20.824201+00:00",
+  "captured_at": "2026-10-04T17:50:58.120Z",
+  "usage": {
+    "input_tokens": 20913929,
+    "cached_input_tokens": 20472448,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 39497,
+    "reasoning_output_tokens": 10935,
+    "total_tokens": 20953426
+  },
+  "accounting": "Replace this session cumulative snapshot; never add it to earlier snapshots for same stable ID",
+  "cost_usd": null,
+  "cost_limitation": "Native dollar cost not reported; not guessed"
+}

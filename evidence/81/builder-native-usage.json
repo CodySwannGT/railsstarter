@@ -1,0 +1,16 @@
+{
+  "session_id": "01a1079a-1893-7142-94c8-1c560545d8d1",
+  "usage_id": "lisa-implement:81:01a1079a-1893-7142-94c8-1c560545d8d1",
+  "session_path": "/Users/cody/.codex/sessions/2026/10/04/rollout-2026-10-04T11-48-21-01a1079a-1893-7142-94c8-1c560545d8d1.jsonl",
+  "line": 687,
+  "timestamp": "2026-10-04T17:49:26.166Z",
+  "cumulative": {
+    "input_tokens": 12256729,
+    "cached_input_tokens": 11893888,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 49425,
+    "reasoning_output_tokens": 12286,
+    "total_tokens": 12306154
+  },
+  "accounting": "One cumulative native session reused across bounded resolver and builder assignments; replaces prior snapshot, never sums snapshots or charges roles separately"
+}

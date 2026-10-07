@@ -1,0 +1,91 @@
+{
+  "stage": "65-74-access-research",
+  "donor_commit": "a7dd6ad082f364c730aada5f58f139537a6ef34e",
+  "runtime_boundaries_executed": false,
+  "donor_current_committed_source_hashes": {
+    "bin/resolve-release-artifact": "c4f3cb047ed3578ee2651e73121a4faa747e7a3290f3f499e4a11ddb0f090674",
+    "templates/github/workflows/deploy-ecs.yml": "62d8e09b13772118ac92f09df70d26a29ab6c0c1a0a53482d20766074764e841",
+    "spec/workflows/release_artifact_spec.rb": "152e826b52b1d1e5efd4bd3d16c30a3b57573c5938e6604d854121477dbd1fc5",
+    "spec/deployment/asset_publication_spec.rb": "9edc4c6fdec05b1985d19b99d654a83d0979f3c1a28703d339e26dd6d59009f3",
+    "spec/deployment/fixtures/deployment_cli.py": "eaf95b2ed4c562f747e2051716ddf1c32a7dbe8056d5cc9208014d54b07f22f1",
+    "spec/workflows/ci_migration_spec.rb": "5d6d9c9b68f7c17b6f24e9ca3459ce8ec5443e00817825994e6cbb3487fa3282",
+    "bin/publish-assets": "e3caa50531779614d56b9c33ef092f4392a4eac3b45ec916d9f616306d937319",
+    "bin/deploy-staging": "3127df8161a7865b5245b45e91f19d37bb6f15e11e955808c650cd42027f992b"
+  },
+  "driver": {
+    "original_path": "/Users/cody/.codex/worktrees/3234/65-ci-workflow-migration/tmp/74-verify/empirical.py",
+    "original_sha256": "c36d3e6f14884d1f9b554a97f07405847c4ca0ef213eb3b22fe610aaf98f449f",
+    "prepared_path": "/Users/cody/workspace/railsstarter/.claude/worktrees/65-ci-workflow-migration/tmp/65-74-integration/empirical.py",
+    "prepared_sha256": "fbb6f79eec40cb848a280ca262017e95ac64628a9a9dd15e0eb9dc9860018883",
+    "mode": "0600",
+    "ignored": true,
+    "changes": [
+      "OUT current private stage only",
+      "RUBY accepted current resolver path only"
+    ],
+    "inverse_delta_exact": true,
+    "ast_valid": true,
+    "execute_owner": "root"
+  },
+  "historical_control_names": [
+    "fetch/exact-release-selection",
+    "replay/stable-selection",
+    "release-outcome/success",
+    "release-outcome/failure",
+    "release-outcome/skipped",
+    "release-outcome/cancelled",
+    "wrong-checkout/advanced-head",
+    "checkout/exact-released",
+    "wrong-checkout/tag",
+    "rendered-template/Build and push Rails image",
+    "rendered-template/Build and push Worker image",
+    "rendered-template/Publish assets from the exact pushed web image",
+    "rendered-template/Register new ECS task definitions",
+    "exact-source/imageID/digest/extraction/ECSmetadata",
+    "image-negative/FIXTURE_WRONG_DIGEST_IMAGE",
+    "image-negative/FIXTURE_WRONG_REPOSITORY",
+    "image-negative/FIXTURE_MALFORMED_DIGEST",
+    "image-negative/FIXTURE_NO_DIGEST",
+    "image-negative/FIXTURE_AMBIGUOUS_DIGEST",
+    "image-negative/wrong-revision",
+    "source-negative/unavailable",
+    "source-negative/abbreviated",
+    "source-negative/missing-release",
+    "source-negative/unrelated",
+    "replay/ambiguous-release-rejected",
+    "concurrent-release/self-push-policy-detector"
+  ],
+  "read_only_checks": {
+    "bash_helper_exit": 0,
+    "rendered_shell_steps": 14,
+    "rendered_shell_steps_all_exit_zero": true,
+    "node_version": "22.22.0",
+    "git_version": "2.53.0",
+    "bash_version": "3.2.57",
+    "jq_version": "1.8.2",
+    "template_action_reference_count": 6,
+    "all_references_full_sha": true,
+    "official_third_party_findings": []
+  },
+  "boundary": "Actual disposable Git/local fetch plus actual rendered shell and explicitly synthetic Docker/AWS protocol; not live cloud or hosted scheduling",
+  "pending": [
+    "root final default suite and current lint/normalhooks",
+    "actual hosted scheduling/CI metadata",
+    "actual deployed or registry artifact proof only when opted-in target exists",
+    "complete4333release/commonapply"
+  ],
+  "full_flow_tokens": null,
+  "cost": null,
+  "root_empirical_readback": {
+    "path": "/Users/cody/workspace/railsstarter/.claude/worktrees/65-ci-workflow-migration/tmp/65-74-integration/empirical.json",
+    "sha256": "4f810ed7db1ba7854c7d90a277b7ac885462f49b24e1909b03f7821e665843fb",
+    "status": "pass",
+    "control_count": 26,
+    "source_count": 8,
+    "current_source_hashes_match": true,
+    "cleanup": "TemporaryDirectory removed real repo, fixtures, stopped synthetic extraction scratch; no cloud resources created",
+    "actor_uuid": "01a103db-d315-7e12-887a-3a67d75d920d",
+    "execution_attribution": "Root-only execution reported by root; researcher readback of actual report/current source hashes only",
+    "limits": "Actual Git/local fetch and synthetic Docker/AWS CLI protocol; no hosted/live-cloud proof"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "ruby_runtime": {
+    "version": "3.4.11",
+    "patchlevel": 137,
+    "image_index": "sha256:4677fd16f2b54ef534d18b0e34e20a15726b62c203cb996fd70297a058864c60"
+  },
+  "minimum_versions": {
+    "rails": "8.1.4",
+    "activestorage": "8.1.4",
+    "json": "2.21.2",
+    "loofah": "2.25.2",
+    "mail": "2.9.1",
+    "rails-html-sanitizer": "1.7.1",
+    "rubyzip": "3.4.0"
+  },
+  "aws": {
+    "cloudformation": { "list_exports": { "exports": [] } },
+    "ssm": {
+      "get_parameters_by_path": {
+        "parameters": [{ "name": "/app/runtime_smoke_fixture", "value": "authored-local-only" }]
+      }
+    },
+    "secretsmanager": {
+      "list_secrets": { "secret_list": [] },
+      "get_secret_value": { "secret_string": "authored-runtime-smoke-only-secret-key-base-0000000000000000000000000000000000000000000000000000000000000000" }
+    }
+  },
+  "requests": [
+    { "path": "/", "status": 200, "content_type": "text/html", "body": "Welcome to Your Project" },
+    { "path": "/up", "status": 200, "content_type": "text/html", "body": "background-color: green" }
+  ]
+}

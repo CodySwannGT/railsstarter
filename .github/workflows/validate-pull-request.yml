@@ -1,5 +1,8 @@
 name: Test, Scan and Analyze Frontend
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -10,15 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
         with:
-          ruby-version: .ruby-version
+          bundler-cache: true
       - name: Install Dependencies
         run: bundle install
       - name: Run RuboCop
-        run: bundle exec rubocop --fail-level F
+        run: bundle exec rubocop
 
   check-sonar-secret:
     name: Check SONAR TOKEN presence
@@ -29,14 +32,13 @@ jobs:
       - name: Check SONAR_TOKEN presence
         id: check_token
         run: |
-          if [[ ! -z "${SONAR_TOKEN}" ]]; then
-            echo "has_sonar_token=true" >> $GITHUB_OUTPUT
+          if [[ -n "${SONAR_TOKEN}" ]]; then
+            echo "has_sonar_token=true" >> "$GITHUB_OUTPUT"
           else
-            echo "has_sonar_token=false" >> $GITHUB_OUTPUT
+            echo "has_sonar_token=false" >> "$GITHUB_OUTPUT"
           fi
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_OUTPUT: ${{ github.output }}
 
   run-sonarcloud-analysis:
     name: Run SonarCloud Analysis
@@ -45,9 +47,9 @@ jobs:
     if: needs.check-sonar-secret.outputs.has_sonar_token == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v4
+        uses: SonarSource/sonarcloud-github-action@02ef91109b2d589e757aefcfb2854c2783fd7b19 # v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

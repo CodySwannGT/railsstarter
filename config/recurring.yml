@@ -1,4 +1,7 @@
 development:
+  prune_request_rate_limits:
+    class: PruneRequestRateLimitsJob
+    schedule: every minute
   heartbeat:
     command: "puts 'I am alive'"
     schedule: every 30s
@@ -7,6 +10,9 @@ development:
     schedule: every minute
 
 staging:
+  prune_request_rate_limits:
+    class: PruneRequestRateLimitsJob
+    schedule: every minute
   heartbeat:
     command: "puts 'I am alive'"
     schedule: every 30s
@@ -15,6 +21,9 @@ staging:
     schedule: every minute
 
 production:
+  prune_request_rate_limits:
+    class: PruneRequestRateLimitsJob
+    schedule: every minute
   heartbeat:
     command: "puts 'I am alive'"
     schedule: every 30s

@@ -1,0 +1,40 @@
+{
+  "owner": {
+    "root_uuid": "01a10799-1620-79d0-a738-482cbbbc3cbb",
+    "builder_uuid": "01a1079a-1893-7142-94c8-1c560545d8d1",
+    "cwd": "/Users/cody/.codex/worktrees/769f/railsstarter",
+    "scratch": "/var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-01a10799-1wuhlk7v",
+    "port": 63736,
+    "database_mode": false,
+    "pid": 78840,
+    "aws_fixture_consumed": "authored-local-only",
+    "aws_stub_responses": true,
+    "ready": true
+  },
+  "positive_command_before": "/Users/cody/.local/share/mise/installs/ruby/3.4.8/bin/ruby /var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-01a10799-1wuhlk7v/server.rb",
+  "positive_listener_before": "COMMAND   PID USER   FD   TYPE            DEVICE SIZE/OFF NODE NAME\nruby    78840 cody    7u  IPv4 0x547cc823c09ec7c      0t0  TCP 127.0.0.1:63736 (LISTEN)\n",
+  "control_identity": {
+    "css": {
+      "path": "/var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-01a10799-1wuhlk7v/views/layouts/control_css.html.erb",
+      "sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea",
+      "bytes": 2558,
+      "changed_characters": 1,
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    "js": {
+      "path": "/var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-01a10799-1wuhlk7v/views/layouts/control_js.html.erb",
+      "sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684",
+      "bytes": 2558,
+      "changed_characters": 1,
+      "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    }
+  },
+  "signal": "SIGTERM",
+  "removed_only_exact_owned_scratch": "/var/folders/_2/29n6gy1s42777swvq24j3fh00000gn/T/railsstarter-81-01a10799-1wuhlk7v",
+  "pid_absent": true,
+  "port_listener_absent": true,
+  "scratch_removed": true,
+  "no_database_created": true,
+  "exec_session": 13046,
+  "exec_exit_code": 0
+}

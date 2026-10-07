@@ -1,0 +1,6 @@
+{
+  "flashCount": 0,
+  "stimulus": true,
+  "turbo": true,
+  "bootstrap": "5.3.8"
+}

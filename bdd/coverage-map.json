@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 2,
+  "asOf": "2026-10-07",
+  "runnerPlatforms": {
+    "rspec-capybara-selenium": [
+      "web"
+    ]
+  },
+  "coverageFloor": {
+    "web": 100
+  },
+  "testDiscovery": {
+    "rspec-capybara-selenium": {
+      "roots": [
+        "spec/browser",
+        "spec/fixtures/browser"
+      ],
+      "extensions": [
+        ".rb"
+      ],
+      "ignore": [],
+      "evidence": {
+        "kind": "call-title",
+        "functions": [
+          "it"
+        ]
+      }
+    }
+  },
+  "trackers": {
+    "required": true,
+    "keys": [],
+    "github": {
+      "org": "CodySwannGT",
+      "defaultRepo": "railsstarter",
+      "repos": [
+        "railsstarter"
+      ]
+    }
+  },
+  "platformWaivers": [],
+  "retirements": [],
+  "exclusions": [
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "discovers hosted Linux Chrome and driver executables on PATH",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "uses a verified public macOS Chrome override including spaces",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "names missing Chrome instead of silently selecting another executable",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a directory and a nonexecutable driver with clear prerequisite errors",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "names an absent Linux browser prerequisite with no macOS fallback",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "bounds TERM refusal, escalates only its captured child and proves reaping and absence",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses stale start identity without signalling or reaping the live child",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses lost profile ownership before signalling an otherwise matching PID",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "rechecks profile ownership before KILL after TERM refusal",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a process that is not its direct child before permitting reap",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "matches only the exact owned profile flag and leaves a prefix neighbor untouched",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses scratch deletion while the owned port is still listening",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses scratch deletion when its recorded owner token no longer matches",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "bounds a hung quit, records the failure and reports actual scratch cleanup",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "coordinates owned TERM with native ChromeDriver reaping before the quit deadline",
+      "reason": "Owned browser and driver lifecycle regression; validates teardown and reaping rather than a product behavior requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "accepts positively reaped exit during profile validation without sending another signal",
+      "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "cleans a verified later cross-site Chrome child while its captured root is suspended",
+      "reason": "Owned browser teardown regression for verified later native descendants; validates process lifecycle rather than a product request or CSP requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a matching-profile child whose ancestry belongs to another owner",
+      "reason": "Harness process-ownership validation control for foreign ancestry; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a reused captured root and a changed driver before child admission",
+      "reason": "Harness process-ownership validation control for stale identities; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses missing metadata and malformed or duplicate profile identities",
+      "reason": "Harness process-ownership validation control for unavailable or malformed observations; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses foreign UID and process group even when profile and parent match",
+      "reason": "Harness process-ownership validation control for foreign identity metadata; does not exercise a product host or CSP behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a live foreign process copying the exact owned Chrome profile",
+      "reason": "Native harness ownership refusal control for a live foreign process with a copied profile flag; validates teardown signal safety rather than a product request or CSP requirement."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a coherent replacement birth after a late child was captured",
+      "reason": "Harness owner-callback identity binding control for a coherent replacement birth after capture; validates signal safety rather than a product request or CSP requirement."
+    }
+  ],
+  "mappings": [
+    {
+      "scenario": "BDD-BOOTSTRAP-001",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BOOTSTRAP-002",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BOOTSTRAP-003",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTCSP-001",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "enforces request nonces while scripts, styles, navbar, flash and Turbo navigation work",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTCSP-002",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "blocks absent nonces, inline handlers and an unlisted script and style origin",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTCSP-003",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "detects missing importmap nonce and required CDN source controls in real Chrome",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTSRI-004",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTSRI-005",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/bootstrap_assets_spec.rb",
+      "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTQUOTA-006",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "preserves nonces, required resources and navbar flash Turbo navigation with the physical quota enabled",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTQUOTA-007",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "enforces the existing missing-importmap-nonce failure control with the physical quota enabled",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-REQUESTQUOTA-008",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_rate_limits_spec.rb",
+      "evidence": "observes real HTTP quota rejection in Chrome while exact health remains available",
+      "level": "behavioral"
+    }
+  ]
+}

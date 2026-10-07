@@ -1,0 +1,34 @@
+[
+  {
+    "resource": "css",
+    "control_source_sha256": "fb58197466dc9b02c21cde218eb271f4ed39e08337760607d8879a535720bdea",
+    "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+    "bytes": 2558,
+    "changed_characters": 1,
+    "changed_byte_offset": 698,
+    "from": "s",
+    "to": "A",
+    "url_unchanged": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css",
+    "control_integrity": "sha384-ARIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB",
+    "source_manifest": {
+      "app/views/layouts/application.html.erb": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    "head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d"
+  },
+  {
+    "resource": "js",
+    "control_source_sha256": "f02284726595b3b1e92dce0fb81d17adadcba2e34ee8da4c8fa41dc16fb19684",
+    "source_sha256": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d",
+    "bytes": 2558,
+    "changed_characters": 1,
+    "changed_byte_offset": 1066,
+    "from": "F",
+    "to": "A",
+    "url_unchanged": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
+    "control_integrity": "sha384-AKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI",
+    "source_manifest": {
+      "app/views/layouts/application.html.erb": "7b7839ba36a3c46f5401965561db1760ff9c287ed562aca0d12121843506920d"
+    },
+    "head_sha": "2b7af50617a8e3758ac1523e7e29b8d369db347d"
+  }
+]
