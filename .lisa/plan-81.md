@@ -1,5 +1,11 @@
 # Scoped plan — Bootstrap CDN/SRI #81 local handoff
 
+## 2026-10-07 design-source review correction
+
+Current operator authorization includes completing and merging the batch. The enabled official design-source gate rejected the changed layout because its declaration was absent. The generic Bootstrap starter layout is maintained in this repository and has no Figma source in the project. Add the explicit, reason-bearing exception marker without changing any other layout byte or behavior.
+
+Task metadata: plan layout-design-source; type task; acceptance_criteria [declare the actual layout design source, preserve all existing markup and values]; relevant_documentation design-source-of-truth rule and official design-source gate; testing_requirements [official changed-surface gate, byte comparison of remaining layout]; skills [lisa-tdd-implementation, lisa-git-commit]; learnings [a generic repository-owned layout still needs an explicit declaration when design-source enforcement is enabled]. Verification type documentation, command official design-source-gate.mjs against the batch change, expected changed layout is admitted as a reason-bearing exception. The original gate failure is the RED control; this comment-only correction needs no additional behavioral test.
+
 Full delivery is in progress. Operator requires stable LOCAL independent-review/evidence handoff BEFORE commit/push/PR. Root reviews first. Keep #81 open/in-progress, binding and ignored private context retained.
 
 Root consumed complete exact 221581-byte bundle before planning. Private SHA256 74fb3082cc038bb6b34e66990ad3e42a2506b88273c0ba56b6d82fc7b8858d78. Roster is .lisa/roster/CodySwannGT-railsstarter-81.md. First resolver completed claimed/open worktree binding. Historical hold text remains intact, current direct-session operator authorization takes precedence and is reported honestly, not as trusted tracker-human release evidence.
