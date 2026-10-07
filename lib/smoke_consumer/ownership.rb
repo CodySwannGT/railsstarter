@@ -511,7 +511,8 @@ module SmokeConsumer
       write_once('cleanup-request.json', { 'token' => token })
     end
 
-    # Write a safe named JSON receipt exclusively with owner-only permissions.
+    # Publish complete private JSON atomically without replacing an existing receipt.
+    # An exclusive hard link keeps polling readers from observing a partial write.
     # @param name [String] name used by this operation
     # @param data [Hash] manifest, Docker observation, or committed input data used by this operation
     # @return [Integer]
@@ -520,7 +521,7 @@ module SmokeConsumer
       validate
       raise Error, 'Unsafe control filename' unless name.match?(/\A[a-z][a-z0-9-]*\.json\z/)
 
-      File.open(File.join(root, name), File::WRONLY | File::CREAT | File::EXCL, 0o600) { |file| file.write(JSON.generate(data)) }
+      ControlPublication.new(self, name, data).write
     end
 
     private
@@ -540,6 +541,64 @@ module SmokeConsumer
         yield data
         store(data)
       end
+    end
+  end
+
+  # Owns one temporary inode until complete JSON is exclusively linked into place.
+  class ControlPublication
+    # @param ownership [Ownership] current private root validated by the caller
+    # @param name [String] safe final control filename
+    # @param data [Hash] JSON control contents
+    def initialize(ownership, name, data)
+      @ownership = ownership
+      root = ownership.root
+      @destination = File.join(root, name)
+      @temporary = File.join(root, "control-#{SecureRandom.hex(16)}.json")
+      @data = data
+      @file = nil
+      @identity = nil
+    end
+
+    # Close the writer and unlink only its own temporary inode on every outcome.
+    # @return [Integer] original JSON write byte count
+    def write
+      File.open(@temporary, File::WRONLY | File::CREAT | File::EXCL, 0o600) do |file|
+        @file = file
+        @identity = file.stat
+        publish
+      end
+    ensure
+      remove_temporary if @identity
+    end
+
+    private
+
+    # Flush complete bytes before atomic exclusive publication; never rename over a reader.
+    # @return [Integer] original JSON write byte count
+    def publish
+      written = @file.write(JSON.generate(@data))
+      @file.flush
+      @file.fsync
+      validate_temporary
+      File.link(@temporary, @destination)
+      written
+    end
+
+    # Reject a substituted file before linking or removing the owned temporary inode.
+    # @return [void]
+    # @raise [Error] inode, owner, or regular-file type changed
+    def validate_temporary
+      @ownership.validate
+      stat = File.lstat(@temporary)
+      expected = [@identity.dev, @identity.ino, Process.uid, 'file']
+      raise Error, 'Control temporary identity changed' unless [stat.dev, stat.ino, stat.uid, stat.ftype] == expected
+    end
+
+    # Leave a colliding or substituted foreign path untouched.
+    # @return [void]
+    def remove_temporary
+      validate_temporary
+      File.unlink(@temporary)
     end
   end
 end
