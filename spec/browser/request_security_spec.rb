@@ -70,7 +70,7 @@ RSpec.describe RequestSecurity do
       expect(page.evaluate_script('window.requestSecurityDocumentIdentity')).to eq('same-document')
     end
 
-    it 'enforces request nonces while scripts, styles, navbar, flash and Turbo navigation work' do
+    it('enforces request nonces while scripts, styles, navbar, flash and Turbo navigation work') do
       expect_fresh_nonces
       page.visit('/__request_security')
       initialized
@@ -92,7 +92,7 @@ RSpec.describe RequestSecurity do
       JS
     end
 
-    it 'blocks absent nonces, inline handlers and an unlisted script and style origin' do
+    it('blocks absent nonces, inline handlers and an unlisted script and style origin') do
       page.visit('/__request_security')
       initialized
       expect(harness.response('/__unauthorized.js')[:status]).to eq(200)
@@ -105,7 +105,7 @@ RSpec.describe RequestSecurity do
       harness.capture('unauthorized-controls')
     end
 
-    it 'detects missing importmap nonce and required CDN source controls in real Chrome' do
+    it('detects missing importmap nonce and required CDN source controls in real Chrome') do
       page.visit('/__request_security?control=nonce')
       wait_for { harness.violations.any? { |event| event['directive'] == 'script-src-elem' } }
       expect(page.evaluate_script('!!window.Stimulus || !!window.Turbo')).to be(false)
@@ -131,7 +131,7 @@ RSpec.describe RequestSecurity do
       Dir.mktmpdir('request-security-prerequisite-', &)
     end
 
-    it 'discovers hosted Linux Chrome and driver executables on PATH' do
+    it('discovers hosted Linux Chrome and driver executables on PATH') do
       in_owned_directory do |directory|
         chrome = executable(directory, 'google-chrome')
         driver = executable(directory, 'chromedriver')
@@ -140,14 +140,14 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'uses a verified public macOS Chrome override including spaces' do
+    it('uses a verified public macOS Chrome override including spaces') do
       in_owned_directory do |directory|
         chrome = executable(directory, 'Google Chrome')
         expect(RequestSecurityExecutable.chrome({ 'CHROME_BIN' => chrome }, 'arm64-darwin')).to eq(chrome)
       end
     end
 
-    it 'names missing Chrome instead of silently selecting another executable' do
+    it('names missing Chrome instead of silently selecting another executable') do
       in_owned_directory do |directory|
         executable(directory, 'google-chrome')
         environment = { 'CHROME_BIN' => File.join(directory, 'missing'), 'PATH' => directory }
@@ -155,7 +155,7 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'refuses a directory and a nonexecutable driver with clear prerequisite errors' do
+    it('refuses a directory and a nonexecutable driver with clear prerequisite errors') do
       in_owned_directory do |directory|
         driver = executable(directory, 'chromedriver', 0o600)
         expect { RequestSecurityExecutable.chrome({ 'CHROME_BIN' => directory }) }.to raise_error(/CHROME_BIN.*executable/)
@@ -163,7 +163,7 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'names an absent Linux browser prerequisite with no macOS fallback' do
+    it('names an absent Linux browser prerequisite with no macOS fallback') do
       expect { RequestSecurityExecutable.chrome({ 'PATH' => '' }, 'x86_64-linux') }.to raise_error(/Chrome executable.*CHROME_BIN/)
     end
 
@@ -193,7 +193,7 @@ RSpec.describe RequestSecurity do
       File.write(path, JSON.pretty_generate(record), mode: 'wx', perm: 0o600)
     end
 
-    it 'bounds TERM refusal, escalates only its captured child and proves reaping and absence' do
+    it('bounds TERM refusal, escalates only its captured child and proves reaping and absence') do
       with_term_ignoring_child do |child|
         started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         child.terminate(timeout: 0.1)
@@ -204,7 +204,7 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'refuses stale start identity without signalling or reaping the live child' do
+    it('refuses stale start identity without signalling or reaping the live child') do
       with_term_ignoring_child do |child|
         impostor = RequestSecurityProcess.new(child.pid, child: true)
         impostor.instance_variable_set(:@identity, 'stale start identity')
@@ -214,7 +214,7 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'refuses lost profile ownership before signalling an otherwise matching PID' do
+    it('refuses lost profile ownership before signalling an otherwise matching PID') do
       with_term_ignoring_child do |child|
         impostor = RequestSecurityProcess.new(child.pid, child: true, owner_check: -> { false })
         expect { impostor.terminate(timeout: 0.1) }.to raise_error(/profile ownership changed/)
@@ -223,7 +223,7 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'rechecks profile ownership before KILL after TERM refusal' do
+    it('rechecks profile ownership before KILL after TERM refusal') do
       with_term_ignoring_child do |child|
         checks = 0
         owner_check = lambda do
@@ -237,11 +237,11 @@ RSpec.describe RequestSecurity do
       end
     end
 
-    it 'refuses a process that is not its direct child before permitting reap' do
+    it('refuses a process that is not its direct child before permitting reap') do
       expect { RequestSecurityProcess.new(Process.pid, child: true) }.to raise_error(/not our direct child/)
     end
 
-    it 'matches only the exact owned profile flag and leaves a prefix neighbor untouched' do
+    it('matches only the exact owned profile flag and leaves a prefix neighbor untouched') do
       harness = described_class.new
       harness.setup_scratch
       profile = File.join(harness.instance_variable_get(:@scratch), 'chrome')
@@ -254,7 +254,7 @@ RSpec.describe RequestSecurity do
       harness&.stop
     end
 
-    it 'refuses scratch deletion while the owned port is still listening' do
+    it('refuses scratch deletion while the owned port is still listening') do
       harness = described_class.new
       harness.setup_scratch
       listener = TCPServer.new('127.0.0.1', harness.instance_variable_get(:@ports).first)
@@ -265,7 +265,7 @@ RSpec.describe RequestSecurity do
       harness&.stop
     end
 
-    it 'refuses scratch deletion when its recorded owner token no longer matches' do
+    it('refuses scratch deletion when its recorded owner token no longer matches') do
       harness = described_class.new
       harness.setup_scratch
       owner_file = File.join(harness.instance_variable_get(:@scratch), 'owner.json')
@@ -278,7 +278,7 @@ RSpec.describe RequestSecurity do
       harness&.stop
     end
 
-    it 'bounds a hung quit, records the failure and reports actual scratch cleanup' do
+    it('bounds a hung quit, records the failure and reports actual scratch cleanup') do
       harness = described_class.new(cleanup_timeout: 0.1)
       harness.setup_scratch
       driver = instance_double(Capybara::Selenium::Driver)

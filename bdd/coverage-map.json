@@ -40,7 +40,78 @@
   },
   "platformWaivers": [],
   "retirements": [],
-  "exclusions": [],
+  "exclusions": [
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "discovers hosted Linux Chrome and driver executables on PATH",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "uses a verified public macOS Chrome override including spaces",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "names missing Chrome instead of silently selecting another executable",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a directory and a nonexecutable driver with clear prerequisite errors",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "names an absent Linux browser prerequisite with no macOS fallback",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "bounds TERM refusal, escalates only its captured child and proves reaping and absence",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses stale start identity without signalling or reaping the live child",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses lost profile ownership before signalling an otherwise matching PID",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "rechecks profile ownership before KILL after TERM refusal",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a process that is not its direct child before permitting reap",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "matches only the exact owned profile flag and leaves a prefix neighbor untouched",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses scratch deletion while the owned port is still listening",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses scratch deletion when its recorded owner token no longer matches",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "bounds a hung quit, records the failure and reports actual scratch cleanup",
+      "reason": "Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior."
+    }
+  ],
   "mappings": [
     {
       "scenario": "BDD-BOOTSTRAP-001",
@@ -73,7 +144,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-CSP-001",
+      "scenario": "BDD-REQUESTCSP-001",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -83,7 +154,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-CSP-002",
+      "scenario": "BDD-REQUESTCSP-002",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -93,7 +164,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-CSP-003",
+      "scenario": "BDD-REQUESTCSP-003",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -103,7 +174,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-SRI-004",
+      "scenario": "BDD-REQUESTSRI-004",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -113,7 +184,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-SRI-005",
+      "scenario": "BDD-REQUESTSRI-005",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -123,7 +194,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-QUOTA-006",
+      "scenario": "BDD-REQUESTQUOTA-006",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -133,7 +204,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-QUOTA-007",
+      "scenario": "BDD-REQUESTQUOTA-007",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"
@@ -143,7 +214,7 @@
       "level": "behavioral"
     },
     {
-      "scenario": "BDD-REQUEST-QUOTA-008",
+      "scenario": "BDD-REQUESTQUOTA-008",
       "runner": "rspec-capybara-selenium",
       "platforms": [
         "web"

@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "check:work-item": "node scripts/lisa-work-item.mjs validate-pr",
-    "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/all/copy-overwrite/scripts/lisa-postinstall.mjs || true"
+    "postinstall": "[ -n \"$CI\" ] || LISA_BOOTSTRAP=1 node node_modules/@codyswann/lisa/all/copy-overwrite/scripts/lisa-postinstall.mjs || true",
+    "check:behavior-contract": "BDD_COVERAGE_ROOT=. node node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/check-bdd-coverage.mjs --json",
+    "bdd:coverage": "BDD_COVERAGE_ROOT=. node node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/check-bdd-coverage.mjs --json",
+    "bdd:coverage:write": "BDD_COVERAGE_ROOT=. node node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/check-bdd-coverage.mjs --write --json",
+    "bdd:matrix": "BDD_COVERAGE_ROOT=. node node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/bdd-matrix.mjs --write"
   },
   "devDependencies": {
     "@codyswann/lisa": "^4.70.4"

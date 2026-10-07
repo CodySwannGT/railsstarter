@@ -40,8 +40,10 @@ The DB-free request and Chrome fixtures use the real application, global AWS SDK
 stubs and explicit database refusal. They observe headers/nonces, real CSS and
 module execution, navbar/flash/Turbo navigation, and unauthorized-origin,
 missing-nonce and corrupted-integrity controls. Existing Bootstrap scenarios
-remain separate. Missing common BDD gate/matrix tooling is tracked by issue #65;
-authored mappings are not a claim that its gate ran or that hosted CI passed.
+remain separate. The released Lisa BDD checker and matrix generator are wired
+through the project commands and required CI caller described in
+[the BDD checks](bdd-checks.md). Generated reports distinguish authored mappings
+from supplied execution results; they do not imply hosted CI passed.
 
 Anonymous requests now share a fixed-window quota across application processes,
 using an atomic dedicated table in the existing MySQL cache database. The generic
@@ -113,9 +115,9 @@ restricted synthetic user and four guarded schemas, execute source-identical
 snapshots and clean only recorded owned resources with monotonic deadlines and
 positive absence readbacks. Source schemas are never changed by running specs.
 
-The focused checks retain their actual coverage exits. Full 80/70 coverage,
-assembled-batch BDD tooling adoption and hosted Linux AMD64 CI remain later
-verification. The independent DB-free CSP CLI fixture explicitly uses direct
+The focused checks retain their actual coverage exits. Full 80/70 coverage and
+hosted Linux AMD64 CI require their own actual runs. The independent DB-free
+CSP CLI fixture explicitly uses direct
 ingress, a valid socket address and disabled quota storage. It clears ambient
 request/proxy inputs while retaining its host, CSP, SSL and asset-task controls.
 

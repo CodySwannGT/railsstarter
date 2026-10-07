@@ -49,7 +49,23 @@
       }
     },
     "traceability": {
-      "pull-request": "required"
+      "pull-request": {
+        "level": "required",
+        "caller_chain": [
+          "Quality Checks"
+        ]
+      }
+    },
+    "behavior-contract": {
+      "pull-request": {
+        "level": "required",
+        "run": [
+          "bdd:coverage"
+        ],
+        "caller_chain": [
+          "Behavior Checks"
+        ]
+      }
     }
   }
 }

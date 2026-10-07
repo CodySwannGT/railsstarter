@@ -47,7 +47,7 @@ RSpec.describe 'RequestRateLimits' do
     expect(page.evaluate_script('window.quotaDocumentIdentity')).to eq('same-document')
   end
 
-  it 'preserves nonces, required resources and navbar flash Turbo navigation with the physical quota enabled' do
+  it('preserves nonces, required resources and navbar flash Turbo navigation with the physical quota enabled') do
     page.visit('/__request_security')
     initialized
     expect(page.evaluate_script('!!document.querySelector("link[href*=bootstrap]").sheet && bootstrap.Collapse.VERSION === "5.3.8"')).to be(true)
@@ -60,7 +60,7 @@ RSpec.describe 'RequestRateLimits' do
     harness.capture('quota-positive')
   end
 
-  it 'enforces the existing missing-importmap-nonce failure control with the physical quota enabled' do
+  it('enforces the existing missing-importmap-nonce failure control with the physical quota enabled') do
     page.visit('/__request_security?control=nonce')
     Selenium::WebDriver::Wait.new(timeout: 10).until { harness.violations.any? { |event| event['directive'] == 'script-src-elem' } }
     expect(page.evaluate_script('!!window.Stimulus || !!window.Turbo')).to be(false)
@@ -84,7 +84,7 @@ RSpec.describe 'RequestRateLimits' do
       JS
     end
 
-    it 'observes real HTTP quota rejection in Chrome while exact health remains available' do
+    it('observes real HTTP quota rejection in Chrome while exact health remains available') do
       page.visit('/__request_security')
       initialized
       statuses = browser_quota
