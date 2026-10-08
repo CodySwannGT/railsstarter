@@ -886,12 +886,27 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       CHILD
     end
 
+    # Require native exit/EOF observations without including private command data.
+    # @param script [String] native leader/grandchild program
+    # @param file [String] private process-identity destination
+    # @param nonce [String] private identity witness
+    # @return [void]
+    def expect_inherited_pipe_deadline(script, file, nonce)
+      expect { described_class::Command.new(timeout: 5).call(RbConfig.ruby, '-e', script, file, nonce, timeout: 0.8) }
+        .to raise_error(described_class::Error, /deadline exceeded/) do |error|
+          expect(error.observation).to eq('output_eof' => false, 'status_eof' => true, 'exitstatus' => 0, 'termsig' => nil)
+          receipt = described_class::CleanupFailure.new('images', error).to_h
+          expect(receipt.fetch('command_deadlines')).to eq([error.observation])
+          expect(JSON.generate(receipt)).not_to include(nonce, script, file)
+        end
+    end
+
     it 'cleans an inherited-pipe grandchild after its leader exits and is reaped' do
       Dir.mktmpdir('consumer-exited-leader', File.realpath(Dir.tmpdir)) do |base|
         file = File.join(base, 'nonce-process.json')
         nonce = SecureRandom.hex(16)
         script = exited_leader_script
-        expect { described_class::Command.new(timeout: 5).call(RbConfig.ruby, '-e', script, file, nonce, timeout: 0.8) }.to raise_error(described_class::Error, /deadline exceeded/)
+        expect_inherited_pipe_deadline(script, file, nonce)
         row = JSON.parse(File.read(file))
         expect(row.fetch('nonce')).to eq(nonce)
         await_actual_absence(row.fetch('pid'))

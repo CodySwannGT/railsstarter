@@ -874,7 +874,7 @@ module SmokeConsumer
     def to_h
       causes = []
       locations = []
-      queries = []
+      queries = { 'process_queries' => [], 'command_deadlines' => [] }
       seen = {}.compare_by_identity
       @current = @error
       while @current && causes.length < 4 && !seen.key?(@current)
@@ -883,7 +883,7 @@ module SmokeConsumer
         @current = @current.cause
       end
       { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_locations' => locations,
-        'cause_chain_truncated' => @current ? true : false, 'process_queries' => queries }
+        'cause_chain_truncated' => @current ? true : false, **queries }
     end
 
     private
@@ -891,13 +891,24 @@ module SmokeConsumer
     # Append this actual cause's fingerprint, admitted positions, and typed query metrics.
     # @param causes [Array<Hash>] bounded exception fingerprints
     # @param locations [Array<Array<Hash>>] corresponding admitted native source positions
-    # @param queries [Array<Hash>] bounded process-query diagnostics without observed output
+    # @param queries [Hash{String => Array<Hash>}] bounded scalar progress without observed output
     # @return [void]
     def record(causes, locations, queries)
       causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
                   'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
       locations << CleanupFailureLocations.new(@current).to_a
-      queries << @current.observation if @current.is_a?(ProcessQueryFailure)
+      record_query(queries)
+    end
+
+    # Select the typed observation destination before reading its immutable scalar record.
+    # @param queries [Hash{String => Array<Hash>}] bounded process/command progress arrays
+    # @return [void]
+    def record_query(queries)
+      key = case @current
+            when ProcessQueryFailure then 'process_queries'
+            when CommandDeadlineFailure then 'command_deadlines'
+            end
+      queries.fetch(key) << @current.observation if key
     end
   end
 
