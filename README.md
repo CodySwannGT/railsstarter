@@ -155,6 +155,8 @@ Use a short-lived feature branch targeting `main`. Choose a real issue in the co
 
 For a documentation-only contribution, run its relevant local checks and normal hooks, then batch related changes into one PR. Preserve full CI on the assembled PR. Rails environment names do not require permanent `dev` or `staging` branches.
 
+Follow the [dependency update guide](docs/dependency-updates.md) for Lisa ownership and cadence, both JavaScript lockfiles, and update coverage for additional npm packages. Bundler and GitHub Actions updates remain daily.
+
 When finished with the local application, stop only its Compose project with `docker compose down`. Add `--volumes` only when you intend to delete that project's databases.
 
 ## Generated schemas
