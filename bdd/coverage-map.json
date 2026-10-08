@@ -163,6 +163,11 @@
     },
     {
       "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "gives the native driver owned temporary paths without changing the parent environment",
+      "reason": "Native fixture-process environment and scratch ownership control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
       "evidence": "retains an empty startup log when failure precedes driver execution",
       "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
     },

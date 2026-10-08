@@ -98,8 +98,10 @@ class BootstrapAssets
 
   def browser_options
     options = Selenium::WebDriver::Chrome::Options.new
+    options.binary = ENV['CHROME_BIN'] if ENV.key?('CHROME_BIN')
     options.add_argument('--headless=new')
     options.add_argument('--window-size=800,900')
+    options.add_argument("--user-data-dir=#{File.join(@scratch, 'chrome')}")
     options.add_option('goog:loggingPrefs', browser: 'ALL', performance: 'ALL')
     options
   end

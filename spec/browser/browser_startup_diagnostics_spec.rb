@@ -29,7 +29,7 @@ RSpec.describe BrowserStartupDiagnostics do
       services.last.log&.write("[123:ERROR:startup.cc:1] fixture native startup refusal\n")
       raise original_error
     end
-    allow(Selenium::WebDriver::Service).to receive(:chrome).and_wrap_original do |original, **options|
+    allow(BrowserFixtureChromeService).to receive(:new).and_wrap_original do |original, **options|
       services << original.call(**options)
       services.last
     end
@@ -48,6 +48,34 @@ RSpec.describe BrowserStartupDiagnostics do
     fixture
   end
 
+  def native_driver_fixture
+    path = File.join(directory, 'driver-fixture')
+    File.write(path, "#!#{RbConfig.ruby}\n" + native_driver_source, mode: 'wx', perm: 0o700)
+    path
+  end
+
+  def native_driver_source
+    <<~'RUBY'
+      require 'socket'
+      require 'json'
+      puts JSON.generate(ENV.to_h.slice('TMPDIR', 'TMP', 'TEMP'))
+      $stdout.flush
+      port = Integer(ARGV.grep(/^--port=/).first.split('=').last)
+      server = TCPServer.new('127.0.0.1', port)
+      loop do
+        socket = server.accept
+        request = socket.gets
+        while (header = socket.gets) && header != "\r\n"
+        end
+        body = '{"value":{"ready":true}}'
+        socket.write("HTTP/1.1 200 OK\r\nContent-Length: #{body.bytesize}\r\nConnection: close\r\n\r\n#{body}")
+        socket.close
+        break if request.include?('/shutdown')
+      end
+      server.close
+    RUBY
+  end
+
   [RequestSecurity, BootstrapAssets].each do |type|
     context "with #{type.name}" do
       it('retains startup failure diagnostics through a private verbose IO without replacing the exception') do
@@ -63,6 +91,19 @@ RSpec.describe BrowserStartupDiagnostics do
 
   context 'with owned diagnostic files' do
     let(:diagnostics) { described_class.new(directory, 'fixture') }
+
+    it('gives the native driver owned temporary paths without changing the parent environment') do
+      previous = ENV.to_h.slice('TMPDIR', 'TMP', 'TEMP')
+      service = diagnostics.service(native_driver_fixture)
+      manager = service.launch
+      manager.stop
+      service.log.rewind
+      expect(JSON.parse(service.log.gets)).to eq('TMPDIR' => directory, 'TMP' => directory, 'TEMP' => directory)
+      expect(ENV.to_h.slice('TMPDIR', 'TMP', 'TEMP')).to eq(previous)
+    ensure
+      manager&.stop
+      diagnostics.close
+    end
 
     it('retains an empty startup log when failure precedes driver execution') do
       diagnostics.retain(original_error)

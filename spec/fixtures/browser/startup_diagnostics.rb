@@ -4,6 +4,36 @@ require 'digest'
 require 'json'
 require 'tmpdir'
 
+# Passes temporary paths only to our native driver and its browser children.
+class BrowserFixtureServiceManager < Selenium::WebDriver::ServiceManager
+  def initialize(config)
+    @temporary_directory = config.temporary_directory
+    super
+  end
+
+  private
+
+  def build_process(*command)
+    environment = { 'TMPDIR' => @temporary_directory, 'TMP' => @temporary_directory, 'TEMP' => @temporary_directory }
+    super(environment, *command)
+  end
+end
+
+# Keeps Selenium's original startup, process-group and shutdown implementation.
+class BrowserFixtureChromeService < Selenium::WebDriver::Chrome::Service
+  attr_reader :temporary_directory
+
+  def initialize(temporary_directory:, **)
+    @temporary_directory = temporary_directory
+    super(**)
+  end
+
+  def launch
+    self.executable_path ||= Selenium::WebDriver::DriverFinder.new(nil, self).driver_path
+    BrowserFixtureServiceManager.new(self).tap(&:start)
+  end
+end
+
 # Retains only startup observations; browser protocol output stays private.
 class BrowserStartupDiagnostics
   LOG_BYTES = 65_536
@@ -22,7 +52,7 @@ class BrowserStartupDiagnostics
   # @param path [String, nil] original selected ChromeDriver path
   # @return [Selenium::WebDriver::Chrome::Service]
   def service(path = nil)
-    @service ||= Selenium::WebDriver::Service.chrome(path: path, args: ['--verbose'], log: @log)
+    @service ||= BrowserFixtureChromeService.new(temporary_directory: @scratch, path: path, args: ['--verbose'], log: @log)
   end
 
   # @param failure [Exception] original startup exception, never rewritten
