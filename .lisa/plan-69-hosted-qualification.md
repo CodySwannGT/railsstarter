@@ -108,6 +108,16 @@ Live GitHub check-run evidence at published `285901f09cee55b2b3bf80a378fdc477116
 
 ## Published Lisa 4.71.4 adoption
 
+### Current adoption: published Lisa 4.71.10
+
+The chronology correction shipped in upstream PR #4388 after passing local and hosted checks and substantive CodeRabbit approval. The actual release run 37736193285 succeeded. Registry version 4.71.10, its official tarball integrity and genuine tag agree on release commit `e9e985dfe1de2866d89582cfa02d033cec785f8b`; the published chronology modules match reviewed upstream source.
+
+Both JavaScript locks now select that exact release. Frozen Bun installation and a separate disposable npm ci passed. The npm consistency run disabled lifecycle execution only for lock verification, retained both copied inputs, and observed the exact installed version and release identity. The existing consumer lifecycle example genuinely failed on the new locked release before the verified tuple was admitted. All 14 lifecycle boundary examples then passed, including altered origin, integrity and script refusals. That focused run exited 2 solely because the unchanged aggregate coverage floors apply to partial test selections.
+
+Explicit full Fleet apply completed and pinned the Rails CI caller to the genuine immutable release. All 23 changed managed script files match installed package source bytes. Doctor exited successfully without errors, reporting the existing worker/worktree warnings and three preserved copy-contents host files: `.gitattributes`, `.gitignore` and `Gemfile`. Their starter-specific content remains present; the Gemfile Lisa guardrail block and learnings merge mappings were inspected. This record does not claim those warnings disappeared.
+
+The three previously committed browser corrections and this adoption are submitted together through the original full Git push. Full-suite publication, new-head hosted checks, current substantive review and the final published-main walkthrough remain required until their actual terminal results arrive.
+
 Upstream PR4373 merged with substantive CodeRabbit approval and passing hosted checks. Its original release run 37707755055 completed successfully. The genuine npm package, GitHub release tag and embedded release identity agree on version 4.71.4 and commit `576a393ba84f328089ee9cfecd47119992636908`. The downloaded archive's SHA512 matches the registry integrity, and the three checked authority/runtime helpers match the installed distribution bytes.
 
 The manifest and both committed JavaScript locks now resolve that released version and integrity. Normal package-only commit `9cc6aa4` passed the original commit hooks. Frozen Bun installation passed. A separate disposable frozen npm installation, with lifecycle scripts disabled solely for lock-consistency verification, also passed, installed Lisa 4.71.4 and left its copied manifest and lock unchanged. The project installer remains Bun. The npm audit still reports 34 development dependency advisories; this is not a zero-advisory claim or authorization for a forced audit rewrite.
