@@ -347,6 +347,7 @@ RSpec.describe RequestSecurity do
     it('matches only the exact owned profile flag and leaves a prefix neighbor untouched') do
       harness = described_class.new
       harness.setup_scratch
+      harness.instance_variable_set(:@browser_allocation_started, true)
       profile = File.join(harness.instance_variable_get(:@scratch), 'chrome')
       with_term_ignoring_child("--user-data-dir=#{profile}-neighbor") do |child|
         expect(harness.send(:owned_browser_processes)).to eq([])

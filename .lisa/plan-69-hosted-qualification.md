@@ -235,3 +235,42 @@ Independent source review found a new-helper initialization failure: after the r
 All four selected native lifecycle controls now run with zero failures; the partial RSpec exit remains 2 under unchanged aggregate coverage floors. Scoped three-file RuboCop and the actual BDD gate pass. The constructor-refusal example is disclosed as a fixture allocation control, with no product scenario waiver. The revised source remains subject to independent review before ordinary commit.
 
 The upstream original full push at `42332ec6` finished nonzero with its whole unit and coverage gates passing (1,417 unit files, 26,887 passing tests and two existing skips). One integration test failed on unexpected scratch marker-read diagnostics; 181 integration files and 3,289 tests passed with two existing skips. The upstream owner independently verified all 38 retained original process births, all seven groups and both exact scratch roots absent. Its source diagnosis found that a marker can disappear between native count reads. A separate minimal upstream repair must retain unreadable-marker refusal and the existing empty-stderr assertion. The heavy execution lane is now returned to the starter; no aggregate retry of that failed upstream head is authorized as acceptance.
+
+## Receipt-only cleanup and explicit browser allocation lifecycle
+
+The original full push of committed `5d84a1f` ended with exit 1: 677 examples
+ran with one failure, in the configuration control that clears prior owner-mode
+validation. The preceding setup-timer and Chrome quit failures did not recur.
+Coverage passed at 84.52% line and 74.32% branch under the original 80% and 70%
+floors, and every other original gate passed. This head did not publish; PR 88
+remains at `b1d52f9`. All six outer cleanup checks passed. Independent native
+readback found 163 recorded PID coordinates, 121 groups, 29 ports, the exact
+container, volume and scratch absent; no signals were sent. This covers recorded
+resources, not unrecorded process births. Earlier cleanup-reader receipts rejected
+the Docker absence message solely because of case-sensitive parsing; native
+`no such object` output and the corrected positive receipt are both retained.
+
+That configuration control allocates only an owned receipt scratch and never
+starts a browser. Nevertheless, teardown requests the full Chrome inventory,
+and its native observation timed out. A deterministic refusal control runs an
+actual private `ps` executable returning exit 42, proves the observer child is
+reaped and absent, and then reaches the same unnecessary inventory path during
+receipt-only cleanup. The new controls fail against the preceding committed
+fixture. A browser-allocation flag is now set before the first browser
+construction operation. Inventory is required whenever allocation has started
+or a page, driver controller or Chrome controller has already been retained.
+Before those states, this invocation has allocated no browser to inventory.
+No observation deadline, process identity check, ancestry check or signal
+authority changes. The existing native prefix-neighbor control explicitly enters
+the browser-allocation phase so its real inventory matching remains exercised.
+
+The nine mode-receipt controls pass after correction. The second new control
+refuses browser construction after entering allocation, then proves an actual
+unavailable native inventory still prevents scratch deletion. After restoring
+the real observer, normal owned cleanup emits the final receipt. The expected
+refusal has its separate in-memory cleanup record; it does not overwrite that
+final exclusive receipt. These are fixture lifecycle controls outside the browser
+behavior discovery roots; all eleven product scenarios remain required. The
+focused command exits 2 solely under unchanged aggregate coverage floors. Scoped
+lint, distinct source review, original commit and full push, genuine Chrome
+controls and fresh exact-head hosted acceptance remain required.

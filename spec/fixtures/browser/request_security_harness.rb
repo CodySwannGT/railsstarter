@@ -693,6 +693,7 @@ class RequestSecurity
   end
 
   def start_browser
+    @browser_allocation_started = true
     options = Selenium::WebDriver::Chrome::Options.new
     options.binary = @chrome_binary
     options.add_argument('--headless=new')
@@ -771,6 +772,8 @@ class RequestSecurity
   end
 
   def owned_browser_processes
+    return [] unless @browser_allocation_started || @page || @driver_process || @chrome_processes
+
     RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}")
   end
 

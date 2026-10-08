@@ -241,6 +241,30 @@ RSpec.describe RequestPolicy do
       File.write(File.join(target, "mode-control-#{token}.json"), JSON.pretty_generate(record), mode: 'wx', perm: 0o600) if target
     end
 
+    def with_refusing_mode_inventory
+      original_path = ENV.fetch('PATH')
+      directory = File.join(mode_state.fetch(:directory), 'observer-refusal')
+      Dir.mkdir(directory, 0o700)
+      calls = File.join(directory, 'calls')
+      program = "#!/bin/sh\nprintf '%s\\n' \"$$\" >> #{Shellwords.escape(calls)}\nprintf '%s\\n' 'mode inventory unavailable' >&2\nexit 42\n"
+      File.write(File.join(directory, 'ps'), program, mode: 'wx', perm: 0o700)
+      ENV['PATH'] = directory + File::PATH_SEPARATOR + original_path
+      yield calls
+    ensure
+      ENV['PATH'] = original_path
+      verify_mode_observer_children(calls)
+    end
+
+    def verify_mode_observer_children(calls)
+      return unless calls && File.file?(calls)
+
+      File.readlines(calls).each do |line|
+        pid = Integer(line.strip)
+        expect { Process.waitpid(pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+        expect { Process.kill(0, pid) }.to raise_error(Errno::ESRCH)
+      end
+    end
+
     around do |example|
       previous = ENV.fetch('REQUEST_SECURITY_ARTIFACT_DIR', nil)
       Dir.mktmpdir('request-owner-mode-receipts-') do |directory|
@@ -275,6 +299,37 @@ RSpec.describe RequestPolicy do
       retain_mode_cleanup
       expect(harness.cleanup_record).to include(database_mode: nil)
       expect(harness.cleanup_record).not_to have_key(:database_access)
+    end
+
+    it 'cleans receipt-only scratch before browser allocation without consulting a process inventory' do
+      with_refusing_mode_inventory do |calls|
+        expect { RequestSecurityObservation.profiles('owned-mode-control') }.to raise_error(RequestSecurityObservation::Failure, /observation/)
+        expect(File.readlines(calls).size).to eq(1)
+        begin
+          retain_mode_cleanup
+        ensure
+          mode_state[:retained] = true if harness.cleanup_record&.fetch(:scratch_removed, false) && !File.exist?(mode_state.fetch(:scratch))
+        end
+        expect(File.readlines(calls).size).to eq(1)
+        expect(harness.cleanup_record).to include(errors: [], observer_failures: [], browser_processes_after_quit: [])
+      end
+    end
+
+    it 'requires process inventory after browser allocation begins even when construction refuses' do
+      allow(Selenium::WebDriver::Chrome::Options).to receive(:new).and_raise('synthetic browser construction refusal')
+      expect { harness.send(:start_browser) }.to raise_error('synthetic browser construction refusal')
+      expect(harness.instance_variable_get(:@browser_allocation_started)).to be(true)
+      with_refusing_mode_inventory do
+        # This expected refusal stays distinct from the final successful receipt.
+        directory = ENV.delete('REQUEST_SECURITY_ARTIFACT_DIR')
+        begin
+          expect { harness.stop }.to raise_error(/chrome.*observation/)
+          expect(harness.cleanup_record).to include(scratch_removed: false)
+          expect(File.directory?(mode_state.fetch(:scratch))).to be(true)
+        ensure
+          ENV['REQUEST_SECURITY_ARTIFACT_DIR'] = directory
+        end
+      end
     end
 
     context 'when the owner mode is missing' do
