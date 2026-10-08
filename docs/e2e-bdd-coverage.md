@@ -44,7 +44,7 @@ A waiver is a dated IOU with a named owner and a retiring ticket. It is never co
 
 Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.
 
-49 tests discovered under `spec/browser`, `spec/fixtures/browser`; 49 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
+52 tests discovered under `spec/browser`, `spec/fixtures/browser`; 52 are named by a mapping or an exclusion. 0 carry a computed title, taken verbatim from the source — a runner result cannot be joined to those by title.
 
 | Runner | File | Test not named by the contract |
 |---|---|---|
@@ -72,12 +72,15 @@ Every row here is a standing claim that a real test proves nothing about product
 | `spec/browser/request_security_spec.rb` | admits a later child through a complete authenticated Chrome ancestry chain | Synthetic fixture-process ancestry admission control; no product request or CSP behavior is exercised. |
 | `spec/browser/request_security_spec.rb` | bounds a hung quit, records the failure and reports actual scratch cleanup | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | bounds TERM refusal, escalates only its captured child and proves reaping and absence | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
+| `spec/browser/request_security_spec.rb` | captures a native child before destructive driver quit can reap it | Native fixture lifecycle regression for capture before destructive quit; verifies owned process reaping and absence rather than a product browser behavior. |
 | `spec/browser/request_security_spec.rb` | cleans a verified later cross-site Chrome child while its captured root is suspended | Owned browser teardown regression for verified later native descendants; validates process lifecycle rather than a product request or CSP requirement. |
 | `spec/browser/request_security_spec.rb` | coordinates owned TERM with native ChromeDriver reaping before the quit deadline | Owned browser and driver lifecycle regression; validates teardown and reaping rather than a product behavior requirement. |
 | `spec/browser/request_security_spec.rb` | discovers hosted Linux Chrome and driver executables on PATH | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
+| `spec/browser/request_security_spec.rb` | escalates owned TERM refusal before requiring driver quit to finish | Native fixture lifecycle regression for bounded shutdown and driver-owned reaping of a TERM-refusing child; product browser scenarios remain separately required. |
 | `spec/browser/request_security_spec.rb` | matches only the exact owned profile flag and leaves a prefix neighbor untouched | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | names an absent Linux browser prerequisite with no macOS fallback | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | names missing Chrome instead of silently selecting another executable | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
+| `spec/browser/request_security_spec.rb` | reaps its original native child when identity capture refuses | Native fixture allocation-failure cleanup control; verifies direct-child reaping and PID/group absence after constructor refusal, with product browser scenarios separately required. |
 | `spec/browser/request_security_spec.rb` | rechecks profile ownership before KILL after TERM refusal | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
 | `spec/browser/request_security_spec.rb` | refuses a coherent replacement birth after a late child was captured | Harness owner-callback identity binding control for a coherent replacement birth after capture; validates signal safety rather than a product request or CSP requirement. |
 | `spec/browser/request_security_spec.rb` | refuses a directory and a nonexecutable driver with clear prerequisite errors | Harness prerequisite or owned-process teardown unit control; this test does not exercise a user-facing browser behavior. |
