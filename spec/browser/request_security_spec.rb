@@ -425,6 +425,45 @@ RSpec.describe RequestSecurity do
       resume&.join(1)
     end
 
+    # A real owned child makes destructive quit race with a fresh native capture.
+    def native_quit_capture_fixture
+      pid = Process.spawn(RbConfig.ruby, '-e', 'sleep 60', pgroup: true, out: File::NULL, err: File::NULL)
+      reaper = RequestSecurityProcess.new(pid, child: true)
+      quit_finished = Queue.new
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit) do
+        reaper.terminate(timeout: 2)
+        quit_finished << true
+      end
+      [native_quit_capture_harness(driver, pid, quit_finished), reaper]
+    end
+
+    # Forces the old ordering to observe the actual child's completed native exit.
+    def native_quit_capture_harness(driver, pid, quit_finished)
+      harness = described_class.new(cleanup_timeout: 2)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      harness.instance_variable_set(:@driver_pid, Process.pid.to_s)
+      allow(harness).to receive(:captured_chrome_processes) do
+        quit_started = harness.instance_variable_get(:@quit_thread)
+        raise 'Native quit did not finish' if quit_started && !RequestSecurityDeadline.wait(3) { !quit_finished.empty? }
+
+        [RequestSecurityProcess.new(pid)]
+      end
+      harness
+    end
+
+    it('captures a native child before destructive driver quit can reap it') do
+      harness, reaper = native_quit_capture_fixture
+
+      expect { harness.send(:quit_browser) }.not_to raise_error
+      expect(reaper.reaped).to be(true)
+      expect(reaper.absent?).to be(true)
+      expect { Process.kill(0, -reaper.pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      harness&.instance_variable_get(:@quit_thread)&.join(3)
+      reaper&.terminate(timeout: 2)
+    end
+
     def later_cross_site_child(harness)
       harness.start
       harness.page.visit('/up')

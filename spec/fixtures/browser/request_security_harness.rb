@@ -467,6 +467,8 @@ module RequestSecurityCleanup
   def quit_browser
     return unless @page
 
+    # Capture authenticated roots before destructive quit can change the inventory.
+    browser_roots = captured_chrome_processes.select { |process| process.identity.split[1] == @driver_pid }
     @quit_thread = Thread.new do
       @page.driver.quit
     rescue StandardError => error
@@ -474,7 +476,7 @@ module RequestSecurityCleanup
     end
     # ChromeDriver must reap its child while our authenticated TERM wakes a
     # custom-profile browser whose graceful close can exceed this deadline.
-    captured_chrome_processes.select { |process| process.identity.split[1] == @driver_pid }.each(&:request_termination)
+    browser_roots.each(&:request_termination)
     raise 'driver quit timed out' unless RequestSecurityDeadline.wait(@cleanup_timeout) { !@quit_thread.alive? }
     raise @quit_error if @quit_error
   end
