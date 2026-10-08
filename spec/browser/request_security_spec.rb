@@ -453,13 +453,77 @@ RSpec.describe RequestSecurity do
       raise 'No genuine later Chrome child observed' if later.empty?
       raise 'Captured root changed before suspension' unless RequestSecurityObservation.identity(root.pid.to_s).split == root.identity.split
 
+      harness.send(:validated_browser_profiles, rows)
       later.each { |row| verify_later_identity(row, root) }
+    end
+
+    # Synthetic observations exercise the real admission path without launching Chrome.
+    def later_ancestry_fixture
+      anchors, rows, details = browser_inventory_fixture
+      details[103] = details.fetch(102).merge(pid: 103, ppid: 102)
+      rows << "103 102 #{details.fetch(103).fetch(:birth)}"
+      harness = described_class.new
+      harness.instance_variable_set(:@browser_anchors, Marshal.load(Marshal.dump(anchors)))
+      allow(harness).to receive(:owned_browser_processes).and_return(rows)
+      observe_later_ancestry(details)
+      captured = [101, 102].map do |pid|
+        instance_double(RequestSecurityProcess, pid: pid, identity: RequestSecurityObservation.identity(pid.to_s))
+      end
+      [harness, captured, captured.first, rows, details]
+    end
+
+    # Supplies consistent finite native-observation tuples to the admission controls.
+    def observe_later_ancestry(details)
+      allow(RequestSecurityObservation).to receive(:metadata).and_return(details)
+      allow(RequestSecurityObservation).to receive(:identity) do |pid|
+        process = details.fetch(pid.to_i)
+        "#{process.fetch(:pid)} #{process.fetch(:ppid)} #{process.fetch(:pgid)} #{process.fetch(:birth)}"
+      end
+    end
+
+    it('admits a later child through a complete authenticated Chrome ancestry chain') do
+      harness, captured, root = later_ancestry_fixture
+      expect { verify_later_children(harness, captured, root) }.not_to raise_error
+    end
+
+    it('refuses a later child with foreign or incomplete Chrome ancestry') do
+      harness, captured, root, rows, details = later_ancestry_fixture
+      details[103][:ppid] = Process.pid
+      rows[2] = "103 #{Process.pid} #{details.fetch(103).fetch(:birth)}"
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry/)
+      details[103][:ppid] = 102
+      rows[2] = "103 102 #{details.fetch(103).fetch(:birth)}"
+      rows.delete_at(1)
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry/)
+    end
+
+    it('refuses later Chrome admission after a captured driver identity changes') do
+      harness, captured, root, _, details = later_ancestry_fixture
+      details[100][:birth] = 'Wed Oct 7 03:52:45 2026'
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/anchor identity/)
+    end
+
+    it('refuses later Chrome admission with a foreign owner or process group') do
+      harness, captured, root, _, details = later_ancestry_fixture
+      details[103][:uid] += 1
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/owner/)
+      details[103][:uid] = Process.uid
+      details[103][:pgid] += 1
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/owner/)
+    end
+
+    it('refuses later Chrome admission when the fresh process identity differs') do
+      harness, captured, root = later_ancestry_fixture
+      allow(RequestSecurityObservation).to receive(:identity).with('103').and_return('103 102 100 Wed Oct 7 03:52:45 2026')
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry identity/)
+      allow(RequestSecurityObservation).to receive(:identity).with('103').and_return('103 102 104 Wed Oct 7 03:52:44 2026')
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/process group/)
     end
 
     def verify_later_identity(row, root)
       fields = row.split
       identity = RequestSecurityObservation.identity(fields.first).split
-      raise 'Later Chrome ancestry identity disagrees' unless identity.values_at(0, 1, 3, 4, 5, 6, 7) == fields && fields[1] == root.pid.to_s
+      raise 'Later Chrome ancestry identity disagrees' unless identity.values_at(0, 1, 3, 4, 5, 6, 7) == fields
       raise 'Later Chrome process group disagrees' unless identity[2] == root.identity.split[2]
     end
 

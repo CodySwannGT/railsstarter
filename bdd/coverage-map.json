@@ -162,6 +162,31 @@
       "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
     },
     {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "admits a later child through a complete authenticated Chrome ancestry chain",
+      "reason": "Synthetic fixture-process ancestry admission control; no product request or CSP behavior is exercised."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a later child with foreign or incomplete Chrome ancestry",
+      "reason": "Fixture-process ownership refusal control for foreign or incomplete ancestry; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission after a captured driver identity changes",
+      "reason": "Fixture-process retained-anchor identity refusal control; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission with a foreign owner or process group",
+      "reason": "Fixture-process UID and group ownership refusal control; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission when the fresh process identity differs",
+      "reason": "Fixture-process fresh identity refusal control; not a user-facing product behavior."
+    },
+    {
       "file": "spec/browser/browser_startup_diagnostics_spec.rb",
       "evidence": "gives the native driver owned temporary paths without changing the parent environment",
       "reason": "Native fixture-process environment and scratch ownership control; this example does not exercise a user-facing product behavior."
