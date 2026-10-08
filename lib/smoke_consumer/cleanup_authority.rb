@@ -680,6 +680,28 @@ module SmokeConsumer
 
   # Securely removes a named consumer path inside its unchanged exclusive ownership root.
   class OwnedConsumerPath
+    # Remove independent consumer trees concurrently and propagate failure after every removal settles.
+    # @param ownership [Ownership] exclusive validated ownership scope
+    # @param paths [Array<String>] separately allocated direct-child consumer paths
+    # @return [void]
+    # @raise [StandardError] an individual owned-directory removal fails
+    def self.remove_all(ownership, paths)
+      threads = []
+      begin
+        paths.each do |path|
+          threads << Thread.new do
+            new(ownership, path).remove
+          rescue StandardError => error
+            error
+          end
+        end
+      ensure
+        threads.each(&:join)
+      end
+      failure = threads.map(&:value).find { |result| result.is_a?(StandardError) }
+      raise failure if failure
+    end
+
     # Retain ownership and the named consumer path for secure removal checks.
     # @param ownership [Ownership] exclusive validated ownership scope
     # @param path [String] owned filesystem path
@@ -998,7 +1020,7 @@ module SmokeConsumer
       data = @ownership.read
       data.fetch('projects').each { |project| OwnedImage.new(@ownership, @command, project).remove }
       @stage = 'consumer_roots'
-      data.fetch('consumers').each { |path| OwnedConsumerPath.new(@ownership, path).remove }
+      OwnedConsumerPath.remove_all(@ownership, data.fetch('consumers'))
     end
 
     # Require registered/stopped identities to be nonrunning and separately record positive absence.

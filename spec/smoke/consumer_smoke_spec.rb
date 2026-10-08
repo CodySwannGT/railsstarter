@@ -122,6 +122,21 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     File.write(File.join(app, 'package-lock.json'), JSON.generate(lock.merge('lockfileVersion' => 1)))
   end
 
+  it 'verifies the official Bun archive before accepting it and rejects changed bytes' do
+    Dir.mktmpdir('consumer-bun-checksum', File.realpath(Dir.tmpdir)) do |home|
+      command = described_class::Command.new(timeout: 180)
+      version = locked_toolchain_metadata.fetch('bun')
+      environment = { 'HOME' => home, 'PATH' => ENV.fetch('PATH') }
+      release = described_class::BunTool.new(command, version, environment, home).send(:release)
+      expect(release.url).to eq("https://github.com/oven-sh/bun/releases/download/bun-v#{version}/bun-linux-x64.zip")
+      archive = File.join(home, 'bun.zip')
+      command.call('curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '120', '--output', archive, release.url, env: environment, timeout: 125)
+      expect { release.verify(archive) }.not_to raise_error
+      File.open(archive, 'ab') { |file| file.write('altered bytes') }
+      expect { release.verify(archive) }.to raise_error(described_class::Error, 'Essential prerequisite: release digest mismatch')
+    end
+  end
+
   it 'carries qualified private Bundler through the public setup prerequisite check' do
     Dir.mktmpdir('consumer-bundler-setup', File.realpath(Dir.tmpdir)) do |base|
       home = File.join(base, 'home')

@@ -120,21 +120,22 @@ module SmokeConsumer
     end
   end
 
-  # Prepares the accepted exact Bun version using the official release asset digest.
+  # Prepares the accepted exact Bun version using its official release checksum list.
   class BunTool < VersionedTool
     # Executable name used for exact Bun version probes.
     NAME = 'bun'
 
     private
 
-    # Read the official Bun release asset digest and construct its archive descriptor.
+    # Read the official Bun checksum asset without depending on GitHub's API quota.
     # @return [ReleaseArchive]
     def release
       name = 'bun-linux-x64.zip'
-      response, = command.call('curl', '--fail', '--silent', '--show-error', '--max-time', '30', "https://api.github.com/repos/oven-sh/bun/releases/tags/bun-v#{version}", env: environment,
-                                                                                                                                                                           timeout: 35)
-      asset = JSON.parse(response).fetch('assets').find { |entry| entry['name'] == name }
-      ReleaseArchive.new("https://github.com/oven-sh/bun/releases/download/bun-v#{version}/#{name}", asset&.fetch('digest', nil)&.delete_prefix('sha256:'))
+      base = "https://github.com/oven-sh/bun/releases/download/bun-v#{version}"
+      sums, = command.call('curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '30', "#{base}/SHASUMS256.txt", env: environment, timeout: 35)
+      entries = sums.lines.map(&:split).select { |parts| parts.length == 2 && parts.last == name }
+      checksum = entries.one? ? entries.first.first : nil
+      ReleaseArchive.new("#{base}/#{name}", checksum)
     end
 
     # Extract the verified Bun zip archive and return its executable directory.

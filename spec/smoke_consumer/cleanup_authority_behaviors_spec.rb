@@ -254,6 +254,67 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
   end
 
   context 'with actual disposable files' do
+    # Refuse the second constructor while retaining a gated first native removal thread.
+    # @param release [Queue] first worker's explicit release channel
+    # @param state [Hash{Symbol => Thread, nil}] retained directly owned child
+    # @return [void]
+    def refuse_second_removal_thread(release, state)
+      allow(Thread).to receive(:new).and_wrap_original do |native, &task|
+        raise ThreadError, 'synthetic thread construction refusal' if state[:child]
+
+        state[:child] = native.call do
+          release.pop
+          task.call
+        end
+        allow(state.fetch(:child)).to receive(:join).and_wrap_original do |join|
+          release << true
+          join.call
+        end
+        state.fetch(:child)
+      end
+    end
+
+    it 'removes both independently owned trees and verifies repeated absence' do
+      paths = [consumer_path, ownership.register_consumer('owned_second').first]
+      paths.each do |path|
+        Dir.mkdir(path, 0o700)
+        File.write(File.join(path, 'owned.txt'), 'owned fixture')
+      end
+      SmokeConsumer::OwnedConsumerPath.remove_all(ownership, paths)
+      expect(paths.none? { |path| File.exist?(path) }).to be(true)
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, paths) }.not_to raise_error
+    end
+
+    it 'settles the owned tree removal while refusing a substituted symlink' do
+      second = ownership.register_consumer('owned_second').first
+      foreign = File.join(base, 'foreign_consumer')
+      Dir.mkdir(foreign, 0o700)
+      File.write(File.join(foreign, 'preserved.txt'), 'foreign witness')
+      File.symlink(foreign, consumer_path)
+      Dir.mkdir(second, 0o700)
+      File.write(File.join(second, 'owned.txt'), 'owned fixture')
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, [consumer_path, second]) }
+        .to raise_error(SmokeConsumer::Error, 'Symlinked consumer path')
+      expect(File.exist?(second)).to be(false)
+      expect(File.read(File.join(foreign, 'preserved.txt'))).to eq('foreign witness')
+    end
+
+    it 'settles a real owned removal when starting the next removal thread fails' do
+      second = ownership.register_consumer('owned_second').first
+      Dir.mkdir(consumer_path, 0o700)
+      File.write(File.join(consumer_path, 'owned.txt'), 'owned fixture')
+      release = Queue.new
+      state = { child: nil }
+      refuse_second_removal_thread(release, state)
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, [consumer_path, second]) }
+        .to raise_error(ThreadError, 'synthetic thread construction refusal')
+      expect(state.fetch(:child).alive?).to be(false)
+      expect(File.exist?(consumer_path)).to be(false)
+    ensure
+      release << true if state&.fetch(:child)&.alive?
+      state&.fetch(:child)&.join
+    end
+
     it 'removes its direct child directory and accepts a repeated absence check' do
       Dir.mkdir(consumer_path, 0o700)
       File.write(File.join(consumer_path, 'owned.txt'), 'owned fixture')

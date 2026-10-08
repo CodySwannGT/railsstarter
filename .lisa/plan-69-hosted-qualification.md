@@ -271,6 +271,20 @@ the real observer, normal owned cleanup emits the final receipt. The expected
 refusal has its separate in-memory cleanup record; it does not overwrite that
 final exclusive receipt. These are fixture lifecycle controls outside the browser
 behavior discovery roots; all eleven product scenarios remain required. The
-focused command exits 2 solely under unchanged aggregate coverage floors. Scoped
-lint, distinct source review, original commit and full push, genuine Chrome
-controls and fresh exact-head hosted acceptance remain required.
+focused command exits 2 solely under unchanged aggregate coverage floors.
+
+## Published allocation correction and current hosted qualification
+
+The reviewed allocation correction is committed as `47950d7b3567833775695fb9b1e06ffa838c1faf`. Its first original full push failed with679 examples and10 failures: nine came from the private launcher's omitted required artifact directories, and one was a Bootstrap CDN timeout. That failed evidence remains retained;84.52% line/74.32% branch coverage and all other gates passed.
+
+After creating the original collector directories before invocation, the corrected original full push passed **679 examples, zero failures**, **84.65% line/75.33% branch coverage**, and every other original gate. Recorded native resources, ports, scratch, container and volume were independently verified absent. Commit47950d7 is published in PR88.
+
+Fresh hosted run37778568058 executed679 examples with three failures, all in Bun release-metadata acquisition (`curl` HTTP failure at `BunTool#release`). All browser controls passed. The hosted BDD contract had zero findings but rejected stale generated coverage files that recorded49 instead of52 disclosed tests. The genuine generators regenerated both reports, and ordinary commit79127c1 passed all commit hooks; its original push remains subject to terminal readback.
+
+The Bun preparation follow-up reads the versioned official `SHASUMS256.txt` release asset and requires exactly one digest for the accepted Linux archive, retaining checksum equality before extraction. It removes the unauthenticated GitHub API metadata dependency without changing native provisioning, accepted versions, isolation or time limits. Actual archive qualification and altered-byte refusal supplement the existing real Linux setup routes.
+
+The original79127c1 push completed679 examples with one failure: the public consumer command exceeded its existing65-second cleanup acknowledgement deadline. Its actual owned receipt records both successful consumers and successful cleanup83 seconds after the cleanup request. The BDD gate passed52 disclosed tests with zero findings; coverage remained84.52% line/74.32% branch. The failed push remains retained and79127c1 has not been published.
+
+The follow-up removes the two independent owned consumer directory trees concurrently, retaining each path's validation, secure removal, positive absence checks and propagated errors after both operations settle. Images and Docker ownership checks remain unchanged. The65-second acknowledgement deadline is unchanged. Native controls cover both actual trees and a substituted symlink; original full-suite and fresh hosted qualification remain required to establish that this resolves the observed timing failure.
+
+Fresh all-required hosted checks, substantive review, normal merge and the subsequent published-main README walkthrough remain required. No failure, threshold, ownership requirement or original hook is waived.
