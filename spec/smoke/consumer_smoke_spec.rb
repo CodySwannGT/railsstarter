@@ -947,7 +947,9 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     it 'refuses a failed observer rather than declaring the live PID absent' do
       identity = described_class::Ownership.identity_for(Process.pid)
       with_observer_fixture("warn 'deliberate failure'; exit 1") do
-        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer failed/)
+        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer failed/) do |error|
+          expect(error.observation).to include('stage' => 'reaping', 'exitstatus' => 1)
+        end
       end
       expect(independent_process(Process.pid)).not_to be_nil
     end
@@ -980,11 +982,25 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       end
     end
 
+    def observer_timeout_fixture
+      "File.write(File.join(__dir__, 'observer.pid'), Process.pid.to_s); " \
+        "$stdout.write('private output'); $stdout.flush; $stderr.write('private error'); $stderr.flush; sleep 20"
+    end
+
     it 'bounds a timed-out observer and proves its owned PID is actually absent' do
       identity = described_class::Ownership.identity_for(Process.pid)
-      with_observer_fixture("File.write(File.join(__dir__, 'observer.pid'), Process.pid.to_s); sleep 20") do |base|
-        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer deadline exceeded/)
-        await_actual_absence(Integer(File.read(File.join(base, 'observer.pid'))))
+      with_observer_fixture(observer_timeout_fixture) do |base|
+        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer deadline exceeded/) do |error|
+          observer_pid = Integer(File.read(File.join(base, 'observer.pid')))
+          await_actual_absence(observer_pid)
+          expect(error.observation).to include('pid' => observer_pid, 'stage' => 'draining', 'exitstatus' => nil,
+                                               'streams' => { 'output_bytes' => 14, 'error_bytes' => 13,
+                                                              'open_streams' => %w[output error], 'read_interruptions' => 0 })
+          expect(error.observation.fetch('elapsed_seconds')).to be >= 2
+          receipt = described_class::CleanupFailure.new('waiting', error).to_h
+          expect(receipt.fetch('process_queries')).to eq([error.observation])
+          expect(JSON.generate(receipt)).not_to include('private output', 'private error')
+        end
       end
     end
 

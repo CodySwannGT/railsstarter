@@ -852,17 +852,30 @@ module SmokeConsumer
     def to_h
       causes = []
       locations = []
+      queries = []
       seen = {}.compare_by_identity
       @current = @error
       while @current && causes.length < 4 && !seen.key?(@current)
         seen[@current] = true
-        causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
-                    'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
-        locations << CleanupFailureLocations.new(@current).to_a
+        record(causes, locations, queries)
         @current = @current.cause
       end
       { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_locations' => locations,
-        'cause_chain_truncated' => @current ? true : false }
+        'cause_chain_truncated' => @current ? true : false, 'process_queries' => queries }
+    end
+
+    private
+
+    # Append this actual cause's fingerprint, admitted positions, and typed query metrics.
+    # @param causes [Array<Hash>] bounded exception fingerprints
+    # @param locations [Array<Array<Hash>>] corresponding admitted native source positions
+    # @param queries [Array<Hash>] bounded process-query diagnostics without observed output
+    # @return [void]
+    def record(causes, locations, queries)
+      causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
+                  'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
+      locations << CleanupFailureLocations.new(@current).to_a
+      queries << @current.observation if @current.is_a?(ProcessQueryFailure)
     end
   end
 
