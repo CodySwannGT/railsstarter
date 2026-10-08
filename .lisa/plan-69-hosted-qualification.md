@@ -159,3 +159,43 @@ Independent review found that passing the long fixture directory as Chrome's tem
 All 14 diagnostic and ownership examples passed after the correction, followed by the full affected 48-example browser cohort with zero failures under the original scratch supervisor and seed 20311. Both partial selections exited 2 solely under the unchanged aggregate coverage floors. Scoped RuboCop passed and independent source review approved the correction. The native driver environment example still verifies the child receives the owned temporary paths while the parent's environment is preserved. These local observations do not establish hosted Linux acceptance.
 
 The new fixture controls are explicitly disclosed as infrastructure controls in the behavior map. Generated BDD coverage and the scenario matrix were rebuilt with the actual PR base revision: all 11 product obligations remain mapped, all 49 discovered test titles are disclosed, and no findings or waivers remain. A first generation without the required base revision genuinely refused; only the baselined result qualifies. Fresh original publication and current-head hosted checks remain required.
+
+## Linux collision fixture and function documentation
+
+The original full push at `25cad927c441c70944fe3dcc6fa4ea09eee3e2ee`
+passed all gates with 674 examples, zero failures, 84.52% line and 74.32% branch
+coverage, and all six independently verified cleanup checks. Its hosted MySQL
+run 37745159134 is terminal failure: 674 examples and one collision-control
+failure, with 85.60% line and 75.33% branch coverage. All other eight required
+contexts passed. The preceding twelve browser startup failures did not recur.
+The intentionally refused diagnostic fixtures still emit their synthetic startup
+messages; these are not additional failed examples.
+
+The collision control had replaced `Dir.tmpdir` with its already long diagnostic
+directory. Linux therefore correctly refused the composed socket pathname before
+the test reached the intended exclusive-creation collision. The control now first
+creates a genuinely budget-qualified short directory beneath the original
+temporary parent, then repeats that exact basename. It still requires native
+`EEXIST` and preservation of the existing sentinel. Cleanup rechecks the created
+directory's UID and device/inode before removal. The separate overlong-parent
+control continues to require refusal before allocation. Production pathname
+limits, allocation and ownership are unchanged. All fourteen diagnostic examples
+pass; the partial command exits 2 solely because the unchanged aggregate 80/70
+coverage floors apply. This is scoped behavior evidence, not full-suite success.
+
+The prior CodeRabbit pre-merge review also reports 69.61% function documentation
+against its 80% requirement at `b8313c61`. Source review identified undocumented
+starter-owned browser, observer and native test-helper contracts. Small normal
+commit `1af94de361f19a0c05e17f97bd63586ead12ef0f` documents their ownership,
+bounded observations and private failure handling, corrects the cleanup watcher
+description, and adds docstrings to the two new README ownership tests. Normalized
+Ruby syntax trees for all nine affected Ruby files remain identical; the Python
+tree is identical after removing documentation strings. Scoped RuboCop and all
+original commit hooks passed. No managed-source comment or documentation threshold
+was changed. Actual review of the resulting published head must establish whether
+the finding is resolved; no new vendor percentage or passing review is claimed.
+
+The two corrections are to be batched into the existing PR through one original
+full push after the active upstream aggregate run releases the shared heavy lane.
+Current-head hosted checks, review disposition, normal merge, and the final
+published-main walkthrough remain required. The failed hosted run is retained.

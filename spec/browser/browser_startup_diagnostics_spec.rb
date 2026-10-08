@@ -189,15 +189,20 @@ RSpec.describe BrowserStartupDiagnostics do
   end
 
   context 'with exclusive short scratch creation' do
-    before { allow(Dir).to receive(:tmpdir).and_return(directory) }
-
     it('preserves an existing directory when its short random name collides') do
-      allow(SecureRandom).to receive(:hex).with(4).and_return('abcdef12')
-      existing = File.join(directory, 'abcdef12')
-      Dir.mkdir(existing, 0o700)
+      existing = BrowserFixtureScratch.create
+      identity = File.lstat(existing)
       File.write(File.join(existing, 'foreign'), 'preserved', mode: 'wx', perm: 0o600)
+      allow(SecureRandom).to receive(:hex).with(4).and_return(File.basename(existing))
       expect { BrowserFixtureScratch.create }.to raise_error(Errno::EEXIST)
       expect(File.read(File.join(existing, 'foreign'))).to eq('preserved')
+    ensure
+      if existing && identity
+        actual = File.lstat(existing)
+        raise 'Collision fixture directory identity changed' unless actual.directory? && actual.uid == Process.uid && [actual.dev, actual.ino] == [identity.dev, identity.ino]
+
+        FileUtils.remove_entry_secure(existing)
+      end
     end
 
     it('refuses an overlong temporary parent before creating a browser directory') do
