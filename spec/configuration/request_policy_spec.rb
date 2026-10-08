@@ -350,7 +350,7 @@ RSpec.describe RequestPolicy do
       original_path = ENV.fetch('PATH')
       Dir.mktmpdir('request-observer-control-') do |directory|
         program = "File.open(#{File.join(directory, 'observer-pids').dump}, 'a', 0o600) { |f| f.puts Process.pid }; " \
-                  "trap('TERM', 'IGNORE') if #{delay} > 0; $stdout.write(#{output.dump}); $stderr.write(#{error.dump}); sleep #{delay}; exit #{exit_code}"
+                  "trap('TERM', 'IGNORE') if #{delay} > 0; $stdout.write(#{output.dump}); $stdout.flush; $stderr.write(#{error.dump}); $stderr.flush; sleep #{delay}; exit #{exit_code}"
         script = "#!/bin/sh\nunset RUBYOPT\nexec #{Shellwords.escape(RbConfig.ruby)} -e #{Shellwords.escape(program)}\n"
         File.write(File.join(directory, 'ps'), script, mode: 'wx', perm: 0o700)
         ENV['PATH'] = directory + File::PATH_SEPARATOR + original_path
@@ -427,16 +427,39 @@ RSpec.describe RequestPolicy do
       end
     end
 
+    def expect_private_observer_cleanup(failure)
+      harness = RequestSecurity.new(cleanup_timeout: 0.1)
+      harness.setup_scratch
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit).and_raise(failure)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      expect { harness.stop }.to raise_error(/driver_quit.*observation timed out/)
+      expect(harness.cleanup_record).to include(scratch_removed: true, observer_failures: [{ stage: :driver_quit, observation: failure.observation }])
+    ensure
+      harness&.stop unless harness&.cleanup_record
+    end
+
+    def expect_observer_failure(failure, observer_pid, directory)
+      expect(failure.observation).to include(operation: 'identity', stage: 'waiting', observer_pid: observer_pid,
+                                             reaped: true, exit: nil, signal: Signal.list.fetch('KILL'), output_bytes: 14, error_bytes: 13)
+      expect(failure.observation.fetch(:elapsed)).to be >= 1
+      expect(failure.observation.keys).to contain_exactly(:operation, :stage, :observer_pid, :elapsed, :reaped, :exit, :signal, :output_bytes, :error_bytes)
+      expect(JSON.generate(failure.observation)).not_to include('bounded-output', 'bounded-error', directory)
+    end
+
     it 'bounds a TERM-ignoring observer itself without treating its timeout as target absence' do
       with_observed_child do |process, record|
-        with_designed_observer(delay: 30) do |directory|
+        failure = nil
+        with_designed_observer(output: 'bounded-output', error: 'bounded-error', delay: 30) do |directory|
           started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-          expect { process.absent? }.to raise_error(RuntimeError, /observation timed out/)
+          expect { process.absent? }.to raise_error(RuntimeError, /observation timed out/) { |error| failure = error }
           expect(Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to be < 3
           observer_pid = Integer(File.read(File.join(directory, 'observer-pids')).strip)
           expect(genuine_observation(observer_pid)).to eq(output: '', error: '', exit: 1)
           expect { Process.waitpid(observer_pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+          expect_observer_failure(failure, observer_pid, directory)
         end
+        expect_private_observer_cleanup(failure)
         expect(genuine_observation(process.pid)).to eq(record[:before])
       end
     end
