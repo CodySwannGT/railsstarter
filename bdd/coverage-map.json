@@ -118,6 +118,21 @@
     },
     {
       "file": "spec/browser/request_security_spec.rb",
+      "evidence": "captures a native child before destructive driver quit can reap it",
+      "reason": "Native fixture lifecycle regression for capture before destructive quit; verifies owned process reaping and absence rather than a product browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "escalates owned TERM refusal before requiring driver quit to finish",
+      "reason": "Native fixture lifecycle regression for bounded shutdown and driver-owned reaping of a TERM-refusing child; product browser scenarios remain separately required."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "reaps its original native child when identity capture refuses",
+      "reason": "Native fixture allocation-failure cleanup control; verifies direct-child reaping and PID/group absence after constructor refusal, with product browser scenarios separately required."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
       "evidence": "accepts positively reaped exit during profile validation without sending another signal",
       "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
     },

@@ -474,9 +474,9 @@ module RequestSecurityCleanup
     rescue StandardError => error
       @quit_error = error
     end
-    # ChromeDriver must reap its child while our authenticated TERM wakes a
-    # custom-profile browser whose graceful close can exceed this deadline.
-    browser_roots.each(&:request_termination)
+    # Keep ChromeDriver alive to reap its child while the existing authenticated
+    # TERM/KILL sequence finishes a browser that refuses graceful shutdown.
+    browser_roots.each { |process| process.terminate(timeout: @cleanup_timeout) }
     raise 'driver quit timed out' unless RequestSecurityDeadline.wait(@cleanup_timeout) { !@quit_thread.alive? }
     raise @quit_error if @quit_error
   end

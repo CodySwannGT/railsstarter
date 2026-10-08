@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'capybara/rspec'
+require 'io/wait'
 require_relative '../fixtures/browser/request_security_harness'
 
 Capybara.threadsafe = true
@@ -462,6 +463,81 @@ RSpec.describe RequestSecurity do
     ensure
       harness&.instance_variable_get(:@quit_thread)&.join(3)
       reaper&.terminate(timeout: 2)
+    end
+
+    # The real child refuses TERM and remains owned until bounded KILL and reap.
+    def native_term_refusal_child
+      reader, writer = IO.pipe
+      pid = Process.spawn(RbConfig.ruby, '-e', 'trap("TERM") {}; puts "ready"; STDOUT.flush; sleep 60', pgroup: true, out: writer)
+      process = RequestSecurityProcess.new(pid, child: true)
+      writer.close
+      raise 'Native TERM-refusal child did not become ready' unless reader.wait_readable(3) && reader.gets == "ready\n"
+
+      process
+    rescue StandardError
+      process ? process.terminate(timeout: 0.2) : reap_unobserved_native_child(pid)
+      raise
+    ensure
+      reader&.close unless reader&.closed?
+      writer&.close unless writer&.closed?
+    end
+
+    # A private spawn result is signalable only while waitpid proves it unreaped.
+    def reap_unobserved_native_child(pid)
+      return unless pid
+      return if Process.waitpid(pid, Process::WNOHANG)
+
+      begin
+        Process.kill('KILL', pid)
+      rescue Errno::ESRCH
+        # An exit racing the signal must still be positively reaped below.
+      end
+      raise 'Native constructor-refusal child remains unreaped' unless RequestSecurityDeadline.wait(1) { Process.waitpid(pid, Process::WNOHANG) }
+    rescue Errno::ECHILD
+      # The original child is already reaped; never signal a reused PID.
+      nil
+    end
+
+    it('reaps its original native child when identity capture refuses') do
+      pid = nil
+      allow(Process).to receive(:spawn).and_wrap_original do |spawn, *arguments, **options|
+        pid = spawn.call(*arguments, **options)
+      end
+      allow(RequestSecurityObservation).to receive(:identity).and_raise(RequestSecurityObservation::Failure, 'synthetic identity capture refusal')
+
+      expect { native_term_refusal_child }.to raise_error(RequestSecurityObservation::Failure, 'synthetic identity capture refusal')
+      expect(pid).to be_positive
+      expect { Process.waitpid(pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect { Process.kill(0, pid) }.to raise_error(Errno::ESRCH)
+      expect { Process.kill(0, -pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      reap_unobserved_native_child(pid)
+    end
+
+    # Driver quit waits for its real browser child to exit and positively reaps it.
+    def native_term_refusal_harness(process)
+      root = RequestSecurityProcess.new(process.pid)
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit) { Process.waitpid2(process.pid) }
+      harness = described_class.new(cleanup_timeout: 0.2)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      harness.instance_variable_set(:@driver_pid, Process.pid.to_s)
+      allow(harness).to receive(:captured_chrome_processes).and_return([root])
+      [harness, root]
+    end
+
+    it('escalates owned TERM refusal before requiring driver quit to finish') do
+      process = native_term_refusal_child
+      harness, root = native_term_refusal_harness(process)
+
+      expect { harness.send(:quit_browser) }.not_to raise_error
+      expect(root.signals).to eq(%w[TERM KILL])
+      expect(root.absent?).to be(true)
+      expect { Process.waitpid(process.pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect { Process.kill(0, -process.pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      process&.terminate(timeout: 0.2)
+      harness&.instance_variable_get(:@quit_thread)&.join(1)
     end
 
     def later_cross_site_child(harness)

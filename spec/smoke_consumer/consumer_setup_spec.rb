@@ -6,15 +6,18 @@ require_relative '../../lib/smoke_consumer'
 
 RSpec.describe SmokeConsumer::Consumer do
   # Yield an owned consumer with an executable native setup fixture.
-  def with_native_setup(script)
+  def with_native_setup(script, committed: false)
     Dir.mktmpdir('consumer-setup-observation', File.realpath(Dir.tmpdir)) do |base|
       owner = SmokeConsumer::Ownership.create(base, timeout: 30)
       path, project = owner.register_consumer('diagnostic_consumer')
       FileUtils.mkdir_p(File.join(path, 'bin'), mode: 0o700)
       File.write(File.join(path, 'bin/setup'), "#!#{RbConfig.ruby}\n$stdout.sync = true\n#{script}\n", mode: 'w', perm: 0o700)
+      environment = SmokeConsumer.environment
+      environment.merge!(prepare_real_setup(owner, path)) if committed
+      # The bounded setup command starts after this fixture's tool preparation.
       command = SmokeConsumer::Command.new(timeout: 20, ownership: owner)
       consumer = described_class.new(path: path, project: project, ownership: owner, command: command,
-                                     environment: SmokeConsumer.environment, repository: 'example/template')
+                                     environment: environment, repository: 'example/template')
       allow(consumer.instance_variable_get(:@database)).to receive(:setup_environment).and_return({})
       yield consumer, owner, path
     end
@@ -47,13 +50,13 @@ RSpec.describe SmokeConsumer::Consumer do
   end
 
   # Qualify native tools and initialize the owned consumer repository.
-  def prepare_real_setup(consumer, owner, path)
+  def prepare_real_setup(owner, path)
     metadata = real_setup_inputs(path)
     home = File.join(owner.root, 'tools')
     Dir.mkdir(home, 0o700)
     environment = SmokeConsumer::Toolchain.new(SmokeConsumer::Command.new(timeout: 180), metadata, home).environment
-    consumer.instance_variable_get(:@target).environment.merge!(environment)
     SmokeConsumer::Command.new(timeout: 10).call('git', 'init', '--quiet', path)
+    environment
   end
 
   it 'retains a sanitized native setup failure before removing the consumer tree' do
@@ -80,8 +83,7 @@ RSpec.describe SmokeConsumer::Consumer do
   end
 
   it 'records the actual committed setup prerequisite refusal through the consumer boundary' do
-    with_native_setup('exit 0') do |consumer, owner, path|
-      prepare_real_setup(consumer, owner, path)
+    with_native_setup('exit 0', committed: true) do |consumer, owner, _path|
       expect { consumer.send(:setup_twice) }.to raise_error(SmokeConsumer::Error, 'setup failed (exit 1)')
       receipt = JSON.parse(File.read(File.join(owner.root, 'setup-failure-diagnostic-consumer-1.json')))
       expect(receipt).to include('exitstatus' => 1, 'emitted_phase' => 'locked_dependencies', 'setup_error' => nil)
