@@ -2,7 +2,24 @@
 
 require 'digest'
 require 'json'
+require 'securerandom'
 require 'tmpdir'
+
+# Chrome creates a singleton socket below TMPDIR; Ruby's usual dated names
+# exceed Linux's sockaddr_un capacity below the supervised temporary root.
+class BrowserFixtureScratch
+  CHROME_SOCKET_SUFFIX = '/com.google.Chrome.XXXXXX/SingletonSocket'
+
+  def self.create
+    path = File.join(Dir.tmpdir, SecureRandom.hex(4))
+    # Chromium expands sockaddr_un on macOS; Linux retains its native limit.
+    limit = RUBY_PLATFORM.include?('darwin') ? 252 : 107
+    raise 'Owned browser temporary path exceeds Chrome socket capacity' if path.bytesize + CHROME_SOCKET_SUFFIX.bytesize > limit
+
+    Dir.mkdir(path, 0o700) # Exclusive creation refuses collisions without claiming an existing directory.
+    path
+  end
+end
 
 # Passes temporary paths only to our native driver and its browser children.
 class BrowserFixtureServiceManager < Selenium::WebDriver::ServiceManager

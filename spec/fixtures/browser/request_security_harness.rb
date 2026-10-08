@@ -578,7 +578,7 @@ class RequestSecurity
   # @return [void]
   def setup_scratch
     @root = @throttle_environment.fetch('REQUEST_RATE_ROOT', File.expand_path('../../..', __dir__))
-    @scratch = Dir.mktmpdir('railsstarter-request-security-browser-')
+    @scratch = BrowserFixtureScratch.create
     File.chmod(0o700, @scratch)
     @token = SecureRandom.hex(16)
     @ports = Array.new(2) do

@@ -49,8 +49,8 @@
       "spec/browser",
       "spec/fixtures/browser"
     ],
-    "discovered": 40,
-    "disclosed": 40,
+    "discovered": 49,
+    "disclosed": 49,
     "dynamicTitles": 0,
     "undisclosed": [],
     "exclusions": [
@@ -58,6 +58,21 @@
         "file": "spec/browser/browser_startup_diagnostics_spec.rb",
         "evidence": "bounds retained startup output and preserves private file and directory permissions",
         "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "gives the native driver owned temporary paths without changing the parent environment",
+        "reason": "Native fixture-process environment and scratch ownership control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "keeps the owned Chrome singleton socket within the Linux path limit",
+        "reason": "Browser fixture temporary-path capacity and private ownership regression; product browser journeys remain separately required."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "preserves an existing directory when its short random name collides",
+        "reason": "Exclusive fixture scratch allocation refusal control; this example does not exercise a user-facing product behavior."
       },
       {
         "file": "spec/browser/browser_startup_diagnostics_spec.rb",
@@ -73,6 +88,11 @@
         "file": "spec/browser/browser_startup_diagnostics_spec.rb",
         "evidence": "refuses an existing log without truncating its contents",
         "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+        "evidence": "refuses an overlong temporary parent before creating a browser directory",
+        "reason": "Browser fixture path-capacity refusal control; no product request or CSP behavior is exercised."
       },
       {
         "file": "spec/browser/browser_startup_diagnostics_spec.rb",
@@ -98,6 +118,11 @@
         "file": "spec/browser/request_security_spec.rb",
         "evidence": "accepts positively reaped exit during profile validation without sending another signal",
         "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "admits a later child through a complete authenticated Chrome ancestry chain",
+        "reason": "Synthetic fixture-process ancestry admission control; no product request or CSP behavior is exercised."
       },
       {
         "file": "spec/browser/request_security_spec.rb",
@@ -156,6 +181,11 @@
       },
       {
         "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses a later child with foreign or incomplete Chrome ancestry",
+        "reason": "Fixture-process ownership refusal control for foreign or incomplete ancestry; not a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
         "evidence": "refuses a live foreign process copying the exact owned Chrome profile",
         "reason": "Native harness ownership refusal control for a live foreign process with a copied profile flag; validates teardown signal safety rather than a product request or CSP requirement."
       },
@@ -178,6 +208,21 @@
         "file": "spec/browser/request_security_spec.rb",
         "evidence": "refuses foreign UID and process group even when profile and parent match",
         "reason": "Harness process-ownership validation control for foreign identity metadata; does not exercise a product host or CSP behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses later Chrome admission after a captured driver identity changes",
+        "reason": "Fixture-process retained-anchor identity refusal control; not a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses later Chrome admission when the fresh process identity differs",
+        "reason": "Fixture-process fresh identity refusal control; not a user-facing product behavior."
+      },
+      {
+        "file": "spec/browser/request_security_spec.rb",
+        "evidence": "refuses later Chrome admission with a foreign owner or process group",
+        "reason": "Fixture-process UID and group ownership refusal control; not a user-facing product behavior."
       },
       {
         "file": "spec/browser/request_security_spec.rb",

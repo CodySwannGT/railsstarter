@@ -39,7 +39,7 @@ class BootstrapAssets
 
   def setup_scratch
     @root = File.expand_path('../../..', __dir__)
-    @scratch = Dir.mktmpdir('railsstarter-bootstrap-browser-')
+    @scratch = BrowserFixtureScratch.create
     File.chmod(0o700, @scratch)
     @token = SecureRandom.hex(16)
     File.write(File.join(@scratch, 'owner.json'), JSON.generate(token: @token), mode: 'wx', perm: 0o600)

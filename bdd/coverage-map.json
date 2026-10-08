@@ -193,6 +193,21 @@
     },
     {
       "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "keeps the owned Chrome singleton socket within the Linux path limit",
+      "reason": "Browser fixture temporary-path capacity and private ownership regression; product browser journeys remain separately required."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "preserves an existing directory when its short random name collides",
+      "reason": "Exclusive fixture scratch allocation refusal control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "refuses an overlong temporary parent before creating a browser directory",
+      "reason": "Browser fixture path-capacity refusal control; no product request or CSP behavior is exercised."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
       "evidence": "retains an empty startup log when failure precedes driver execution",
       "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
     },

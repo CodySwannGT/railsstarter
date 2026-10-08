@@ -78,6 +78,19 @@ RSpec.describe BrowserStartupDiagnostics do
 
   [RequestSecurity, BootstrapAssets].each do |type|
     context "with #{type.name}" do
+      it('keeps the owned Chrome singleton socket within the Linux path limit') do
+        fixture = type.new
+        fixture.__send__(:setup_scratch)
+        scratch = fixture.instance_variable_get(:@scratch)
+        linux_parent = "/tmp/lisa-rails-scratch/r.#{'a' * 24}/tmp"
+        socket_path = File.join(linux_parent, File.basename(scratch), 'com.google.Chrome.abcdef', 'SingletonSocket')
+        expect(socket_path.bytesize).to be <= 107
+        expect(File.stat(scratch).mode & 0o777).to eq(0o700)
+        expect(JSON.parse(File.read(File.join(scratch, 'owner.json')))).to include('token' => fixture.instance_variable_get(:@token))
+      ensure
+        FileUtils.remove_entry_secure(scratch) if scratch && File.directory?(scratch)
+      end
+
       it('retains startup failure diagnostics through a private verbose IO without replacing the exception') do
         fixture = prepared_fixture(type)
         expect { fixture.__send__(:start_browser) }.to raise_error(original_error) { |caught| expect(caught).to equal(original_error) }
@@ -169,6 +182,27 @@ RSpec.describe BrowserStartupDiagnostics do
       expect(observation.string).not_to include('native refusal', 'synthetic-marker', 'https://fixture.invalid', 'synthetic-payload')
       log = File.join(ENV.fetch('BROWSER_STARTUP_ARTIFACT_DIR'), '*', 'chromedriver-startup.log')
       expect(File.read(Dir.glob(log).fetch(0))).to eq(lines.join)
+    end
+  end
+
+  context 'with exclusive short scratch creation' do
+    before { allow(Dir).to receive(:tmpdir).and_return(directory) }
+
+    it('preserves an existing directory when its short random name collides') do
+      allow(SecureRandom).to receive(:hex).with(4).and_return('abcdef12')
+      existing = File.join(directory, 'abcdef12')
+      Dir.mkdir(existing, 0o700)
+      File.write(File.join(existing, 'foreign'), 'preserved', mode: 'wx', perm: 0o600)
+      expect { BrowserFixtureScratch.create }.to raise_error(Errno::EEXIST)
+      expect(File.read(File.join(existing, 'foreign'))).to eq('preserved')
+    end
+
+    it('refuses an overlong temporary parent before creating a browser directory') do
+      parent = File.join(directory, 'x' * 200)
+      Dir.mkdir(parent, 0o700)
+      allow(Dir).to receive(:tmpdir).and_return(parent)
+      expect { BrowserFixtureScratch.create }.to raise_error(/exceeds Chrome socket capacity/)
+      expect(Dir.children(parent)).to be_empty
     end
   end
 end
