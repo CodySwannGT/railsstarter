@@ -97,29 +97,13 @@ begin
 rescue StandardError => error
   raise "#{error.class}: #{error.message}\n#{File.read(File.join(scratch, 'proxy.log'))}"
 ensure
-  begin
-    Process.kill('TERM', -pid)
-  rescue Errno::ESRCH
-    # An already terminated group still requires waitpid below.
-  end
-  begin
-    Timeout.timeout(10) { Process.waitpid(pid) }
-  rescue Timeout::Error
-    Process.kill('KILL', -pid)
-    Process.waitpid(pid)
-  end
+  group_absent = DependencyResource.stop_tool_group!(pid)
 end
 closed_ports = [proxy_port, backend_port].map do |port|
   TCPSocket.open('127.0.0.1', port).close
   raise 'Owned tool port remained open'
 rescue Errno::ECONNREFUSED
   true
-end
-begin
-  Process.kill(0, -pid)
-  raise 'Owned tool process group remained'
-rescue Errno::ESRCH
-  group_absent = true
 end
 puts JSON.generate(physical: physical, web_console: { mounted: true, loopback: true, foreign_rejected: true },
                    kamal: { host_parsed: true, synthetic_parsed: true },
