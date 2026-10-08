@@ -65,6 +65,7 @@ Rails.application.routes.prepend do
   get '/__unauthorized.js', to: ->(_) { [200, { 'content-type' => 'application/javascript' }, ['window.unauthorizedSourceRan = true']] }
   get '/__unauthorized.css', to: ->(_) { [200, { 'content-type' => 'text/css' }, ['body { --unauthorized-source: reached; }']] }
 end
+Rails.application.reload_routes!
 
 require 'puma'
 ports = ENV.fetch('REQUEST_SECURITY_PORTS').split(',').map { |port| Integer(port) }
