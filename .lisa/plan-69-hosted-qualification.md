@@ -199,3 +199,13 @@ The two corrections are to be batched into the existing PR through one original
 full push after the active upstream aggregate run releases the shared heavy lane.
 Current-head hosted checks, review disposition, normal merge, and the final
 published-main walkthrough remain required. The failed hosted run is retained.
+
+## Published follow-up and final collision review
+
+The ordinary full push published `bf60d03c2e6d2bc4b9b2495bf67e8db54550be30` with 674 examples and zero failures, 84.52% line and 74.15% branch coverage, every original push gate and all six outer owned cleanup checks passing. Independent readback found the exact container and volume absent, scratch absent, database and browser ports closed, all 65 retained outer process IDs absent and all 150 retained browser/observer process IDs absent. Intentional negative driver-quit and observer failure receipts remain retained. No original coverage floor or cleanup refusal was waived.
+
+Current-head candidate onboarding run 37750794719 passed on Ubuntu, retaining all eight renamed application/test schemas, executable hook hashes, successful home and health HTTP responses, owned runtime/checkout absence and preservation of the foreign resource baseline. Published-main qualification still follows the actual merge. Hosted MySQL run 37750796112 is still running as this follow-up is prepared.
+
+The substantive CodeRabbit review at that published head reports docstring coverage 87.16%, above its unchanged 80% requirement. It also identified a remaining fixture assumption: the collision example still inherits its caller's temporary parent. Under an owned 228-byte temporary parent the two selected controls genuinely ran with one failure, reaching the original pathname refusal before EEXIST. Both owned parent directories were verified absent afterward.
+
+Only that collision example now selects the canonical short `/tmp` parent before its first allocation. The unchanged allocator still performs exclusive private creation and its original platform capacity guard. The collision still requires native EEXIST, sentinel preservation and UID/device/inode verification before cleanup; the separate overlong-parent refusal remains intact. Under the same deliberately long ambient parent, both selected controls pass and both owned parent directories are absent. All 14 diagnostic examples pass with seed 10216, and scoped RuboCop passes. The two focused commands exit 2 solely under the unchanged whole-project coverage floors. A new ordinary full push, current-head hosted checks and resolution of this review thread remain required before merge.

@@ -190,6 +190,8 @@ RSpec.describe BrowserStartupDiagnostics do
 
   context 'with exclusive short scratch creation' do
     it('preserves an existing directory when its short random name collides') do
+      # Keep the collision control independent of the caller's temporary-path length.
+      allow(Dir).to receive(:tmpdir).and_return(File.realpath('/tmp'))
       existing = BrowserFixtureScratch.create
       identity = File.lstat(existing)
       File.write(File.join(existing, 'foreign'), 'preserved', mode: 'wx', perm: 0o600)
