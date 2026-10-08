@@ -78,11 +78,14 @@ class RequestSecurityObservation
   class Failure < RuntimeError
     attr_reader :observation
 
+    # Attach immutable sanitized observer progress to the original refusal.
     def retain(observation) = @observation = observation.freeze
   end
 
+  # Run one bounded native observation with a fixed operation classification.
   def self.capture(arguments, timeout: 1, operation: 'capture') = new(timeout, operation).capture(arguments)
 
+  # Validate the deadline and initialize state before any observer is spawned.
   def initialize(timeout, operation = 'capture')
     raise Failure, 'Process observation requires a finite positive timeout' unless timeout.is_a?(Numeric) && timeout.finite? && timeout.positive?
 
@@ -105,6 +108,7 @@ class RequestSecurityObservation
     @status = nil
   end
 
+  # Capture native ps output and stop and remove only this observer's resources.
   def capture(arguments)
     reset_observation
     setup_scratch
@@ -127,6 +131,7 @@ class RequestSecurityObservation
     cleanup if @scratch
   end
 
+  # Clear prior failure progress before the next native observation.
   def reset_observation
     @failure = nil
     @elapsed = nil
@@ -134,12 +139,14 @@ class RequestSecurityObservation
     @started = nil
   end
 
+  # Retain the actual failure and monotonic elapsed time before owned cleanup.
   def retain_failure(error)
     @failure = error
     @elapsed = elapsed
     error
   end
 
+  # Return monotonic elapsed time, or nil before observation starts.
   def elapsed
     Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started if @started
   end
@@ -150,6 +157,7 @@ class RequestSecurityObservation
       exit: @status&.exitstatus, signal: @status&.termsig, output_bytes: output_size('stdout'), error_bytes: output_size('stderr') }
   end
 
+  # Read size only from a private regular capture beneath unchanged owned scratch.
   def output_size(name)
     return unless @scratch
 
@@ -223,6 +231,7 @@ class RequestSecurityObservation
     false
   end
 
+  # Read fresh PID/parent/group/birth identity, distinguishing absence from refusal.
   def self.identity(pid)
     result = capture(['-p', pid, '-o', 'pid=,ppid=,pgid=,lstart='], operation: 'identity')
     output, error, exit_status = result.values_at(:output, :error, :exit)
@@ -235,6 +244,7 @@ class RequestSecurityObservation
     identity
   end
 
+  # Require a successful native process-group inventory containing numeric rows.
   def self.groups
     rows = successful(capture(['-axo', 'pgid='], operation: 'groups')).split
     raise Failure, 'Process observation malformed group table' unless rows.all? { |value| value.match?(/\A\d+\z/) }
@@ -266,6 +276,7 @@ class RequestSecurityObservation
     { pid: pid, ppid: parent, pgid: group, uid: uid, birth: fields.last(5).join(' ') }.freeze
   end
 
+  # Select exact profile arguments from a validated native process table.
   def self.profiles(profile)
     successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='], operation: 'profiles')).lines.filter_map do |line|
       fields = line.strip.split(/\s+/, 8)
@@ -280,6 +291,7 @@ end
 # A later renderer is owned through retained native anchors and complete ancestry.
 # The profile flag is necessary, but can never make an unrelated process ours.
 class RequestSecurityBrowserInventory
+  # Retain profile identities and require one root beneath the two native anchors.
   def initialize(anchors, rows)
     @anchors = anchors
     @profiles = rows.map { |line| profile_identity(line) }
@@ -292,6 +304,7 @@ class RequestSecurityBrowserInventory
     @root = roots.first
   end
 
+  # Recheck retained anchors and every profile against fresh native metadata.
   def validate(metadata)
     @anchors.each do |pid, expected|
       raise 'Browser retained anchor identity changed or unavailable' unless metadata[pid] == expected
@@ -304,6 +317,7 @@ class RequestSecurityBrowserInventory
 
   private
 
+  # Require matching identity, current UID and root group before ancestry checks.
   def verify_profile(profile, metadata)
     actual = metadata[profile[:pid]]
     raise 'Browser profile/native identity changed or unavailable' unless actual && profile.all? { |key, value| actual[key] == value }
@@ -312,6 +326,7 @@ class RequestSecurityBrowserInventory
     verify_ancestry(profile, metadata)
   end
 
+  # Parse only complete native PID/parent/birth profile identity rows.
   def profile_identity(line)
     fields = line.split
     raise 'Malformed browser profile identity' unless RequestSecurityObservation.valid_identity?(fields, numbers: 2)
@@ -319,6 +334,7 @@ class RequestSecurityBrowserInventory
     { pid: fields[0].to_i, ppid: fields[1].to_i, birth: fields.last(5).join(' ') }
   end
 
+  # Require a complete acyclic chain of profile members back to the retained root.
   def verify_ancestry(profile, metadata)
     members = @profiles.map { |row| row.fetch(:pid) }
     visited = []
@@ -719,6 +735,7 @@ class RequestSecurity
     capture_browser_anchors
   end
 
+  # Capture the driver and its unique Chrome root as fresh immutable native anchors.
   def capture_browser_anchors
     roots = @chrome_processes.select { |process| process.identity.split[1] == @driver_pid }
     raise 'Browser captured root is ambiguous' unless roots.one?
@@ -729,6 +746,7 @@ class RequestSecurity
     @browser_anchors = metadata.freeze
   end
 
+  # Compare fresh native UID and identity with the originally captured process.
   def verify_browser_capture(process, actual)
     identity = process.identity.split
     expected = { pid: process.pid, ppid: identity[1].to_i, pgid: identity[2].to_i, uid: Process.uid, birth: identity.last(5).join(' ') }
@@ -754,6 +772,7 @@ class RequestSecurity
     RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}")
   end
 
+  # Admit later profile members only after validating the complete native ancestry.
   def captured_chrome_processes
     captured = Array(@chrome_processes)
     rows = owned_browser_processes
@@ -765,6 +784,7 @@ class RequestSecurity
     @chrome_processes = captured + later
   end
 
+  # Bind a later child's signals to its admitted identity and fresh ownership check.
   def capture_later_browser(pid, actual)
     admitted = actual.merge(birth: actual.fetch(:birth).dup.freeze).freeze
     process = RequestSecurityProcess.new(pid, owner_check: -> { later_browser_owned?(pid, admitted) })
@@ -772,6 +792,7 @@ class RequestSecurity
     process
   end
 
+  # Read fresh metadata for the retained anchors and all observed profile members.
   def validated_browser_profiles(rows)
     raise 'Missing retained browser anchors' unless @browser_anchors
 
@@ -781,6 +802,7 @@ class RequestSecurity
     metadata
   end
 
+  # Require current profile membership and unchanged admitted identity before signaling.
   def later_browser_owned?(pid, admitted)
     return false if RequestSecurityObservation.identity(pid.to_s).empty?
 

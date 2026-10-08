@@ -35,6 +35,7 @@ RSpec.describe BrowserStartupDiagnostics do
     end
   end
 
+  # Prepare inert fixture-owned startup state without launching a browser.
   def prepared_fixture(type)
     fixture = type.new
     scratch = File.join(directory, type.name)
@@ -48,12 +49,14 @@ RSpec.describe BrowserStartupDiagnostics do
     fixture
   end
 
+  # Write an executable Ruby driver fixture inside the owned temporary root.
   def native_driver_fixture
     path = File.join(directory, 'driver-fixture')
     File.write(path, "#!#{RbConfig.ruby}\n" + native_driver_source, mode: 'wx', perm: 0o700)
     path
   end
 
+  # Serve Selenium readiness and shutdown while reporting only temporary paths.
   def native_driver_source
     <<~'RUBY'
       require 'socket'

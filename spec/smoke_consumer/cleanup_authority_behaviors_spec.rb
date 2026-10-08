@@ -387,6 +387,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       expect(File.exist?(File.join(ownership.root, 'armed.json'))).to be(true)
     end
 
+    # Execute a genuinely failing native child during the owned cleanup attempt.
     def fail_cleanup_with_native_child
       native_command = SmokeConsumer::Command.new(timeout: 60)
       collection = instance_double(SmokeConsumer::ContainerCollection)
@@ -396,6 +397,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       allow(SmokeConsumer::ContainerCollection).to receive(:new).and_return(collection)
     end
 
+    # Construct synthetic nested exceptions to check bounded private diagnostics.
     def private_cause_chain
       error = nil
       6.times do |index|
@@ -412,6 +414,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       error
     end
 
+    # Produce native EBADF over the original synthetic failure.
     def native_descriptor_failure
       reader, writer = IO.pipe
       IO.for_fd(writer.fileno).close
@@ -437,6 +440,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       SmokeConsumer::DirectChild.new(pid).terminate if pid
     end
 
+    # Preserve finish's refusal while printing only its sanitized receipt evidence.
     def finish_with_failure_diagnostic(pid)
       described_class.finish(ownership, pid)
     rescue SmokeConsumer::Error
@@ -444,6 +448,7 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       raise
     end
 
+    # Select the cleanup failure record or an explicit unavailable indicator.
     def cleanup_failure_diagnostic
       receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
       JSON.generate(receipt.slice('failure'))

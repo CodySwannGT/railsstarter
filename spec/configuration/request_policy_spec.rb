@@ -427,6 +427,7 @@ RSpec.describe RequestPolicy do
       end
     end
 
+    # Verify owned cleanup retains only sanitized observer failure evidence.
     def expect_private_observer_cleanup(failure)
       harness = RequestSecurity.new(cleanup_timeout: 0.1)
       harness.setup_scratch
@@ -439,6 +440,7 @@ RSpec.describe RequestPolicy do
       harness&.stop unless harness&.cleanup_record
     end
 
+    # Check exact bounded progress while refusing private output and path disclosure.
     def expect_observer_failure(failure, observer_pid, directory)
       expect(failure.observation).to include(operation: 'identity', stage: 'waiting', observer_pid: observer_pid,
                                              reaped: true, exit: nil, signal: Signal.list.fetch('KILL'), output_bytes: 14, error_bytes: 13)

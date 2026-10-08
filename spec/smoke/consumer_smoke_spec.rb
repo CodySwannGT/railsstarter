@@ -473,6 +473,7 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       header.to_s + body.ljust(512, "\0") + ("\0" * 1024)
     end
 
+    # Commit sample bytes in the isolated archive repository using the native command.
     def commit_archive_sample(command, repository, contents)
       File.write(File.join(repository, 'sample'), contents)
       command.call('git', 'add', 'sample', chdir: repository, timeout: 10)
@@ -982,6 +983,7 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       end
     end
 
+    # Emit synthetic private streams before exceeding the unchanged observer deadline.
     def observer_timeout_fixture
       "File.write(File.join(__dir__, 'observer.pid'), Process.pid.to_s); " \
         "$stdout.write('private output'); $stdout.flush; $stderr.write('private error'); $stderr.flush; sleep 20"

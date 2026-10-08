@@ -5,6 +5,7 @@ require_relative '../../lib/smoke_consumer'
 
 RSpec.describe SmokeConsumer::QueryStreams do
   context 'with native process observers' do
+    # Retain actual PID/group pairs from the native children spawned by this test.
     def observe_spawn_groups
       observations = []
       allow(Process).to receive(:spawn).and_wrap_original do |native, *arguments, **options|

@@ -10,6 +10,7 @@ require 'tmpdir'
 class BrowserFixtureScratch
   CHROME_SOCKET_SUFFIX = '/com.google.Chrome.XXXXXX/SingletonSocket'
 
+  # Create an exclusive private directory within Chrome's socket pathname budget.
   def self.create
     path = File.join(Dir.tmpdir, SecureRandom.hex(4))
     # Chromium expands sockaddr_un on macOS; Linux retains its native limit.
@@ -23,6 +24,7 @@ end
 
 # Passes temporary paths only to our native driver and its browser children.
 class BrowserFixtureServiceManager < Selenium::WebDriver::ServiceManager
+  # Retain the fixture temporary path while preserving Selenium's service options.
   def initialize(config)
     @temporary_directory = config.temporary_directory
     super
@@ -30,6 +32,7 @@ class BrowserFixtureServiceManager < Selenium::WebDriver::ServiceManager
 
   private
 
+  # Pass owned temporary paths only to the driver child and its descendants.
   def build_process(*command)
     environment = { 'TMPDIR' => @temporary_directory, 'TMP' => @temporary_directory, 'TEMP' => @temporary_directory }
     super(environment, *command)
@@ -40,11 +43,13 @@ end
 class BrowserFixtureChromeService < Selenium::WebDriver::Chrome::Service
   attr_reader :temporary_directory
 
+  # Keep the owned temporary path and forward the original Chrome service options.
   def initialize(temporary_directory:, **)
     @temporary_directory = temporary_directory
     super(**)
   end
 
+  # Resolve the original driver and start it through Selenium's service manager.
   def launch
     self.executable_path ||= Selenium::WebDriver::DriverFinder.new(nil, self).driver_path
     BrowserFixtureServiceManager.new(self).tap(&:start)
@@ -96,11 +101,13 @@ class BrowserStartupDiagnostics
 
   private
 
+  # Describe captured bytes with fingerprints without publishing exception text.
   def observation(failure, binaries, bytes)
     binaries.merge(error_class: failure.class.name, error_sha256: Digest::SHA256.hexdigest(failure.message),
                    captured_bytes: bytes.bytesize, log_sha256: Digest::SHA256.hexdigest(bytes), truncated: @log.stat.size > LOG_BYTES)
   end
 
+  # Require a private current-user directory and retain its device/inode identity.
   def private_directory(path)
     stat = File.lstat(path)
     raise 'Refusing unsafe browser diagnostic directory' unless stat.directory? && stat.uid == Process.uid && (stat.mode & 0o777) == 0o700
@@ -108,6 +115,7 @@ class BrowserStartupDiagnostics
     [stat.dev, stat.ino]
   end
 
+  # Recheck scratch and descriptor identity before reading the bounded log tail.
   def startup_bytes
     raise 'Browser diagnostic scratch changed' unless private_directory(@scratch) == @scratch_identity
 
@@ -120,6 +128,7 @@ class BrowserStartupDiagnostics
     @log.read(LOG_BYTES) || ''.b
   end
 
+  # Allocate a fresh private retention directory beneath a validated artifact root.
   def retained_directory
     root = ENV.fetch('BROWSER_STARTUP_ARTIFACT_DIR', File.expand_path('../../../tmp/browser-startup-diagnostics', __dir__))
     Dir.mkdir(root, 0o700) unless File.exist?(root) || File.symlink?(root)
@@ -127,10 +136,12 @@ class BrowserStartupDiagnostics
     Dir.mktmpdir("browser-#{@token}-", root)
   end
 
+  # Exclusively create a private artifact, refusing any existing destination.
   def write_private(path, bytes)
     File.open(path, 'wx', 0o600) { |output| output.write(bytes) }
   end
 
+  # Fingerprint at most twenty native error lines while keeping their text private.
   def native_errors(bytes)
     bytes.encode(Encoding::UTF_8, invalid: :replace, undef: :replace).lines.filter_map do |line|
       Digest::SHA256.hexdigest(line) if line.match?(NATIVE_ERROR)

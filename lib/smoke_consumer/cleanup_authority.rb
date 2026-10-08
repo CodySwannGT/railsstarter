@@ -920,7 +920,7 @@ module SmokeConsumer
       @stage = 'arming'
     end
 
-    # Acknowledge arming, wait for cleanup triggers, and record only the exception class on failure.
+    # Acknowledge arming, wait for cleanup, and retain sanitized stage and failure fingerprints.
     # @return [void]
     def watch
       acknowledge

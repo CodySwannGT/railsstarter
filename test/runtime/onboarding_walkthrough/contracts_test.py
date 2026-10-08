@@ -65,6 +65,7 @@ def remove_exact_test_child(ready, token):
 
 class WalkthroughContracts(unittest.TestCase):
     def test_native_compose_resolves_the_shared_image_build_owner_and_cleanup_labels(self):
+        """Resolve native Compose ownership labels without allocating resources."""
         source = Path(__file__).resolve().parents[3]
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
@@ -87,6 +88,7 @@ class WalkthroughContracts(unittest.TestCase):
                              {project + "-app:local"})
 
     def test_literal_private_input_step_exports_the_native_nonroot_build_identity(self):
+        """Verify README input exports native ownership and a private environment file."""
         source = Path(__file__).resolve().parents[3]
         body = commands((source / "README.md").read_text(), 4)
         with tempfile.TemporaryDirectory() as name:

@@ -5,6 +5,7 @@ require 'tmpdir'
 require_relative '../../lib/smoke_consumer'
 
 RSpec.describe SmokeConsumer::Consumer do
+  # Yield an owned consumer with an executable native setup fixture.
   def with_native_setup(script)
     Dir.mktmpdir('consumer-setup-observation', File.realpath(Dir.tmpdir)) do |base|
       owner = SmokeConsumer::Ownership.create(base, timeout: 30)
@@ -19,6 +20,7 @@ RSpec.describe SmokeConsumer::Consumer do
     end
   end
 
+  # Produce a real failing child that writes synthetic private output.
   def nested_setup_failure
     <<~RUBY
       require #{File.expand_path('../../lib/smoke_consumer', __dir__).inspect}
@@ -33,6 +35,7 @@ RSpec.describe SmokeConsumer::Consumer do
     RUBY
   end
 
+  # Copy committed setup inputs into this isolated consumer.
   def real_setup_inputs(path)
     FileUtils.cp('bin/setup', File.join(path, 'bin/setup'))
     FileUtils.cp_r('lib', path)
@@ -43,6 +46,7 @@ RSpec.describe SmokeConsumer::Consumer do
     SmokeConsumer::Toolchain.metadata(manifest, lock, File.read('.ruby-version'), File.read('Gemfile.lock'))
   end
 
+  # Qualify native tools and initialize the owned consumer repository.
   def prepare_real_setup(consumer, owner, path)
     metadata = real_setup_inputs(path)
     home = File.join(owner.root, 'tools')
