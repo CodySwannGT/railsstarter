@@ -104,3 +104,56 @@ EOF or extends a command/cleanup timeout. Total private capture remains 16 MiB;
 native pipe/ceiling errors propagate, and unresolved group ownership still
 preserves checkout and failed evidence. This proves capture loss, not that every
 historical short-deadline failure had the same scheduling cause.
+
+## Hosted Linux checkout ownership correction
+
+The actual candidate run 37622161281 failed the literal commands with a bounded
+permission-denied indicator targeting `bin`. Its runner UID was 1001; the private
+standalone clone remained 0700, while the local image created UID 1000. A genuine
+Linux filesystem control and the unchanged local-user build stanza reproduce
+`Errno::EACCES` when UID 1000 reads that UID-1001 directory. Docker Desktop's bind
+translation passed a separate control and is not evidence of Ubuntu acceptance.
+
+The local image now accepts non-root numeric UID/GID build inputs, preserves the
+1000 defaults, and reuses an already existing group. README step 4 exports actual
+`id -u`/`id -g`; Compose forwards those values to the shared local image. Native
+controls built the exact new user stanza and read/wrote private 0700 source as
+1000:1000, 1001:1001 and 1001:20. Root and malformed UID builds refused. Checkout
+permissions, production images, ports and command deadlines are unchanged.
+
+The same hosted report observed null image project/service labels and retained
+the original command failure when cleanup refused. Explicit local build labels
+now bind the shared image to its Compose project and web build service. Genuine
+local Compose 5.1.0 already supplies automatic labels; its unchanged control did
+not reproduce the hosted null labels and is retained as a version distinction.
+Actual fixed image metadata was read back. Existing canonical-ID, sole-alias,
+no-prune removal and unknown-query refusal remain unchanged.
+
+The existing Python contract file now executes literal step 4 and the genuine
+Compose configuration parser. The old README fails with `LOCAL_UID` unbound;
+the exact committed baseline Compose bytes fail the parser contract on missing
+build arguments. Those are source/command controls, not hosted walkthrough proof.
+The tiny native probes removed only their positively owned images/containers and
+proved foreign baseline preservation. Full candidate and later published-main
+literal walkthroughs remain required before closing #76. This follow-up is based
+on merged PR87 main, with the current four-comment #76 context read privately.
+
+## Hosted cold-start health request
+
+The candidate walkthrough at `285901f` in run 37652369397 built its image and
+passed the native Linux supervision/command controls, then failed with curl
+status 56. Its native failing-command SHA-256 matches the exact first `/up`
+request after background web startup. Owned runtime and checkout cleanup and
+foreign preservation all passed. The report does not prove whether that Rails
+process would subsequently become ready.
+
+The literal README had no HTTP readiness wait. A private native loopback
+cold-start control reproduced status 56 with the same curl command and a real
+TCP reset. The bounded corrected curl succeeded after actual readiness; the
+same command against a never-ready endpoint retained status 56 after 30.23
+seconds. Both owned server threads and sockets were positively closed.
+This qualifies curl startup/failure behavior, not hosted Rails acceptance.
+Step 6 now uses a 60-second retry window, 30 retries at one-second intervals and
+a five-second request limit; the following home request remains required.
+Existing walkthrough, setup and resource-cleanup deadlines are unchanged.
+Fresh candidate and published-main walkthroughs remain required.

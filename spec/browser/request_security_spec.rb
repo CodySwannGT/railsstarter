@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'capybara/rspec'
+require 'io/wait'
 require_relative '../fixtures/browser/request_security_harness'
 
 Capybara.threadsafe = true
@@ -346,6 +347,7 @@ RSpec.describe RequestSecurity do
     it('matches only the exact owned profile flag and leaves a prefix neighbor untouched') do
       harness = described_class.new
       harness.setup_scratch
+      harness.instance_variable_set(:@browser_allocation_started, true)
       profile = File.join(harness.instance_variable_get(:@scratch), 'chrome')
       with_term_ignoring_child("--user-data-dir=#{profile}-neighbor") do |child|
         expect(harness.send(:owned_browser_processes)).to eq([])
@@ -425,6 +427,120 @@ RSpec.describe RequestSecurity do
       resume&.join(1)
     end
 
+    # A real owned child makes destructive quit race with a fresh native capture.
+    def native_quit_capture_fixture
+      pid = Process.spawn(RbConfig.ruby, '-e', 'sleep 60', pgroup: true, out: File::NULL, err: File::NULL)
+      reaper = RequestSecurityProcess.new(pid, child: true)
+      quit_finished = Queue.new
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit) do
+        reaper.terminate(timeout: 2)
+        quit_finished << true
+      end
+      [native_quit_capture_harness(driver, pid, quit_finished), reaper]
+    end
+
+    # Forces the old ordering to observe the actual child's completed native exit.
+    def native_quit_capture_harness(driver, pid, quit_finished)
+      harness = described_class.new(cleanup_timeout: 2)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      harness.instance_variable_set(:@driver_pid, Process.pid.to_s)
+      allow(harness).to receive(:captured_chrome_processes) do
+        quit_started = harness.instance_variable_get(:@quit_thread)
+        raise 'Native quit did not finish' if quit_started && !RequestSecurityDeadline.wait(3) { !quit_finished.empty? }
+
+        [RequestSecurityProcess.new(pid)]
+      end
+      harness
+    end
+
+    it('captures a native child before destructive driver quit can reap it') do
+      harness, reaper = native_quit_capture_fixture
+
+      expect { harness.send(:quit_browser) }.not_to raise_error
+      expect(reaper.reaped).to be(true)
+      expect(reaper.absent?).to be(true)
+      expect { Process.kill(0, -reaper.pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      harness&.instance_variable_get(:@quit_thread)&.join(3)
+      reaper&.terminate(timeout: 2)
+    end
+
+    # The real child refuses TERM and remains owned until bounded KILL and reap.
+    def native_term_refusal_child
+      reader, writer = IO.pipe
+      pid = Process.spawn(RbConfig.ruby, '-e', 'trap("TERM") {}; puts "ready"; STDOUT.flush; sleep 60', pgroup: true, out: writer)
+      process = RequestSecurityProcess.new(pid, child: true)
+      writer.close
+      raise 'Native TERM-refusal child did not become ready' unless reader.wait_readable(3) && reader.gets == "ready\n"
+
+      process
+    rescue StandardError
+      process ? process.terminate(timeout: 0.2) : reap_unobserved_native_child(pid)
+      raise
+    ensure
+      reader&.close unless reader&.closed?
+      writer&.close unless writer&.closed?
+    end
+
+    # A private spawn result is signalable only while waitpid proves it unreaped.
+    def reap_unobserved_native_child(pid)
+      return unless pid
+      return if Process.waitpid(pid, Process::WNOHANG)
+
+      begin
+        Process.kill('KILL', pid)
+      rescue Errno::ESRCH
+        # An exit racing the signal must still be positively reaped below.
+      end
+      raise 'Native constructor-refusal child remains unreaped' unless RequestSecurityDeadline.wait(1) { Process.waitpid(pid, Process::WNOHANG) }
+    rescue Errno::ECHILD
+      # The original child is already reaped; never signal a reused PID.
+      nil
+    end
+
+    it('reaps its original native child when identity capture refuses') do
+      pid = nil
+      allow(Process).to receive(:spawn).and_wrap_original do |spawn, *arguments, **options|
+        pid = spawn.call(*arguments, **options)
+      end
+      allow(RequestSecurityObservation).to receive(:identity).and_raise(RequestSecurityObservation::Failure, 'synthetic identity capture refusal')
+
+      expect { native_term_refusal_child }.to raise_error(RequestSecurityObservation::Failure, 'synthetic identity capture refusal')
+      expect(pid).to be_positive
+      expect { Process.waitpid(pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect { Process.kill(0, pid) }.to raise_error(Errno::ESRCH)
+      expect { Process.kill(0, -pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      reap_unobserved_native_child(pid)
+    end
+
+    # Driver quit waits for its real browser child to exit and positively reaps it.
+    def native_term_refusal_harness(process)
+      root = RequestSecurityProcess.new(process.pid)
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit) { Process.waitpid2(process.pid) }
+      harness = described_class.new(cleanup_timeout: 0.2)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      harness.instance_variable_set(:@driver_pid, Process.pid.to_s)
+      allow(harness).to receive(:captured_chrome_processes).and_return([root])
+      [harness, root]
+    end
+
+    it('escalates owned TERM refusal before requiring driver quit to finish') do
+      process = native_term_refusal_child
+      harness, root = native_term_refusal_harness(process)
+
+      expect { harness.send(:quit_browser) }.not_to raise_error
+      expect(root.signals).to eq(%w[TERM KILL])
+      expect(root.absent?).to be(true)
+      expect { Process.waitpid(process.pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect { Process.kill(0, -process.pid) }.to raise_error(Errno::ESRCH)
+    ensure
+      process&.terminate(timeout: 0.2)
+      harness&.instance_variable_get(:@quit_thread)&.join(1)
+    end
+
     def later_cross_site_child(harness)
       harness.start
       harness.page.visit('/up')
@@ -453,13 +569,77 @@ RSpec.describe RequestSecurity do
       raise 'No genuine later Chrome child observed' if later.empty?
       raise 'Captured root changed before suspension' unless RequestSecurityObservation.identity(root.pid.to_s).split == root.identity.split
 
+      harness.send(:validated_browser_profiles, rows)
       later.each { |row| verify_later_identity(row, root) }
+    end
+
+    # Synthetic observations exercise the real admission path without launching Chrome.
+    def later_ancestry_fixture
+      anchors, rows, details = browser_inventory_fixture
+      details[103] = details.fetch(102).merge(pid: 103, ppid: 102)
+      rows << "103 102 #{details.fetch(103).fetch(:birth)}"
+      harness = described_class.new
+      harness.instance_variable_set(:@browser_anchors, Marshal.load(Marshal.dump(anchors)))
+      allow(harness).to receive(:owned_browser_processes).and_return(rows)
+      observe_later_ancestry(details)
+      captured = [101, 102].map do |pid|
+        instance_double(RequestSecurityProcess, pid: pid, identity: RequestSecurityObservation.identity(pid.to_s))
+      end
+      [harness, captured, captured.first, rows, details]
+    end
+
+    # Supplies consistent finite native-observation tuples to the admission controls.
+    def observe_later_ancestry(details)
+      allow(RequestSecurityObservation).to receive(:metadata).and_return(details)
+      allow(RequestSecurityObservation).to receive(:identity) do |pid|
+        process = details.fetch(pid.to_i)
+        "#{process.fetch(:pid)} #{process.fetch(:ppid)} #{process.fetch(:pgid)} #{process.fetch(:birth)}"
+      end
+    end
+
+    it('admits a later child through a complete authenticated Chrome ancestry chain') do
+      harness, captured, root = later_ancestry_fixture
+      expect { verify_later_children(harness, captured, root) }.not_to raise_error
+    end
+
+    it('refuses a later child with foreign or incomplete Chrome ancestry') do
+      harness, captured, root, rows, details = later_ancestry_fixture
+      details[103][:ppid] = Process.pid
+      rows[2] = "103 #{Process.pid} #{details.fetch(103).fetch(:birth)}"
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry/)
+      details[103][:ppid] = 102
+      rows[2] = "103 102 #{details.fetch(103).fetch(:birth)}"
+      rows.delete_at(1)
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry/)
+    end
+
+    it('refuses later Chrome admission after a captured driver identity changes') do
+      harness, captured, root, _, details = later_ancestry_fixture
+      details[100][:birth] = 'Wed Oct 7 03:52:45 2026'
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/anchor identity/)
+    end
+
+    it('refuses later Chrome admission with a foreign owner or process group') do
+      harness, captured, root, _, details = later_ancestry_fixture
+      details[103][:uid] += 1
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/owner/)
+      details[103][:uid] = Process.uid
+      details[103][:pgid] += 1
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/owner/)
+    end
+
+    it('refuses later Chrome admission when the fresh process identity differs') do
+      harness, captured, root = later_ancestry_fixture
+      allow(RequestSecurityObservation).to receive(:identity).with('103').and_return('103 102 100 Wed Oct 7 03:52:45 2026')
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/ancestry identity/)
+      allow(RequestSecurityObservation).to receive(:identity).with('103').and_return('103 102 104 Wed Oct 7 03:52:44 2026')
+      expect { verify_later_children(harness, captured, root) }.to raise_error(/process group/)
     end
 
     def verify_later_identity(row, root)
       fields = row.split
       identity = RequestSecurityObservation.identity(fields.first).split
-      raise 'Later Chrome ancestry identity disagrees' unless identity.values_at(0, 1, 3, 4, 5, 6, 7) == fields && fields[1] == root.pid.to_s
+      raise 'Later Chrome ancestry identity disagrees' unless identity.values_at(0, 1, 3, 4, 5, 6, 7) == fields
       raise 'Later Chrome process group disagrees' unless identity[2] == root.identity.split[2]
     end
 

@@ -67,7 +67,7 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     )
   end
 
-  it 'prepares the exact locked Bundler in a private HOME before consumer setup' do
+  it 'qualifies the exact locked Bundler with a private HOME before consumer setup' do
     Dir.mktmpdir('consumer-bundler', File.realpath(Dir.tmpdir)) do |home|
       command = described_class::Command.new(timeout: 180)
       metadata = locked_toolchain_metadata
@@ -77,7 +77,6 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       expect(status.success?).to be(true)
       expect(output.strip).to eq("Bundler version #{metadata.fetch('bundler')}")
       expect(environment.fetch('HOME')).to eq(home)
-      expect(environment.fetch('GEM_HOME')).to eq(File.join(home, 'gems'))
       expect(environment.fetch('BUNDLER_VERSION')).to eq(metadata.fetch('bundler'))
     end
   end
@@ -121,6 +120,21 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     FileUtils.cp_r('lib', app)
     FileUtils.cp(['package.json', '.ruby-version', 'Gemfile.lock'], app)
     File.write(File.join(app, 'package-lock.json'), JSON.generate(lock.merge('lockfileVersion' => 1)))
+  end
+
+  it 'verifies the official Bun archive before accepting it and rejects changed bytes' do
+    Dir.mktmpdir('consumer-bun-checksum', File.realpath(Dir.tmpdir)) do |home|
+      command = described_class::Command.new(timeout: 180)
+      version = locked_toolchain_metadata.fetch('bun')
+      environment = { 'HOME' => home, 'PATH' => ENV.fetch('PATH') }
+      release = described_class::BunTool.new(command, version, environment, home).send(:release)
+      expect(release.url).to eq("https://github.com/oven-sh/bun/releases/download/bun-v#{version}/bun-linux-x64.zip")
+      archive = File.join(home, 'bun.zip')
+      command.call('curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '120', '--output', archive, release.url, env: environment, timeout: 125)
+      expect { release.verify(archive) }.not_to raise_error
+      File.open(archive, 'ab') { |file| file.write('altered bytes') }
+      expect { release.verify(archive) }.to raise_error(described_class::Error, 'Essential prerequisite: release digest mismatch')
+    end
   end
 
   it 'carries qualified private Bundler through the public setup prerequisite check' do
@@ -474,6 +488,14 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       header.to_s + body.ljust(512, "\0") + ("\0" * 1024)
     end
 
+    # Commit sample bytes in the isolated archive repository using the native command.
+    def commit_archive_sample(command, repository, contents)
+      File.write(File.join(repository, 'sample'), contents)
+      command.call('git', 'add', 'sample', chdir: repository, timeout: 10)
+      command.call('git', '-c', 'user.name=Archive witness', '-c', 'user.email=archive@example.invalid',
+                   'commit', '-m', "test: #{contents} archive", chdir: repository, timeout: 10)
+    end
+
     it 'refuses malformed explicit source identities before creating a destination' do
       Dir.mktmpdir('consumer-smoke-invalid-source', File.realpath(Dir.tmpdir)) do |base|
         destination = File.join(base, 'named_consumer')
@@ -486,10 +508,14 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     end
 
     it 'refuses a genuine archive whose comment belongs to a different accepted commit' do
-      command = SmokeConsumer::Command.new(timeout: 30)
-      archive, = command.capture('git', 'archive', '--format=tar', 'HEAD', timeout: 20)
-      different, = command.capture('git', 'rev-parse', 'HEAD^', timeout: 10)
       Dir.mktmpdir('consumer-smoke-mismatched-source', File.realpath(Dir.tmpdir)) do |base|
+        command = SmokeConsumer::Command.new(timeout: 30)
+        repository = File.join(base, 'repository')
+        command.call('git', 'init', repository, timeout: 10)
+        commit_archive_sample(command, repository, 'first')
+        archive, = command.call('git', 'archive', '--format=tar', 'HEAD', chdir: repository, timeout: 20)
+        commit_archive_sample(command, repository, 'second')
+        different, = command.call('git', 'rev-parse', 'HEAD', chdir: repository, timeout: 10)
         destination = File.join(base, 'named_consumer')
         expect { SmokeConsumer::Rename.export(archive, destination, source: different.strip) }
           .to raise_error(SmokeConsumer::Error, 'Git archive source metadata differs')
@@ -860,12 +886,27 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       CHILD
     end
 
+    # Require native exit/EOF observations without including private command data.
+    # @param script [String] native leader/grandchild program
+    # @param file [String] private process-identity destination
+    # @param nonce [String] private identity witness
+    # @return [void]
+    def expect_inherited_pipe_deadline(script, file, nonce)
+      expect { described_class::Command.new(timeout: 5).call(RbConfig.ruby, '-e', script, file, nonce, timeout: 0.8) }
+        .to raise_error(described_class::Error, /deadline exceeded/) do |error|
+          expect(error.observation).to eq('output_eof' => false, 'status_eof' => true, 'exitstatus' => 0, 'termsig' => nil)
+          receipt = described_class::CleanupFailure.new('images', error).to_h
+          expect(receipt.fetch('command_deadlines')).to eq([error.observation])
+          expect(JSON.generate(receipt)).not_to include(nonce, script, file)
+        end
+    end
+
     it 'cleans an inherited-pipe grandchild after its leader exits and is reaped' do
       Dir.mktmpdir('consumer-exited-leader', File.realpath(Dir.tmpdir)) do |base|
         file = File.join(base, 'nonce-process.json')
         nonce = SecureRandom.hex(16)
         script = exited_leader_script
-        expect { described_class::Command.new(timeout: 5).call(RbConfig.ruby, '-e', script, file, nonce, timeout: 0.8) }.to raise_error(described_class::Error, /deadline exceeded/)
+        expect_inherited_pipe_deadline(script, file, nonce)
         row = JSON.parse(File.read(file))
         expect(row.fetch('nonce')).to eq(nonce)
         await_actual_absence(row.fetch('pid'))
@@ -937,7 +978,9 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
     it 'refuses a failed observer rather than declaring the live PID absent' do
       identity = described_class::Ownership.identity_for(Process.pid)
       with_observer_fixture("warn 'deliberate failure'; exit 1") do
-        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer failed/)
+        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer failed/) do |error|
+          expect(error.observation).to include('stage' => 'reaping', 'exitstatus' => 1)
+        end
       end
       expect(independent_process(Process.pid)).not_to be_nil
     end
@@ -970,11 +1013,26 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
       end
     end
 
+    # Emit synthetic private streams before exceeding the unchanged observer deadline.
+    def observer_timeout_fixture
+      "File.write(File.join(__dir__, 'observer.pid'), Process.pid.to_s); " \
+        "$stdout.write('private output'); $stdout.flush; $stderr.write('private error'); $stderr.flush; sleep 20"
+    end
+
     it 'bounds a timed-out observer and proves its owned PID is actually absent' do
       identity = described_class::Ownership.identity_for(Process.pid)
-      with_observer_fixture("File.write(File.join(__dir__, 'observer.pid'), Process.pid.to_s); sleep 20") do |base|
-        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer deadline exceeded/)
-        await_actual_absence(Integer(File.read(File.join(base, 'observer.pid'))))
+      with_observer_fixture(observer_timeout_fixture) do |base|
+        expect { described_class::Ownership.alive?(identity) }.to raise_error(described_class::Error, /observer deadline exceeded/) do |error|
+          observer_pid = Integer(File.read(File.join(base, 'observer.pid')))
+          await_actual_absence(observer_pid)
+          expect(error.observation).to include('pid' => observer_pid, 'stage' => 'draining', 'exitstatus' => nil,
+                                               'streams' => { 'output_bytes' => 14, 'error_bytes' => 13,
+                                                              'open_streams' => %w[output error], 'read_interruptions' => 0 })
+          expect(error.observation.fetch('elapsed_seconds')).to be >= 2
+          receipt = described_class::CleanupFailure.new('waiting', error).to_h
+          expect(receipt.fetch('process_queries')).to eq([error.observation])
+          expect(JSON.generate(receipt)).not_to include('private output', 'private error')
+        end
       end
     end
 

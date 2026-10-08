@@ -40,6 +40,17 @@ mise exec ruby@3.4.11 -- gem install bundler --version "$BUNDLER_VERSION"
 mise exec ruby@3.4.11 "node@$NODE_VERSION" "bun@$BUN_VERSION" -- bundle --version
 ```
 
+On macOS, build the host `mysql2` gem with MariaDB Connector/C. It supports the MySQL server used by this starter and keeps Ruby and the client library on the same OpenSSL 3 family. Select it before installing the bundle:
+
+```sh
+if [ "$(uname -s)" = Darwin ]; then
+  brew install mariadb-connector-c
+  mise exec ruby@3.4.11 -- bundle config --local build.mysql2 "--with-mysql-config=$(brew --prefix mariadb-connector-c)/bin/mariadb_config"
+fi
+```
+
+If the host bundle already has `mysql2` compiled against another client library, rebuild it with `mise exec ruby@3.4.11 -- bundle pristine mysql2` after selecting Connector/C. The native client selection matters for host tests that fork while database connections are open.
+
 Use Bun for project JavaScript dependencies. Lisa's package metadata declares Bun as the supported project installer. Do not run a frozen Bun install against an absent lock or change dependency versions just to satisfy setup.
 
 ### 3. Rename explicitly
@@ -83,9 +94,10 @@ Compose reads `.env`; host Rails does not. Export matching base/user and TCP set
 ```sh
 export DATABASE_NAME=acme_portal DATABASE_USER=root DATABASE_PORT=3306
 export PRIMARY_DB_HOST=127.0.0.1 AWS_BOOTSTRAP_ENABLED=false RAILS_ENV=development
+export LOCAL_UID=$(id -u) LOCAL_GID=$(id -g)
 ```
 
-Inside Compose use `db`; on the host use `127.0.0.1`/3306. `localhost` can select a Unix socket Docker does not expose. Resolve private passwords/keys separately without printing them or sourcing an arbitrary `.env` as shell code. A non-root `DATABASE_USER` must actually exist and have grants to create/use all development and test databases; changing `.env` does not create that user.
+The shared local image runs as your non-root UID/GID so it can traverse a private checkout and write its runtime files through the bind mount. Rebuild it after changing these values. Inside Compose use `db`; on the host use `127.0.0.1`/3306. `localhost` can select a Unix socket Docker does not expose. Resolve private passwords/keys separately without printing them or sourcing an arbitrary `.env` as shell code. A non-root `DATABASE_USER` must actually exist and have grants to create/use all development and test databases; changing `.env` does not create that user.
 
 ### 5. Install dependencies, hooks and databases
 
@@ -109,9 +121,11 @@ Build the shared local image, run its one-shot preparation and start web:
 docker compose build web
 docker compose run --rm db-prepare
 docker compose up -d web
-curl --fail --silent --show-error http://127.0.0.1:3000/up
+curl --fail --silent --show-error --retry 30 --retry-delay 1 --retry-max-time 60 --max-time 5 --retry-all-errors http://127.0.0.1:3000/up
 curl --fail --silent --show-error http://127.0.0.1:3000/
 ```
+
+The health request waits through transient startup failures with a 60-second retry window and a five-second limit per request. If web never becomes ready, curl still exits unsuccessfully; inspect `docker compose logs web` before continuing.
 
 Compose pins MySQL 8.4.11 by digest. Web, worker and `db-prepare` share the local image. Preparation waits for healthy MySQL; both application services depend on its successful completion. Entry points do not independently migrate.
 
@@ -140,6 +154,8 @@ Lisa maps `main` to its terminal `production` lifecycle role so verified merges 
 Use a short-lived feature branch targeting `main`. Choose a real issue in the consumer's configured tracker, and use the installed Lisa workflow to claim/link it and attach the branch. Inspect the binding with `node scripts/lisa-work-item.mjs current`; a copied binding or invented issue is invalid. Make an ordinary commit and push so the installed prepare/commit-message/pre-push hooks run with their actual arguments and push-ref input. Work-item trailers and applicable provider evidence are required in addition to a conventional headline. Host pre-push Rails checks need the prepared test databases and TCP settings from step 4.
 
 For a documentation-only contribution, run its relevant local checks and normal hooks, then batch related changes into one PR. Preserve full CI on the assembled PR. Rails environment names do not require permanent `dev` or `staging` branches.
+
+Follow the [dependency update guide](docs/dependency-updates.md) for Lisa ownership and cadence, both JavaScript lockfiles, and update coverage for additional npm packages. Bundler and GitHub Actions updates remain daily.
 
 When finished with the local application, stop only its Compose project with `docker compose down`. Add `--volumes` only when you intend to delete that project's databases.
 

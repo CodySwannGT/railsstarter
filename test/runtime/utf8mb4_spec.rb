@@ -24,6 +24,7 @@ class UnicodeDatabaseWitness
   COLLATION = 'utf8mb4_0900_ai_ci'
   SAMPLE = "Unicode café 漢字 😀 🧪 e\u0301"
   SYSTEM_DATABASES = %w[information_schema mysql performance_schema sys].freeze
+  IMAGE = 'mysql:8.4.11@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242'
 
   attr_reader :results, :baseline
 
@@ -65,7 +66,8 @@ class UnicodeDatabaseWitness
   end
 
   def create_target
-    @image = docker('image', 'inspect', 'mysql:8.4', '--format', '{{.Id}}')
+    docker('pull', IMAGE)
+    @image = docker('image', 'inspect', IMAGE, '--format', '{{.Id}}')
     @volume = docker('volume', 'create', '--label', "unicode-witness=#{@token}")
     verify_volume
     create_container

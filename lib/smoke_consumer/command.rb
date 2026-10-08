@@ -3,6 +3,18 @@
 require 'io/wait'
 
 module SmokeConsumer
+  # Retains scalar command progress when collection exceeds its unchanged deadline.
+  class CommandDeadlineFailure < Error
+    attr_reader :observation
+
+    # Keep EOF/status observations separate from private command arguments and output.
+    # @param observation [Hash] fixed EOF booleans and decoded exit/signal scalars
+    def initialize(observation)
+      super('Operation deadline exceeded')
+      @observation = observation.freeze
+    end
+  end
+
   # An immutable exit observation: safe to query without re-polling an operating process.
   class CommandStatus
     # Retain the executable basename and actual command termination status.
@@ -471,7 +483,7 @@ module SmokeConsumer
     # @return [Array(String, CommandExit)]
     def collect(limit)
       until complete?
-        limit.check('Operation deadline exceeded')
+        check_deadline(limit)
         wait_for_output
         @output.read_next
         @status_output.read_next
@@ -481,6 +493,22 @@ module SmokeConsumer
     end
 
     private
+
+    # Retain the original deadline failure as the cause of its typed progress record.
+    # @param limit [Deadline] unchanged monotonic operation deadline
+    # @return [void]
+    def check_deadline(limit)
+      limit.check('Operation deadline exceeded')
+    rescue Error
+      raise CommandDeadlineFailure, deadline_observation
+    end
+
+    # Report only EOF and decoded wait-status observations, never command output or argv.
+    # @return [Hash] closed scalar diagnostic record
+    def deadline_observation
+      { 'output_eof' => @output.complete?, 'status_eof' => @status_output.complete?,
+        'exitstatus' => @status&.exitstatus, 'termsig' => @status&.termsig }
+    end
 
     # Wait once for either open channel, without throttling output on an empty status pipe.
     # @return [Array, nil] ready descriptors, or nil when the bounded readiness wait expires

@@ -254,6 +254,67 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
   end
 
   context 'with actual disposable files' do
+    # Refuse the second constructor while retaining a gated first native removal thread.
+    # @param release [Queue] first worker's explicit release channel
+    # @param state [Hash{Symbol => Thread, nil}] retained directly owned child
+    # @return [void]
+    def refuse_second_removal_thread(release, state)
+      allow(Thread).to receive(:new).and_wrap_original do |native, &task|
+        raise ThreadError, 'synthetic thread construction refusal' if state[:child]
+
+        state[:child] = native.call do
+          release.pop
+          task.call
+        end
+        allow(state.fetch(:child)).to receive(:join).and_wrap_original do |join|
+          release << true
+          join.call
+        end
+        state.fetch(:child)
+      end
+    end
+
+    it 'removes both independently owned trees and verifies repeated absence' do
+      paths = [consumer_path, ownership.register_consumer('owned_second').first]
+      paths.each do |path|
+        Dir.mkdir(path, 0o700)
+        File.write(File.join(path, 'owned.txt'), 'owned fixture')
+      end
+      SmokeConsumer::OwnedConsumerPath.remove_all(ownership, paths)
+      expect(paths.none? { |path| File.exist?(path) }).to be(true)
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, paths) }.not_to raise_error
+    end
+
+    it 'settles the owned tree removal while refusing a substituted symlink' do
+      second = ownership.register_consumer('owned_second').first
+      foreign = File.join(base, 'foreign_consumer')
+      Dir.mkdir(foreign, 0o700)
+      File.write(File.join(foreign, 'preserved.txt'), 'foreign witness')
+      File.symlink(foreign, consumer_path)
+      Dir.mkdir(second, 0o700)
+      File.write(File.join(second, 'owned.txt'), 'owned fixture')
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, [consumer_path, second]) }
+        .to raise_error(SmokeConsumer::Error, 'Symlinked consumer path')
+      expect(File.exist?(second)).to be(false)
+      expect(File.read(File.join(foreign, 'preserved.txt'))).to eq('foreign witness')
+    end
+
+    it 'settles a real owned removal when starting the next removal thread fails' do
+      second = ownership.register_consumer('owned_second').first
+      Dir.mkdir(consumer_path, 0o700)
+      File.write(File.join(consumer_path, 'owned.txt'), 'owned fixture')
+      release = Queue.new
+      state = { child: nil }
+      refuse_second_removal_thread(release, state)
+      expect { SmokeConsumer::OwnedConsumerPath.remove_all(ownership, [consumer_path, second]) }
+        .to raise_error(ThreadError, 'synthetic thread construction refusal')
+      expect(state.fetch(:child).alive?).to be(false)
+      expect(File.exist?(consumer_path)).to be(false)
+    ensure
+      release << true if state&.fetch(:child)&.alive?
+      state&.fetch(:child)&.join
+    end
+
     it 'removes its direct child directory and accepts a repeated absence check' do
       Dir.mkdir(consumer_path, 0o700)
       File.write(File.join(consumer_path, 'owned.txt'), 'owned fixture')
@@ -378,8 +439,58 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       ownership.write_once('cleanup-request.json', 'token' => 'foreign-token')
       described_class.new(ownership).watch
       receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
-      expect(receipt).to eq('token' => ownership.token, 'clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt).to include('token' => ownership.token, 'clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt.fetch('failure')).to include(
+        'stage' => 'waiting',
+        'causes' => [{ 'class' => 'SmokeConsumer::Error',
+                       'message_sha256' => Digest::SHA256.hexdigest('Invalid cleanup request') }]
+      )
       expect(File.exist?(File.join(ownership.root, 'armed.json'))).to be(true)
+    end
+
+    # Execute a genuinely failing native child during the owned cleanup attempt.
+    def fail_cleanup_with_native_child
+      native_command = SmokeConsumer::Command.new(timeout: 60)
+      collection = instance_double(SmokeConsumer::ContainerCollection)
+      allow(collection).to receive(:remove_all) do
+        native_command.call(RbConfig.ruby, '-e', "warn 'synthetic-private-output'; exit 17", timeout: 10)
+      end
+      allow(SmokeConsumer::ContainerCollection).to receive(:new).and_return(collection)
+    end
+
+    # Construct synthetic nested exceptions to check bounded private diagnostics.
+    def private_cause_chain
+      error = nil
+      6.times do |index|
+        raise error if error
+      rescue StandardError
+        begin
+          raise SmokeConsumer::Error, "synthetic-private-message-#{index}"
+        rescue StandardError => nested
+          error = nested
+        end
+      else
+        error = SmokeConsumer::Error.new("synthetic-private-message-#{index}")
+      end
+      error
+    end
+
+    # Produce native EBADF over the original synthetic failure.
+    def native_descriptor_failure
+      reader, writer = IO.pipe
+      IO.for_fd(writer.fileno).close
+      begin
+        raise SmokeConsumer::Error, 'synthetic-private-original'
+      rescue StandardError
+        begin
+          writer.close
+        rescue Errno::EBADF => error
+          error
+        end
+      end
+    ensure
+      reader&.close unless reader&.closed?
+      writer&.close unless writer&.closed?
     end
 
     def with_cleanup_authority
@@ -390,9 +501,25 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
       SmokeConsumer::DirectChild.new(pid).terminate if pid
     end
 
+    # Preserve finish's refusal while printing only its sanitized receipt evidence.
+    def finish_with_failure_diagnostic(pid)
+      described_class.finish(ownership, pid)
+    rescue SmokeConsumer::Error
+      warn cleanup_failure_diagnostic
+      raise
+    end
+
+    # Select the cleanup failure record or an explicit unavailable indicator.
+    def cleanup_failure_diagnostic
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      JSON.generate(receipt.slice('failure'))
+    rescue SystemCallError, JSON::ParserError
+      JSON.generate('failure_receipt_unavailable' => true)
+    end
+
     it 'arms a genuine separate authority and reaps it after empty owned cleanup' do
       with_cleanup_authority do |pid|
-        receipt = described_class.finish(ownership, pid)
+        receipt = finish_with_failure_diagnostic(pid)
         expect(receipt.fetch('clean')).to be(true)
         expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
       end
@@ -426,6 +553,64 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
         .to eq('clean' => true, 'consumer_roots_absent' => true, 'registered_processes_nonrunning' => true, 'registered_processes_absent' => true)
       expect(receipt.fetch('removed')).to eq('container' => [], 'volume' => [], 'network' => [])
       expect(File.exist?(consumer_path)).to be(false)
+    end
+
+    it 'retains the failed cleanup stage and native child failure without publishing command output' do
+      fail_cleanup_with_native_child
+      with_cleanup_authority do |pid|
+        expect { described_class.finish(ownership, pid) }
+          .to raise_error(SmokeConsumer::Error, 'Owned cleanup failed; inspect private cleanup receipt')
+      end
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt.fetch('failure')).to include(
+        'stage' => 'containers',
+        'causes' => [{ 'class' => 'SmokeConsumer::Error',
+                       'message_sha256' => Digest::SHA256.hexdigest('ruby failed (exit 17)') }]
+      )
+      expect(receipt.fetch('failure').fetch('cause_locations').first)
+        .to include(a_hash_including('source' => 'command.rb', 'line' => be_positive))
+      expect(JSON.generate(receipt)).not_to include('synthetic-private-output', RbConfig.ruby)
+    end
+
+    it 'bounds cleanup exception causes and fingerprints private messages without publishing them' do
+      error = private_cause_chain
+      failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([failure.fetch('causes').length, failure.fetch('cause_chain_truncated'), failure.fetch('cause_locations')])
+        .to eq([4, true, [[], [], [], []]])
+      expect(failure.fetch('causes').first).to eq(
+        'class' => 'SmokeConsumer::Error', 'message_sha256' => Digest::SHA256.hexdigest('synthetic-private-message-5')
+      )
+      expect(JSON.generate(failure)).not_to include('synthetic-private-message')
+      allow(error).to receive(:cause).and_return(error)
+      cyclic_failure = SmokeConsumer::CleanupFailure.new('containers', error).to_h
+      expect([cyclic_failure.fetch('causes').length, cyclic_failure.fetch('cause_chain_truncated'), cyclic_failure.fetch('cause_locations')])
+        .to eq([1, true, [[]]])
+    end
+
+    it 'retains an original cleanup failure when native descriptor closure raises another exception' do
+      failure = SmokeConsumer::CleanupFailure.new('containers', native_descriptor_failure).to_h
+      expect(failure.fetch('causes').map { |cause| cause.fetch('class') }).to eq(['Errno::EBADF', 'SmokeConsumer::Error'])
+      expect(failure.fetch('causes').last.fetch('message_sha256')).to eq(Digest::SHA256.hexdigest('synthetic-private-original'))
+      expect(failure.fetch('cause_chain_truncated')).to be(false)
+      expect(failure.fetch('cause_locations')).to eq([[], []])
+      expect(JSON.generate(failure)).not_to include('synthetic-private-original')
+    end
+
+    it 'identifies destination cleanup when its native manifest becomes malformed after network cleanup' do
+      allow(SmokeConsumer::Command).to receive(:new).with(timeout: 60).and_return(command)
+      allow(command).to receive(:call).and_return(['', nil])
+      allow(SmokeConsumer::NetworkCollection).to receive(:new).and_wrap_original do |original, *arguments|
+        collection = original.call(*arguments)
+        allow(collection).to receive(:remove_all).and_wrap_original do |remove|
+          remove.call.tap { File.write(File.join(ownership.root, 'manifest.json'), '{') }
+        end
+        collection
+      end
+      ownership.request_cleanup
+      described_class.new(ownership).watch
+      receipt = JSON.parse(File.read(File.join(ownership.root, 'cleanup.json')))
+      expect(receipt).to include('clean' => false, 'error' => 'SmokeConsumer::Error')
+      expect(receipt.fetch('failure').fetch('stage')).to eq('images')
     end
   end
 end

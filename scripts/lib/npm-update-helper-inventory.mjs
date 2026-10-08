@@ -29,9 +29,8 @@ const COMMON = [
   "lib/github-attestation-provider.mjs",
   "lib/github-attestation-recovery.mjs",
   "lib/automation-provenance-contract.mjs",
+  "lib/automation-provenance-files.mjs",
   "lib/automation-provenance-local.mjs",
-];
-const RAILS = [
   "lisa-clean-git-env.sh",
   "lisa-scratch-run.sh",
   "check-threshold-ratchet.mjs",
@@ -42,7 +41,12 @@ const PRODUCER = [
   "allocate",
   "authorization",
   "broker-client",
+  "bun",
+  "cancel-origin",
+  "cancellation",
+  "cancellation-proof",
   "checkpoint",
+  "classifier-cache",
   "contract",
   "controller-broker",
   "controller-factory",
@@ -81,6 +85,7 @@ const PRODUCER = [
   "publish",
   "quality",
   "recovery",
+  "supersession",
   "runtime-archive",
   "runtime-graph",
   "runtime-transport",
@@ -120,7 +125,6 @@ export function managedTemplateMembers() {
       "npm-updater-gate.Dockerfile",
       ...PRODUCER.map(name => `lib/npm-update-${name}.mjs`),
     ].map(member => [member, `all/copy-overwrite/scripts/${member}`]),
-    ...RAILS.map(member => [member, `rails/copy-overwrite/scripts/${member}`]),
-    ["lisa-mutation.sh", "rails/copy-contents/scripts/lisa-mutation.sh"],
+    ["lisa-mutation.sh", "all/copy-contents/scripts/lisa-mutation.sh"],
   ]);
 }

@@ -301,6 +301,66 @@ module SmokeConsumer
     end
   end
 
+  # Retains fixed setup classifications without persisting private command output.
+  class SetupFailure
+    # Exact emitted banners identify the last announced phase, not phase success.
+    PHASES = { '== Installing locked dependencies ==' => 'locked_dependencies',
+               '== Installing configured hooks (not a provider-gate verdict) ==' => 'configured_hooks',
+               '== Preparing databases ==' => 'preparing_databases' }.freeze
+
+    # Retain completed output and its real native status until the sanitized receipt is written.
+    # @param output [String] bounded command output, never included in a receipt
+    # @param status [CommandExit] actual executed setup exit/signal status
+    def initialize(output, status)
+      @output = output.b
+      @status = status
+    end
+
+    # Publish only fixed classifications, actual status and output fingerprints in the private root.
+    # @param ownership [Ownership] exclusively allocated private root
+    # @param name [String] registered consumer name
+    # @param attempt [Integer] first or second setup invocation
+    # @return [Integer] bytes written by the original exclusive publication primitive
+    def record(ownership, name, attempt)
+      ownership.write_once("setup-failure-#{name.tr('_', '-')}-#{attempt}.json", observation.merge('attempt' => attempt))
+    end
+
+    private
+
+    # Describe completed capture without retaining output, arguments, environment or paths.
+    # @return [Hash{String => Object}] closed sanitized observation
+    def observation
+      { 'exitstatus' => @status.exitstatus, 'termsig' => @status.termsig,
+        'output_bytes' => @output.bytesize, 'output_sha256' => Digest::SHA256.hexdigest(@output) }.merge(classifications)
+    end
+
+    # Scan one bounded line at a time, retaining only the last fixed classification.
+    # @return [Hash{String => Object}] announced phase and closed error enum, or unknown
+    def classifications
+      phase = nil
+      error = nil
+      @output.each_line do |line|
+        text = line.delete_suffix("\n")
+        phase = PHASES[text] || phase
+        error = classify_error(text) || error
+      end
+      { 'emitted_phase' => phase, 'setup_error' => error }
+    end
+
+    # Accept only a complete fixed-executable failure line; arbitrary error text remains unretained.
+    # @param line [String] one binary output line without its newline
+    # @return [Hash, nil] closed executable enum and reported status, or unknown
+    def classify_error(line)
+      match = /\Asetup: (bun|bundle|git|rails|lefthook|node) failed \(exit ([0-9]{1,3})\)\z/n.match(line)
+      return unless match
+
+      reported = match[2].to_i
+      return unless (0..255).cover?(reported)
+
+      { 'executable' => match[1], 'reported_status' => reported }
+    end
+  end
+
   # Records executable Lefthook wrappers and hashes without proving hook gate behavior.
   class HookEvidence
     # Retain the target whose installed hook wrappers will be inspected.
@@ -563,7 +623,20 @@ module SmokeConsumer
     # @return [void]
     def setup_twice
       environment = @target.environment.merge(@database.setup_environment)
-      2.times { @target.command.call('bin/setup', '--skip-server', env: environment, chdir: @target.path) }
+      2.times { |attempt| run_setup(environment, attempt + 1) }
+    end
+
+    # Preserve a sanitized completed failure before the original nonzero refusal and owned cleanup.
+    # @param environment [Hash{String => String}] existing live local database and tool environment
+    # @param attempt [Integer] first or second setup invocation
+    # @return [void]
+    def run_setup(environment, attempt)
+      output, status = @target.command.capture('bin/setup', '--skip-server', env: environment, chdir: @target.path)
+      begin
+        SetupFailure.new(output, status).record(@target.ownership, @target.name, attempt) unless status.success?
+      ensure
+        CommandStatus.new('bin/setup', status).require_success
+      end
     end
 
     # Start actual web/worker, collect HTTP/job receipts, and stop application processes.

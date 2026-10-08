@@ -2,6 +2,7 @@
 
 require 'json'
 require 'pathname'
+require 'timeout'
 require 'active_record'
 require 'active_record/database_configurations'
 require 'active_support/configuration_file'
@@ -13,6 +14,51 @@ module DependencyResource
   ROLES = %w[primary primary_replica queue cable cache].freeze
 
   module_function
+
+  # @param pid [Integer] the invocation's waitable direct group leader
+  # @return [Boolean] native group absence after the owned leader is reaped
+  def stop_tool_group!(pid)
+    signal_tool_group(pid, 'TERM')
+    Timeout.timeout(10) do
+      Process.waitpid(pid)
+      sleep 0.01 until tool_group_absent?(pid)
+    end
+    true
+  rescue Timeout::Error
+    raise unless tool_leader_waitable?(pid)
+
+    signal_tool_group(pid, 'KILL')
+    Process.waitpid(pid)
+    raise 'Owned tool process group remained' unless tool_group_absent?(pid)
+
+    true
+  end
+
+  # @param pid [Integer] only a still-waitable original child permits escalation
+  # @return [Boolean] ECHILD never authorizes reuse of the old numeric leader
+  def tool_leader_waitable?(pid)
+    Process.waitpid(pid, Process::WNOHANG).nil?
+  rescue Errno::ECHILD
+    false
+  end
+
+  # @param pid [Integer] the exclusively created group
+  # @param name [String] TERM or KILL after direct-leader waitability is proven
+  # @return [void] native absence still requires the direct child's reap
+  def signal_tool_group(pid, name)
+    Process.kill(name, -pid)
+  rescue Errno::ESRCH
+    nil
+  end
+
+  # @param pid [Integer] the original group whose absence is required
+  # @return [Boolean] a live or zombie group is never reported as absent
+  def tool_group_absent?(pid)
+    Process.kill(0, -pid)
+    false
+  rescue Errno::ESRCH
+    true
+  end
 
   # @return [Hash] generated owned-resource identity, never an ambient endpoint
   def validate!

@@ -10,6 +10,7 @@ require 'net/http'
 require 'securerandom'
 require 'rbconfig'
 require 'timeout'
+require_relative 'startup_diagnostics'
 
 # Owns one real Rails process and one fresh browser per example, without a DB.
 class BootstrapAssets
@@ -30,6 +31,7 @@ class BootstrapAssets
     @page&.driver&.quit
     stop_server
   ensure
+    @startup_diagnostics&.close
     cleanup_scratch
   end
 
@@ -37,7 +39,8 @@ class BootstrapAssets
 
   def setup_scratch
     @root = File.expand_path('../../..', __dir__)
-    @scratch = Dir.mktmpdir('railsstarter-bootstrap-browser-')
+    @scratch = BrowserFixtureScratch.create
+    File.chmod(0o700, @scratch)
     @token = SecureRandom.hex(16)
     File.write(File.join(@scratch, 'owner.json'), JSON.generate(token: @token), mode: 'wx', perm: 0o600)
     FileUtils.mkdir_p(File.join(@scratch, 'views', 'layouts'))
@@ -95,20 +98,27 @@ class BootstrapAssets
 
   def browser_options
     options = Selenium::WebDriver::Chrome::Options.new
+    options.binary = ENV['CHROME_BIN'] if ENV.key?('CHROME_BIN')
     options.add_argument('--headless=new')
     options.add_argument('--window-size=800,900')
+    options.add_argument("--user-data-dir=#{File.join(@scratch, 'chrome')}")
     options.add_option('goog:loggingPrefs', browser: 'ALL', performance: 'ALL')
     options
   end
 
   def start_browser
     args = { browser: :chrome, options: browser_options }
-    args[:service] = Selenium::WebDriver::Service.chrome(path: ENV.fetch('CHROMEDRIVER')) if ENV['CHROMEDRIVER']
+    @startup_diagnostics = BrowserStartupDiagnostics.new(@scratch, @token)
+    args[:service] = @startup_diagnostics.service(ENV.fetch('CHROMEDRIVER', nil))
     name = :"bootstrap_#{@token}"
     Capybara.register_driver(name) { |app| Capybara::Selenium::Driver.new(app, **args) }
     @page = Capybara::Session.new(name)
     @page.config.default_max_wait_time = 10
     @page.config.app_host = "http://127.0.0.1:#{@port}"
+    @page.driver.browser
+  rescue StandardError => error
+    @startup_diagnostics&.retain(error, browser: args[:options].binary, driver: args[:service]&.executable_path)
+    raise
   end
 
   def stop_server

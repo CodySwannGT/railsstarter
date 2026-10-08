@@ -241,6 +241,30 @@ RSpec.describe RequestPolicy do
       File.write(File.join(target, "mode-control-#{token}.json"), JSON.pretty_generate(record), mode: 'wx', perm: 0o600) if target
     end
 
+    def with_refusing_mode_inventory
+      original_path = ENV.fetch('PATH')
+      directory = File.join(mode_state.fetch(:directory), 'observer-refusal')
+      Dir.mkdir(directory, 0o700)
+      calls = File.join(directory, 'calls')
+      program = "#!/bin/sh\nprintf '%s\\n' \"$$\" >> #{Shellwords.escape(calls)}\nprintf '%s\\n' 'mode inventory unavailable' >&2\nexit 42\n"
+      File.write(File.join(directory, 'ps'), program, mode: 'wx', perm: 0o700)
+      ENV['PATH'] = directory + File::PATH_SEPARATOR + original_path
+      yield calls
+    ensure
+      ENV['PATH'] = original_path
+      verify_mode_observer_children(calls)
+    end
+
+    def verify_mode_observer_children(calls)
+      return unless calls && File.file?(calls)
+
+      File.readlines(calls).each do |line|
+        pid = Integer(line.strip)
+        expect { Process.waitpid(pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+        expect { Process.kill(0, pid) }.to raise_error(Errno::ESRCH)
+      end
+    end
+
     around do |example|
       previous = ENV.fetch('REQUEST_SECURITY_ARTIFACT_DIR', nil)
       Dir.mktmpdir('request-owner-mode-receipts-') do |directory|
@@ -275,6 +299,37 @@ RSpec.describe RequestPolicy do
       retain_mode_cleanup
       expect(harness.cleanup_record).to include(database_mode: nil)
       expect(harness.cleanup_record).not_to have_key(:database_access)
+    end
+
+    it 'cleans receipt-only scratch before browser allocation without consulting a process inventory' do
+      with_refusing_mode_inventory do |calls|
+        expect { RequestSecurityObservation.profiles('owned-mode-control') }.to raise_error(RequestSecurityObservation::Failure, /observation/)
+        expect(File.readlines(calls).size).to eq(1)
+        begin
+          retain_mode_cleanup
+        ensure
+          mode_state[:retained] = true if harness.cleanup_record&.fetch(:scratch_removed, false) && !File.exist?(mode_state.fetch(:scratch))
+        end
+        expect(File.readlines(calls).size).to eq(1)
+        expect(harness.cleanup_record).to include(errors: [], observer_failures: [], browser_processes_after_quit: [])
+      end
+    end
+
+    it 'requires process inventory after browser allocation begins even when construction refuses' do
+      allow(Selenium::WebDriver::Chrome::Options).to receive(:new).and_raise('synthetic browser construction refusal')
+      expect { harness.send(:start_browser) }.to raise_error('synthetic browser construction refusal')
+      expect(harness.instance_variable_get(:@browser_allocation_started)).to be(true)
+      with_refusing_mode_inventory do
+        # This expected refusal stays distinct from the final successful receipt.
+        directory = ENV.delete('REQUEST_SECURITY_ARTIFACT_DIR')
+        begin
+          expect { harness.stop }.to raise_error(/chrome.*observation/)
+          expect(harness.cleanup_record).to include(scratch_removed: false)
+          expect(File.directory?(mode_state.fetch(:scratch))).to be(true)
+        ensure
+          ENV['REQUEST_SECURITY_ARTIFACT_DIR'] = directory
+        end
+      end
     end
 
     context 'when the owner mode is missing' do
@@ -350,7 +405,7 @@ RSpec.describe RequestPolicy do
       original_path = ENV.fetch('PATH')
       Dir.mktmpdir('request-observer-control-') do |directory|
         program = "File.open(#{File.join(directory, 'observer-pids').dump}, 'a', 0o600) { |f| f.puts Process.pid }; " \
-                  "trap('TERM', 'IGNORE') if #{delay} > 0; $stdout.write(#{output.dump}); $stderr.write(#{error.dump}); sleep #{delay}; exit #{exit_code}"
+                  "trap('TERM', 'IGNORE') if #{delay} > 0; $stdout.write(#{output.dump}); $stdout.flush; $stderr.write(#{error.dump}); $stderr.flush; sleep #{delay}; exit #{exit_code}"
         script = "#!/bin/sh\nunset RUBYOPT\nexec #{Shellwords.escape(RbConfig.ruby)} -e #{Shellwords.escape(program)}\n"
         File.write(File.join(directory, 'ps'), script, mode: 'wx', perm: 0o700)
         ENV['PATH'] = directory + File::PATH_SEPARATOR + original_path
@@ -427,16 +482,41 @@ RSpec.describe RequestPolicy do
       end
     end
 
+    # Verify owned cleanup retains only sanitized observer failure evidence.
+    def expect_private_observer_cleanup(failure)
+      harness = RequestSecurity.new(cleanup_timeout: 0.1)
+      harness.setup_scratch
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit).and_raise(failure)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      expect { harness.stop }.to raise_error(/driver_quit.*observation timed out/)
+      expect(harness.cleanup_record).to include(scratch_removed: true, observer_failures: [{ stage: :driver_quit, observation: failure.observation }])
+    ensure
+      harness&.stop unless harness&.cleanup_record
+    end
+
+    # Check exact bounded progress while refusing private output and path disclosure.
+    def expect_observer_failure(failure, observer_pid, directory)
+      expect(failure.observation).to include(operation: 'identity', stage: 'waiting', observer_pid: observer_pid,
+                                             reaped: true, exit: nil, signal: Signal.list.fetch('KILL'), output_bytes: 14, error_bytes: 13)
+      expect(failure.observation.fetch(:elapsed)).to be >= 1
+      expect(failure.observation.keys).to contain_exactly(:operation, :stage, :observer_pid, :elapsed, :reaped, :exit, :signal, :output_bytes, :error_bytes)
+      expect(JSON.generate(failure.observation)).not_to include('bounded-output', 'bounded-error', directory)
+    end
+
     it 'bounds a TERM-ignoring observer itself without treating its timeout as target absence' do
       with_observed_child do |process, record|
-        with_designed_observer(delay: 30) do |directory|
+        failure = nil
+        with_designed_observer(output: 'bounded-output', error: 'bounded-error', delay: 30) do |directory|
           started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-          expect { process.absent? }.to raise_error(RuntimeError, /observation timed out/)
+          expect { process.absent? }.to raise_error(RuntimeError, /observation timed out/) { |error| failure = error }
           expect(Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to be < 3
           observer_pid = Integer(File.read(File.join(directory, 'observer-pids')).strip)
           expect(genuine_observation(observer_pid)).to eq(output: '', error: '', exit: 1)
           expect { Process.waitpid(observer_pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+          expect_observer_failure(failure, observer_pid, directory)
         end
+        expect_private_observer_cleanup(failure)
         expect(genuine_observation(process.pid)).to eq(record[:before])
       end
     end

@@ -120,21 +120,22 @@ module SmokeConsumer
     end
   end
 
-  # Prepares the accepted exact Bun version using the official release asset digest.
+  # Prepares the accepted exact Bun version using its official release checksum list.
   class BunTool < VersionedTool
     # Executable name used for exact Bun version probes.
     NAME = 'bun'
 
     private
 
-    # Read the official Bun release asset digest and construct its archive descriptor.
+    # Read the official Bun checksum asset without depending on GitHub's API quota.
     # @return [ReleaseArchive]
     def release
       name = 'bun-linux-x64.zip'
-      response, = command.call('curl', '--fail', '--silent', '--show-error', '--max-time', '30', "https://api.github.com/repos/oven-sh/bun/releases/tags/bun-v#{version}", env: environment,
-                                                                                                                                                                           timeout: 35)
-      asset = JSON.parse(response).fetch('assets').find { |entry| entry['name'] == name }
-      ReleaseArchive.new("https://github.com/oven-sh/bun/releases/download/bun-v#{version}/#{name}", asset&.fetch('digest', nil)&.delete_prefix('sha256:'))
+      base = "https://github.com/oven-sh/bun/releases/download/bun-v#{version}"
+      sums, = command.call('curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '30', "#{base}/SHASUMS256.txt", env: environment, timeout: 35)
+      entries = sums.lines.map(&:split).select { |parts| parts.length == 2 && parts.last == name }
+      checksum = entries.one? ? entries.first.first : nil
+      ReleaseArchive.new("#{base}/#{name}", checksum)
     end
 
     # Extract the verified Bun zip archive and return its executable directory.
@@ -198,7 +199,11 @@ module SmokeConsumer
       ['4.70.4', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.70.4.tgz',
        'sha512-iCIaBMe8zIEwLsAXL4l3cmoAFJSx4NS2eWZDXvjiFdJM0s9egMH4YcF5Yj+kODyNFWHvBwAO7m339Fc1BieXuQ=='].freeze,
       ['4.71.2', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.71.2.tgz',
-       'sha512-Z8TEFFqHvNPtF4ZvitMaMPv+FoE0oXqPDejBrW/B/jSIuvCEcQXtX2xfMOyqQ4ld+luqB+bZHX7IaU+ISE5xRg=='].freeze
+       'sha512-Z8TEFFqHvNPtF4ZvitMaMPv+FoE0oXqPDejBrW/B/jSIuvCEcQXtX2xfMOyqQ4ld+luqB+bZHX7IaU+ISE5xRg=='].freeze,
+      ['4.71.4', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.71.4.tgz',
+       'sha512-+oHfoSSa50CELUPaOygJW60vIpENRCcxWahqc6Lt96uWnXR6Mr99jk0WafbaqezuKKsl8jj3/48bUwyHkq0nlQ=='].freeze,
+      ['4.71.10', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.71.10.tgz',
+       'sha512-f1aYRhtqEZ/Vps3A3GEah4T2ax8pDow6I6C2F5I0hXLwKV80y98+G5MG76bfxdP//+Yei4k187mRXIHkBch+kw=='].freeze
     ].freeze
     # Historical full-apply/bootstrap and suppression markers rejected unless the exact release qualifies.
     APPLYING = %r{LISA_BOOTSTRAP=1|--skip-git-check|--full-apply|2>/dev/null \|\| true|(?:\A|\s)apply(?:\s|\z)}

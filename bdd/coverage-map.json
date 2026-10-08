@@ -118,6 +118,21 @@
     },
     {
       "file": "spec/browser/request_security_spec.rb",
+      "evidence": "captures a native child before destructive driver quit can reap it",
+      "reason": "Native fixture lifecycle regression for capture before destructive quit; verifies owned process reaping and absence rather than a product browser behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "escalates owned TERM refusal before requiring driver quit to finish",
+      "reason": "Native fixture lifecycle regression for bounded shutdown and driver-owned reaping of a TERM-refusing child; product browser scenarios remain separately required."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "reaps its original native child when identity capture refuses",
+      "reason": "Native fixture allocation-failure cleanup control; verifies direct-child reaping and PID/group absence after constructor refusal, with product browser scenarios separately required."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
       "evidence": "accepts positively reaped exit during profile validation without sending another signal",
       "reason": "Owned process lifecycle regression; verifies positive disappearance during profile validation without authorizing another signal."
     },
@@ -155,6 +170,91 @@
       "file": "spec/browser/request_security_spec.rb",
       "evidence": "refuses a coherent replacement birth after a late child was captured",
       "reason": "Harness owner-callback identity binding control for a coherent replacement birth after capture; validates signal safety rather than a product request or CSP requirement."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "retains startup failure diagnostics through a private verbose IO without replacing the exception",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "admits a later child through a complete authenticated Chrome ancestry chain",
+      "reason": "Synthetic fixture-process ancestry admission control; no product request or CSP behavior is exercised."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a later child with foreign or incomplete Chrome ancestry",
+      "reason": "Fixture-process ownership refusal control for foreign or incomplete ancestry; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission after a captured driver identity changes",
+      "reason": "Fixture-process retained-anchor identity refusal control; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission with a foreign owner or process group",
+      "reason": "Fixture-process UID and group ownership refusal control; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses later Chrome admission when the fresh process identity differs",
+      "reason": "Fixture-process fresh identity refusal control; not a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "gives the native driver owned temporary paths without changing the parent environment",
+      "reason": "Native fixture-process environment and scratch ownership control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "keeps the owned Chrome singleton socket within the Linux path limit",
+      "reason": "Browser fixture temporary-path capacity and private ownership regression; product browser journeys remain separately required."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "preserves an existing directory when its short random name collides",
+      "reason": "Exclusive fixture scratch allocation refusal control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "refuses an overlong temporary parent before creating a browser directory",
+      "reason": "Browser fixture path-capacity refusal control; no product request or CSP behavior is exercised."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "retains an empty startup log when failure precedes driver execution",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "bounds retained startup output and preserves private file and directory permissions",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "refuses an existing log without truncating its contents",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "refuses a symlinked scratch directory",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "refuses replaced log identity without retaining foreign bytes",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "retains the original exception when the diagnostic destination is unsafe",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
+    },
+    {
+      "file": "spec/browser/browser_startup_diagnostics_spec.rb",
+      "evidence": "prints only bounded native errors without protocol or credential-shaped lines",
+      "reason": "Browser fixture diagnostic IO, exception preservation and owned-evidence safety control; this example does not exercise a user-facing product behavior."
     }
   ],
   "mappings": [

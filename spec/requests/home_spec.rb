@@ -36,6 +36,7 @@ RSpec.describe 'Application endpoints', type: :request do
 
   it 'preserves the explicitly authored database endpoint for every test role' do
     endpoint = SyntheticAws::DATABASE_ENDPOINT
+    replica_host = endpoint.fetch('DATABASE_REPLICA_HOST', endpoint.fetch('PRIMARY_DB_HOST'))
     expect(ENV.slice(*endpoint.keys)).to eq(endpoint)
     suffixes = { 'primary' => '_test', 'primary_replica' => '_test', 'queue' => '_queue_test',
                  'cable' => '_cable_test', 'cache' => '_cache_test' }
@@ -43,7 +44,7 @@ RSpec.describe 'Application endpoints', type: :request do
     expect(configs.map(&:name)).to match_array(suffixes.keys)
     configs.each do |config|
       expect(config.configuration_hash.slice(:host, :port, :database)).to eq(
-        host: endpoint.fetch(config.name == 'primary_replica' ? 'DATABASE_REPLICA_HOST' : 'PRIMARY_DB_HOST'),
+        host: config.name == 'primary_replica' ? replica_host : endpoint.fetch('PRIMARY_DB_HOST'),
         port: Integer(endpoint.fetch('DATABASE_PORT')),
         database: "#{endpoint.fetch('DATABASE_NAME')}#{suffixes.fetch(config.name)}"
       )

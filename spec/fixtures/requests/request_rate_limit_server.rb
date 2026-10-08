@@ -204,6 +204,7 @@ class RateLimitHttpServer
         [200, { 'content-type' => 'application/json' }, [JSON.generate(result)]]
       }
     end
+    Rails.application.reload_routes!
   end
 
   def self.observer

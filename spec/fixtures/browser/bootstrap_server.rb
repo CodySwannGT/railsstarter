@@ -57,6 +57,7 @@ end
 Rails.application.routes.prepend do
   get '/__bootstrap_acceptance' => 'bootstrap_browser_fixture#index'
 end
+Rails.application.reload_routes!
 
 require 'puma'
 port = Integer(ENV.fetch('BOOTSTRAP_BROWSER_PORT'))

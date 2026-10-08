@@ -1,0 +1,290 @@
+# Hosted qualification follow-up
+
+Work-Item: CodySwannGT/railsstarter#69
+
+Production maps to main. Branch `codex/69-hosted-qualification` starts at the actual merged audit batch `e0dfd6bee8f6a1626060cb04397b0c21cf4aab4c`.
+
+The ignored canonical context contains all four live comments. The original audit hold was explicitly released by the user's implementation and merge instructions, recorded in comment 6028117629. Published Lisa 4.71.2's bounded learnings projection served zero entries. Host rules and source inputs were read before changes.
+
+## Team and ownership
+
+- Root owns hosted test-fixture corrections, ordinary commits and combined delivery.
+- Existing provenance teammate resolves live context and reviews source independently; its separate #76 five-file commit is already ready for ordinary integration.
+- Existing service/security teammate researches actual Chrome startup evidence and reviews runtime ownership boundaries.
+- Existing legacy-protocol teammate owns the separate upstream npm updater resolution. It does not edit this worktree.
+
+These existing specialist assignments preserve the Lisa Implement team's review and verification obligations. No other specialists are required for the bounded test-fixture follow-up; application UI and production behavior are not being redesigned.
+
+## Task metadata
+
+- plan: hosted-qualification
+- type: bug
+- acceptance_criteria: actual local and hosted suites execute examples with unchanged 80% line / 70% branch thresholds; deliberately empty collection fails; fixtures work with eager loading, shallow checkouts and qualified preinstalled tools.
+- relevant_documentation: #69 complete context; hosted MySQL run 37622162995 at 1c5cffb120e7d61189f6665e693192dfab48de05; config/environments/test.rb; lib/smoke_consumer/toolchain.rb; request quota server; committed managed action checker; #76 follow-up plan.
+- testing_requirements: retain hosted 642-example/24-failure RED; reproduce route initialization and browser startup causes before runtime changes; qualify corrected controls; original commit/push gates; exact-head hosted suite; README candidate and subsequent published-main walkthrough.
+- skills: lisa-implement, lisa-tdd-implementation, lisa-git-commit, lisa-git-submit-pr, lisa-drive-pr-to-merge.
+- learnings: none captured into the machine ledger.
+- verification.type: cli-test and api-test
+- verification.command: ordinary full Git push against a positively owned MySQL target, exact-head GitHub quality workflow and literal README walkthrough.
+- verification.expected: named examples and HTTP journeys pass with unchanged floors; no zero-example pass; all owned children, containers, volumes, ports and scratch are removed with positive identity checks.
+
+## Evidence and boundaries
+
+The actual hosted MySQL job failed 24 examples. Coverage exceeded the existing floors. The replica endpoint assertion, npm-only checker path, HEAD-parent assumption, installed Bundler assertion and floating MySQL alias are evidenced fixture mismatches. HTTP 404 and Chrome startup causes require actual qualification. No cleanup guard, child inventory, deadline, coverage floor or sandbox policy will be weakened to obtain green results.
+
+The #76 correction will be combined through an ordinary merge into one follow-up PR. No independent PR or CI cycle per small commit. #65/#69/#76 remain open until their actual hosted acceptance criteria pass. Other leaf verification and the upstream updater remain independent obligations.
+
+## Follow-up evidence
+
+The original action-checker example reproduced ERR_MODULE_NOT_FOUND before the correction. A native ActionDispatch 8.1.4 probe returned 404 after late prepend and 200 after redraw. Three corrected tool/archive/checker examples passed with zero failures; their focused command exited 2 because the unchanged full-application coverage floors still apply.
+
+The actual CI=true run against an owned MySQL target executed all 12 home and HTTP quota examples with zero failures, including direct/ALB/Thruster topology, cross-process quotas, separate socket clients, real disconnection/fail-closed behavior, health liveness and natural fixed-window expiry. Receipt `tmp/railsstarter80-e0b65546024a-ci-eager-load-focused.json` retains exit 2 from focused coverage (36.43% line / 4.53% branch), not a full-suite pass. Container, volume, children, process groups, database port and scratch absence are all positively verified.
+
+Independent source review accepted the five Ruby corrections. Ordinary original commit hooks passed at `522504438f2d95d3a4b77f660e390a401cf0498a`. The separately reviewed #76 commit `71abaa533eab2cd5b30598ddaf813ec021ce634b` was integrated through ordinary merge `36db4d7e47d46f11de5c576c2c694a329c4e8395`, with merge message/trailer hooks passing. No history was rewritten and no hook was bypassed.
+
+The remaining Chrome startup correction adds diagnostics to both existing fixtures: exclusive private driver IO, bounded retained startup logs and selected native error lines, preserving the original exception, sandbox, deadlines and ownership cleanup. Actual local supported Chrome/driver versions are 154.0.8037.98 / 154.0.8037.92. All 37 examples in the original three browser files passed with zero failures under unchanged floors; the focused command still exited 2. A genuine failed-startup retention control and fresh hosted Linux diagnosis remain pending before final browser acceptance.
+
+Final helper controls execute nine examples with zero failures, including empty logs and exact original exception identity. Scoped four-file RuboCop passes. The actual native profile-file refusal retains a 1,533-byte ChromeDriver InitSession error through the default private destination; the probe remains terminal 1 because its additional private assertion incorrectly expected a Chrome launch. It establishes native driver-error retention, not a Chrome process exit or a passing negative command. Missing late PID/port serialization is disclosed; known scratch/parent absence and current driver/target-server census are separately observed. Original failure evidence is retained unchanged.
+
+The original behavior-contract check rejected the eight newly discovered harness-control titles as undisclosed. The host-owned map now declares each exact title as diagnostic IO/exception/ownership infrastructure, following existing per-title harness exclusions. All eleven product scenario obligations and mappings remain intact with 100% traceability and zero waivers. Genuine released Lisa generators regenerated the coverage report and matrix after staging the map; the final original contract check exits 0 with 40 discovered titles, zero undisclosed tests and zero findings. Reports correctly state that execution evidence was not supplied to the contract generator.
+
+## Full-push failures and cleanup diagnosis
+
+The original full push at `fa91a368bc412badb6ab5a3756d036072f546693` executed 651 examples with three failures: quota MySQL readiness, detached empty cleanup and the corrupt Bootstrap stylesheet control. Coverage remained above the unchanged floors. The same-head replay executed 651 examples with three failures: the Unicode child, detached empty cleanup and public consumer cleanup. Its Unicode failure was caused by private diagnostic SPEC_OPTS inheriting a spec-helper import into the standalone child. That replay is retained as failed evidence, not a successful full-suite qualification.
+
+The replay's corrupt stylesheet control passed with actual HTTP 200 CSS, the expected corrupt integrity value, `link.sheet == false`, and independent importmap initialization. The public smoke retained a result for both named consumers with two setup runs each, but its cleanup failed with `SmokeConsumer::Error`; one owned image and both consumer directories remained. A separate detached authority recorded `Errno::EBADF`. That event has no owner/cause correlation and is not attributed to the public smoke failure.
+
+Cleanup failure receipts now include the fixed failed stage, up to four observed exception classes and SHA-256 message fingerprints, and an explicit truncation flag. Messages, command output, argv, environment, paths and process/resource identities are excluded from that diagnostic. Existing token/clean/error fields, outward failure text, ownership checks, census, signals and deadlines remain intact. The cause chain reports only actual retained exceptions.
+
+The original missing-receipt-field control went RED. The native collection failure control executes an actual Ruby child exiting 17 under a real signed detached authority and preserves the original failing status. Cause-chain controls use actual native EBADF over a retained original exception, fingerprint private sentinel messages, and cap cyclic/long chains. The complete authority file then ran 50 examples with zero failures; its native exit 2 came solely from the unchanged full-application coverage floors. Scoped RuboCop and Reek passed, and the original behavior-contract check still reported all eleven obligations, 40 discovered titles, zero findings and zero waivers. This establishes diagnostic behavior, not a fix for either historical cleanup failure or a full-push/hosted pass.
+
+## Published follow-up and review fixes
+
+The original full push at `285901f09cee55b2b3bf80a378fdc4771166266a` passed all original gates: 654 examples, zero failures, 83.21% line coverage and 71.97% branch coverage. All six outer cleanup checks passed. Its separate inner public smoke receipt reports both named consumers running setup twice, successful home/health responses, finished jobs and clean cleanup. Non-draft PR88 is published with canonical backlinks for #69 and #76. Earlier failed runs remain failed evidence; exact-head hosted CI and candidate/published-main README acceptance remain required.
+
+Review task metadata: plan `browser-startup-diagnostics-review-fixes`; type `bug`; acceptance criteria retain the final 65,536 driver-log bytes and private identity/permissions, print only bounded SHA-256 native-error fingerprints, and classify manifest-read failures during destination cleanup as `images`. Relevant documentation is PR88 comments 4209424949, 4209424967 and 4209424981 plus the existing diagnostic contracts. Testing requirements are RED/GREEN existing browser controls, a native malformed-manifest refusal with synthetic empty Docker inventories, scoped lint, unchanged 80/70 floors and the subsequent original full push. Skills are lisa-implement, lisa-tdd-implementation, lisa-git-commit, lisa-git-submit-pr and lisa-drive-pr-to-merge. Learnings remain empty. Verification type is cli-test: invoke the genuine diagnostic/cleanup classes against exclusively owned private files; expected tail preservation, no raw public error text, retained original failure and accurate stage. Exception identity, command status, ownership checks, deadlines and cleanup remain unchanged.
+
+The browser review controls went RED with two failures in nine examples: retained-tail mismatch and public synthetic credential leakage. The final nine examples pass; a separate actual-helper control confirms the exact bounded tail, private permissions, SHA-256-only public output and owned scratch removal without launching a browser. The cleanup stage control went RED reporting `networks` for a native malformed manifest after network removal; the final complete authority file passes 51 examples. Both focused Ruby suites retain exit 2 solely from unchanged aggregate coverage floors. Scoped four-file RuboCop, the original 33 walkthrough contracts and the delivered BDD checker pass; all eleven obligations, 40 discovered titles and zero findings/waivers remain. Exact test titles were preserved. CodeRabbit's speculative Compose timeout increase is declined: the actual Ubuntu contract step passed, its subsequent failure is bound to the first health curl command, and no Compose timeout was observed. The review changes require a new original full push and fresh hosted acceptance before closure.
+
+## Current push failure
+
+The ordinary full push at committed `488f3df58c772ab94408fb5e44b771d5f8e37a13` is terminal failure: 655 examples, one failure, 84.13% line and 73.48% branch coverage, with all six outer owned-resource cleanup checks passing. Git did not publish this head. The failing native cleanup-error example expected the real Ruby child exit 17 but retained `Errno::EBADF` over a `SmokeConsumer::Error`. Its retained message fingerprint matches the existing `Foreign UID in command group` refusal. This identifies the underlying refusal without establishing which actual group member caused it. Descriptor and process-observer diagnosis remains active; no ownership check, coverage floor or error assertion has been weakened, and no passing rerun is claimed.
+
+Observer isolation task metadata: type `bug`; acceptance criteria require the genuine census child to have its own PID as its process group and differ from the managed caller's group, while retaining actual native output, UID validation, original two-second collection/reap limits, output bounds and foreign-UID refusals. Relevant documentation is `ProcessQuery` and `ProcessCensus#group_members` in `lib/smoke_consumer/ownership.rb`. Testing requirements are the complete query-streams RED/GREEN file, existing process-boundary and native cleanup controls, scoped lint and the original full-push and hosted gates with unchanged coverage floors. Skills are lisa-implement and lisa-tdd-implementation; learnings remain empty. Verification type is cli-test: observe the actual child process group immediately after the original `Process.spawn`, then require the original native query to complete, reap its child and positively observe absence. The expected result is an isolated observer group without suppressing any foreign member or changing a UID.
+
+A genuine native query observed its child as UID 0 within the caller's group; three further native query children did the same. They were positively reaped. Twenty original command captures and the two existing descriptor/native-child examples passed, so descriptor-fixture contamination is not established. The complete query-streams regression went RED with seven examples and one failure: the actual spawned observer inherited the managed caller group instead of receiving its own. This proves the isolation defect independently; the failed full push's specific foreign member and descriptor masking mechanism remain unrecorded.
+
+The minimal correction gives the original directly owned observer its own process group. The complete seven query-streams examples then pass, as do both existing UID/group refusal controls. Their focused native exits remain 2 solely from the unchanged aggregate coverage floors. A separate genuine query exits 0 with its observed root-UID child in its own group, positively reaped and absent. Scoped two-file RuboCop passes. The independent source review confirms that UID validation, census parsing, pipe ownership, deadlines, output limits and error assertions are unchanged. No broader passing full-suite or hosted result is credited to these focused controls.
+
+## Private native failure locations
+
+The subsequent uninstrumented original full push at `c655cc1df0340761c13f05a0f6a1270931eaa53c` remains failed: 656 examples, one native cleanup failure, 83.99% line coverage and 73.96% branch coverage. All six outer cleanup checks passed. Its private receipt retains two actual EBADF causes rather than the expected child exit 17. The prior instrumented 656-example run had zero example failures but failed aggregate branch coverage because private observer sources were counted; it did not publish a head or establish a descriptor fix.
+
+The existing private cleanup receipt now includes cause-aligned source positions from the first twenty native frames of each of at most four distinct exceptions. Positions name only the three fixed cleanup-library basenames and line numbers. Absolute paths, other source names, method names, exception messages and command output remain excluded. The original class/message fingerprints, stage, truncation indicator, exception and cause objects, child status, ownership checks, deadlines and outward error remain intact. This is failure observability, not a claimed EBADF correction.
+
+The original native child-failure example went RED because the receipt lacked source locations. With extraction implemented, the same child-exit-17 example and all 51 original authority examples pass, including the foreign-source, long-chain, cycle and genuine descriptor-cause controls. These focused runs exit 2 solely from the unchanged 80/70 aggregate coverage floors. An independent source review found no blocking privacy or correctness issue. Full-suite publication and hosted acceptance remain pending. The separate rejected private observer qualification was not retried or executed.
+
+## Native publication result and diagnostic quality repair
+
+The original full push at `b4a31ed4acbbe4726537cb7bd5563cb4bf428609` failed without publishing: 656 examples, two authority failures, 84.02% line and 73.88% branch coverage, with all six outer cleanup checks passing. The new private receipt locates the actual EBADF at the retained control writer's close in `CommandGroup#terminate` (`command.rb` line 98 through line 328). It does not establish which closer invalidated that descriptor. A separate native control repeated the original aliased-descriptor fixture followed by thirty genuine command captures while natural garbage collection occurred; all thirty retained exit 17 without EBADF. This stimulus does not establish a descriptor repair or rule out every full-parent interleaving.
+
+The same full push exposed a nested-iterator warning in the new source-location extractor and a failing documentation-statistics gate. Extracting only the fixed source-path lookup preserves the original frame selection and receipt values without nested iterators or a new suppression. The first extraction attempt failed FeatureEnvy and was corrected before commit. The fixed source constant and private lookup are documented. Actual whole app/library Reek reports zero warnings, YARD reports 100.00% documented with no warning, and scoped RuboCop passes. The original three child-failure, bounded-cause and native-descriptor examples pass; their focused command retains exit 2 solely from the unchanged aggregate coverage floors. Descriptor diagnosis and full hosted delivery remain pending.
+
+A further supported focused run loaded every default spec source and executed only the three original empty-authority, child-failure and descriptor cases using separate exact-title filters and seed 10216. All three examples passed in their original alias/empty/child order; the command retained exit 2 from unchanged coverage floors. All six owned MySQL/runtime cleanup checks passed and the source hashes remained unchanged. Source collection plus that order alone is therefore insufficient to reproduce the full-run descriptor failure. No descriptor correction is claimed.
+
+## Prior-parent reproduction and empty-case diagnostics
+
+The original all-source-loaded focused run at clean `91e976d` executed the exact eighty examples comprising database isolation, native storage acceptance, reusable configuration, recurring caller, OTLP export and cleanup authority, under seed 10216 and the unchanged outer 240-second deadline. It reproduced the original empty-authority failure in 149.4 seconds; the native child-exit-17 example passed. All six outer cleanup checks passed, and the storage journey independently reported twenty-three native cases, both owned resources absent and all children reaped. Nine source pins remained unchanged. The existing teardown removed the empty case's private receipt, so the underlying cause is not established as EBADF.
+
+The empty-authority test now prints only its existing bounded `failure` diagnostic before teardown when the original finish raises. It re-raises the same exception with its original message and backtrace. Tokens, process/resource identities and other receipt fields are excluded. A missing or unreadable diagnostic produces only an unavailable marker, preserving the original error. Production execution, assertions, cleanup, ownership, coverage floors and deadlines remain unchanged. This is test failure observability, not a descriptor repair or a passing publication claim.
+
+## Native client and required acceptance checks
+
+The original full push at `92a0ff6` failed with 656 examples and two authority failures. Its empty cleanup case now positively retains the same EBADF message fingerprint and control-writer source location as the native child-failure case. Line coverage was 84.04% and branch coverage 73.88%; all other original push hooks and all six owned-resource cleanup checks passed. The actual full-run descriptor invalidator remains unrecorded.
+
+An isolated native MySQL client falsification positively demonstrated that the macOS MySQL 9.6.0 client closes a live Ruby pipe endpoint after a fork drops the client's kqueue descriptor and the endpoint reuses its descriptor number. That probe exercised an explicit client close and a reader endpoint; it does not establish the full suite's natural-finalizer/control-writer interleaving. The mysql2 project supports MariaDB Connector/C through `--with-mysql-config`. The same locked mysql2 0.5.7 and Ruby 3.4.11 were rebuilt in a separate frozen bundle against installed Connector/C 3.4.11, retaining OpenSSL 3.5.5. The actual extension links libmariadb.3; its immutable release source uses poll rather than a kqueue descriptor. The original eighty-example cohort then passed with zero failures, unchanged nine source pins, seed and deadlines, and all six cleanup checks. Its native exit 2 remains the unchanged aggregate coverage-floor refusal. A full-suite correction is not yet claimed. The macOS setup guide documents selecting this supported host client and rebuilding existing extensions.
+
+Live GitHub check-run evidence at published `285901f09cee55b2b3bf80a378fdc4771166266a` identifies `Quality Checks / Test (MySQL)` and `Literal README Steps 1–6` as actual GitHub Actions checks from integration 15368. Both failed, while the live quality ruleset required only seven other checks. The explicit repository intent now adds these two acceptance contexts to the existing list. Provider application must preserve the original seven contexts, every other ruleset field, and reviewer protections, then read back both new context/app pairs. This strengthens the required test and published-onboarding routes; it does not treat a partial suite, static README contracts or a hollow review status as a passing merge gate. Fresh current-head hosted execution and the published-main walkthrough remain required before closure.
+
+## Published Lisa 4.71.4 adoption
+
+### Current adoption: published Lisa 4.71.10
+
+The chronology correction shipped in upstream PR #4388 after passing local and hosted checks and substantive CodeRabbit approval. The actual release run 37736193285 succeeded. Registry version 4.71.10, its official tarball integrity and genuine tag agree on release commit `e9e985dfe1de2866d89582cfa02d033cec785f8b`; the published chronology modules match reviewed upstream source.
+
+Both JavaScript locks now select that exact release. Frozen Bun installation and a separate disposable npm ci passed. The npm consistency run disabled lifecycle execution only for lock verification, retained both copied inputs, and observed the exact installed version and release identity. The existing consumer lifecycle example genuinely failed on the new locked release before the verified tuple was admitted. All 14 lifecycle boundary examples then passed, including altered origin, integrity and script refusals. That focused run exited 2 solely because the unchanged aggregate coverage floors apply to partial test selections.
+
+Explicit full Fleet apply completed and pinned the Rails CI caller to the genuine immutable release. All 23 changed managed script files match installed package source bytes. Doctor exited successfully without errors, reporting the existing worker/worktree warnings and three preserved copy-contents host files: `.gitattributes`, `.gitignore` and `Gemfile`. Their starter-specific content remains present; the Gemfile Lisa guardrail block and learnings merge mappings were inspected. This record does not claim those warnings disappeared.
+
+The three previously committed browser corrections and this adoption are submitted together through the original full Git push. Full-suite publication, new-head hosted checks, current substantive review and the final published-main walkthrough remain required until their actual terminal results arrive.
+
+Upstream PR4373 merged with substantive CodeRabbit approval and passing hosted checks. Its original release run 37707755055 completed successfully. The genuine npm package, GitHub release tag and embedded release identity agree on version 4.71.4 and commit `576a393ba84f328089ee9cfecd47119992636908`. The downloaded archive's SHA512 matches the registry integrity, and the three checked authority/runtime helpers match the installed distribution bytes.
+
+The manifest and both committed JavaScript locks now resolve that released version and integrity. Normal package-only commit `9cc6aa4` passed the original commit hooks. Frozen Bun installation passed. A separate disposable frozen npm installation, with lifecycle scripts disabled solely for lock-consistency verification, also passed, installed Lisa 4.71.4 and left its copied manifest and lock unchanged. The project installer remains Bun. The npm audit still reports 34 development dependency advisories; this is not a zero-advisory claim or authorization for a forced audit rewrite.
+
+The explicit full Fleet apply completed successfully, recorded a 4.71.4/full receipt and reported no stale or deleted templates. It pinned the project-owned Rails CI caller to the genuine immutable release. Seventeen changed managed files match archive bytes, and the eighteenth change is that caller pin. The installed scratch supervisor uses the reviewed short authenticated locator while retaining its full authority token. Doctor completed with 37 passing checks, two warnings (worker epoch and worktree risk), and no errors. The original 80/70 coverage floors, nine required quality checks and local hook configuration remain unchanged. These installation and source results do not establish full-suite publication, current-head hosted acceptance or the final published-main walkthrough.
+
+## Install-only release guard correction
+
+The original full push at `2f8f9844180687c66d79a31f585135727f672de5` is terminal failure: 656 examples and three consumer prerequisite failures, 84.09% line and 74.05% branch coverage, and all six outer cleanup checks true. The historical descriptor failures did not recur, but this does not establish a passing full suite. The actual locked release was rejected because the starter's integrity-qualified install-only allowlist still ended at 4.71.2. The complete work-item gate also refused the newly introduced #82 commit because the existing PR body omitted that item's declaration.
+
+The lifecycle guard now includes only the already authenticated 4.71.4 version, official registry tarball and exact SHA512 tuple. The actual metadata/lifecycle call went red before this change and passes afterward; altered version, origin, integrity and lifecycle script are still rejected. The applying-marker refusal and historical release tuples remain unchanged. This corrects an incomplete dependency adoption; it does not broaden trust to arbitrary releases or relax lifecycle execution. The existing PR declaration must name exactly #69, #76 and #82, with the related #65 reference retained separately. A fresh original full push, current-head hosted checks, substantive review and published-main walkthrough remain required.
+
+## Process observer failure diagnostics
+
+The original full push at `466a5b5747b1427d97164dc54d2e1021faa6e5ec` failed with 656 examples and one public two-consumer cleanup failure. Coverage was 84.09% line and 74.05% branch. All eight other push gates and all six outer cleanup checks passed. The separate inner receipt reports failure in the waiting-stage owner census: its message fingerprint matches `Process observer deadline exceeded`. Both consumers had completed two setup runs, named HTTP/health responses and their jobs. Their successful results do not establish inner cleanup. Forty subsequent native process queries passed, with a maximum measured duration of 0.2071 seconds. That observation and independent source review did not establish the cause of the failed census.
+
+The query now retains only its original PID, fixed phase, elapsed monotonic time, already-observed exit status, stream byte counts, unfinished stream roles and read-interruption count when its existing refusal occurs. A typed error preserves the original message and cause; the private bounded cleanup receipt includes these metrics without process output. Query commands, fresh complete census requirements, two-second deadlines, output bounds, owned-child termination and cleanup assertions remain unchanged. The existing native timeout control went red on missing diagnostics before implementation and passes afterward, including independently observed child absence and refusal to serialize synthetic private output. This is failure observability, not a corrected process observer or a passing publication claim.
+
+## Browser observer failure diagnostics
+
+The original full push at `bb289fe67f7304da0f7f3540a231f6270115eb20` failed with 656 examples and one native browser teardown failure. Coverage reached 84.23% line and 74.23% branch, all eight other push gates passed, and all six outer cleanup checks passed. The separate browser failure reports `Process observation timed out` during driver quit and Chrome cleanup, followed by positive absence refusal and retained scratch. The public two-consumer cleanup passed in this run. Neither result establishes full publication. The same existing STOP/TERM/CONT browser control subsequently passed by itself in 9.36 seconds with positive driver/server/thread absence, scratch removal and its exact original signals. Its focused native exit 2 is the unchanged aggregate coverage refusal.
+
+Independent source review identified an evidence gap: the browser observer stops and reaps its direct subprocess, then removes stdout/stderr before retaining the failed operation or status. Failure diagnostics now retain only a fixed operation kind and phase, elapsed monotonic time at refusal, observer PID, actual reaped/status/signal fields, and private stream sizes. The existing cleanup receipt carries these fixed metrics without arguments, environment, paths or process output. Original `ps` commands, complete identity/profile/group/UID/birth requirements, one-second observation and 0.2/0.5-second TERM/KILL bounds, original exceptions and cleanup refusals remain unchanged. The original native TERM-ignoring observer test went red on the absent diagnostics, then passed with independent observer absence/reaping readback and private cleanup propagation. The complete 31-example policy suite passed; its focused native exit 2 remains the aggregate coverage refusal. One intermediate test invoked cleanup while its intentionally stalled observer was still selected and failed; moving that verification after the fixture restores the genuine observer corrected the test, without changing the producer's bounds or refusal behavior. This change provides evidence for the next full failure; it does not establish the cause of the previous timeout or a passing full push.
+
+## Consumer setup failure observation
+
+The original full push at `d32629a64ad9abdd86ad695a123c2b44b3d7ef60` failed with 656 examples and one public two-consumer setup refusal, reporting actual setup exit 1. The original browser teardown control passed. Coverage reached 84.23% line and 74.23% branch, all eight other push gates passed, and all six outer cleanup checks passed. The actual inner cleanup receipt also reports clean removal; neither consumer produced a successful result. The failed setup output was discarded before the unchanged consumer cleanup removed its directory. The underlying setup cause remains unknown, and the remote PR head remains `285901f09cee55b2b3bf80a378fdc4771166266a`.
+
+Each setup invocation now uses the existing native capture and publishes a failure receipt through the existing exclusive private ownership-root writer before requiring its original successful status. The receipt retains actual exit/signal, invocation number, output size/SHA256, the last exact emitted setup banner and a complete fixed-executable failure-line classification. Emitted banners describe announcements, not phase success. Unrecognized output remains unretained. Raw output, arguments, environment, paths, passwords and authority tokens are excluded. The original 16 MiB capture ceiling, process termination, two setup invocations on success, native nonzero refusal and consumer cleanup remain in place. A publication error remains the cause of the original setup refusal; existing files and symlink targets are preserved.
+
+Two genuinely executed child-process controls failed on absent receipts before production changes. They passed afterward. Eight expanded native controls passed, including the actual copied committed `bin/setup` malformed-carrier refusal, real signal status, unknown binary and misleading output, the second invocation, successful double setup, private permissions, receipt survival after consumer-directory removal and exclusive-publication collision. The focused native exit 2 is solely the unchanged aggregate coverage refusal. Scoped RuboCop, whole application/library Reek and YARD passed after refactoring without suppressions. A fresh full push and exact-head hosted acceptance remain required.
+
+## Published browser corrections and Linux socket capacity
+
+The original full push at `b8313c61e0a456c6362d946ae1bfe9ddf8a2ebd9` completed with 670 examples and zero failures, all original push gates, and all six owned cleanup checks. Independent readback confirmed the exact container and volume absent, the scratch removed, launcher absent and database port closed. One old observed PID had already been reused by a foreign system process; it was left untouched. The published head includes the verified Lisa 4.71.10 full apply. Hosted BDD then refused stale generated reports, while the MySQL job remained running.
+
+Independent review found that passing the long fixture directory as Chrome's temporary parent can exceed Linux's Unix socket capacity. Two actual fixture setup regressions reproduced 147-byte and 154-byte inferred Linux singleton paths against the 107-byte payload maximum. Both harnesses now exclusively create an eight-character random child within their existing temporary parent. The original owner token, metadata, child ancestry, process identity, cleanup and deadlines remain in force. Collision refuses without claiming or deleting an existing directory. A platform-appropriate byte check refuses an overlong parent before allocation, without an ambient fallback or parent environment mutation.
+
+All 14 diagnostic and ownership examples passed after the correction, followed by the full affected 48-example browser cohort with zero failures under the original scratch supervisor and seed 20311. Both partial selections exited 2 solely under the unchanged aggregate coverage floors. Scoped RuboCop passed and independent source review approved the correction. The native driver environment example still verifies the child receives the owned temporary paths while the parent's environment is preserved. These local observations do not establish hosted Linux acceptance.
+
+The new fixture controls are explicitly disclosed as infrastructure controls in the behavior map. Generated BDD coverage and the scenario matrix were rebuilt with the actual PR base revision: all 11 product obligations remain mapped, all 49 discovered test titles are disclosed, and no findings or waivers remain. A first generation without the required base revision genuinely refused; only the baselined result qualifies. Fresh original publication and current-head hosted checks remain required.
+
+## Linux collision fixture and function documentation
+
+The original full push at `25cad927c441c70944fe3dcc6fa4ea09eee3e2ee`
+passed all gates with 674 examples, zero failures, 84.52% line and 74.32% branch
+coverage, and all six independently verified cleanup checks. Its hosted MySQL
+run 37745159134 is terminal failure: 674 examples and one collision-control
+failure, with 85.60% line and 75.33% branch coverage. All other eight required
+contexts passed. The preceding twelve browser startup failures did not recur.
+The intentionally refused diagnostic fixtures still emit their synthetic startup
+messages; these are not additional failed examples.
+
+The collision control had replaced `Dir.tmpdir` with its already long diagnostic
+directory. Linux therefore correctly refused the composed socket pathname before
+the test reached the intended exclusive-creation collision. The control now first
+creates a genuinely budget-qualified short directory beneath the original
+temporary parent, then repeats that exact basename. It still requires native
+`EEXIST` and preservation of the existing sentinel. Cleanup rechecks the created
+directory's UID and device/inode before removal. The separate overlong-parent
+control continues to require refusal before allocation. Production pathname
+limits, allocation and ownership are unchanged. All fourteen diagnostic examples
+pass; the partial command exits 2 solely because the unchanged aggregate 80/70
+coverage floors apply. This is scoped behavior evidence, not full-suite success.
+
+The prior CodeRabbit pre-merge review also reports 69.61% function documentation
+against its 80% requirement at `b8313c61`. Source review identified undocumented
+starter-owned browser, observer and native test-helper contracts. Small normal
+commit `1af94de361f19a0c05e17f97bd63586ead12ef0f` documents their ownership,
+bounded observations and private failure handling, corrects the cleanup watcher
+description, and adds docstrings to the two new README ownership tests. Normalized
+Ruby syntax trees for all nine affected Ruby files remain identical; the Python
+tree is identical after removing documentation strings. Scoped RuboCop and all
+original commit hooks passed. No managed-source comment or documentation threshold
+was changed. Actual review of the resulting published head must establish whether
+the finding is resolved; no new vendor percentage or passing review is claimed.
+
+The two corrections are to be batched into the existing PR through one original
+full push after the active upstream aggregate run releases the shared heavy lane.
+Current-head hosted checks, review disposition, normal merge, and the final
+published-main walkthrough remain required. The failed hosted run is retained.
+
+## Published follow-up and final collision review
+
+The ordinary full push published `bf60d03c2e6d2bc4b9b2495bf67e8db54550be30` with 674 examples and zero failures, 84.52% line and 74.15% branch coverage, every original push gate and all six outer owned cleanup checks passing. Independent readback found the exact container and volume absent, scratch absent, database and browser ports closed, all 65 retained outer process IDs absent and all 150 retained browser/observer process IDs absent. Intentional negative driver-quit and observer failure receipts remain retained. No original coverage floor or cleanup refusal was waived.
+
+Current-head candidate onboarding run 37750794719 passed on Ubuntu, retaining all eight renamed application/test schemas, executable hook hashes, successful home and health HTTP responses, owned runtime/checkout absence and preservation of the foreign resource baseline. Published-main qualification still follows the actual merge. Hosted MySQL run 37750796112 is still running as this follow-up is prepared.
+
+The substantive CodeRabbit review at that published head reports docstring coverage 87.16%, above its unchanged 80% requirement. It also identified a remaining fixture assumption: the collision example still inherits its caller's temporary parent. Under an owned 228-byte temporary parent the two selected controls genuinely ran with one failure, reaching the original pathname refusal before EEXIST. Both owned parent directories were verified absent afterward.
+
+Only that collision example now selects the canonical short `/tmp` parent before its first allocation. The unchanged allocator still performs exclusive private creation and its original platform capacity guard. The collision still requires native EEXIST, sentinel preservation and UID/device/inode verification before cleanup; the separate overlong-parent refusal remains intact. Under the same deliberately long ambient parent, both selected controls pass and both owned parent directories are absent. All 14 diagnostic examples pass with seed 10216, and scoped RuboCop passes. The two focused commands exit 2 solely under the unchanged whole-project coverage floors. A new ordinary full push, current-head hosted checks and resolution of this review thread remain required before merge.
+
+## Published collision correction and native quit ordering
+
+The original full push published `b1d52f9360bf9af7dddf34164b6e2a60597f9c51` with 674 examples and zero failures, 84.52% line and 74.32% branch coverage, every original gate and all six owned cleanup checks passing. Independent readback found the exact container, volume and scratch absent, the database port closed, and all 127 retained process IDs and retained groups absent. Fresh hosted run 37754221196 is running at that published head. PR #87 is merged and 22 of the 26 audit leaves are closed; PR #88 and the epic now state this delivery status above their historical evidence.
+
+The preceding `bf60d03c` hosted MySQL run 37750796112 finished with 674 examples and two browser teardown failures: profile/native identity changed and an owned process missing at capture. Its collision control passed. Source starts the destructive driver quit thread before capturing later native browser children. A separate real owned Ruby child reproduces that ordering defect with the exact missing-at-capture exception, while reaping the child and verifying PID/group absence. The reaching tracked regression also fails before the correction. This witness does not establish the historical Linux process identities.
+
+Capture and validate the browser root controllers before starting driver quit, then retain the original fresh identity, UID, process-group, profile and birth checks before TERM. Native driver reaping, cleanup deadlines and final absence checks remain unchanged. The tracked regression passes after the correction; its partial RSpec command exits 2 solely under unchanged whole-project coverage floors. The standalone native witness exits zero with the child reaped and both PID and group absent. The correction still needs its ordinary commit, original full push and exact-head hosted acceptance before merge.
+
+## Terminal quit-ordering qualification and bounded shutdown follow-up
+
+The normal commit `05bf859d85b0b69049ec2912b20717696dcc149c` passed its original commit hooks, but its original full push ended nonzero. The actual suite ran 675 examples with two failures: the committed setup-refusal control exhausted its command deadline, and the missing-importmap-nonce physical-quota control reached a driver quit timeout. Line coverage was 84.52% and branch coverage 74.32%; the unchanged 80/70 floors passed. The behavior gate separately rejected the new native capture-ordering example because it had no coverage-map disclosure. This commit is not published; PR #88 remains at `b1d52f9360bf9af7dddf34164b6e2a60597f9c51`, whose hosted MySQL run 37754221196 finished with 674 examples and one profile/native-identity teardown failure. None of these failures is waived.
+
+All six outer cleanup checks passed after the failed push. Independent readback verified the exact container, volume and scratch absent, all 29 retained loopback ports closed, and all 124 retained groups absent. Of 252 retained PID coordinates, two numbers had been reused. Their fresh OS birth identities differ from the captured browser children; the original births are absent and the foreign replacements were preserved without signals. The private failed receipt and the subsequent identity-qualified readback both remain retained.
+
+The setup control constructed its 20-second whole-command timer before qualifying native tools. Its fixture now qualifies the same real tools before constructing that setup command; neither the setup limit nor the production smoke deadline is increased. The actual committed `bin/setup` prerequisite-refusal example runs with one example and zero failures after the change. That partial command exits 2 under the unchanged aggregate coverage floors, so it is not full-suite acceptance.
+
+A new owned native child installs a real TERM-refusal handler. The simulated driver's quit callback positively waits for and reaps that actual child. Before the follow-up, the reaching regression fails with `driver quit timed out`: the fixture reports the quit failure before reaching its existing TERM/KILL escalation. The correction invokes the existing authenticated bounded termination sequence on the already captured browser root while driver quit is running, then requires quit completion. Fresh PID/birth/profile checks and direct-child reaping authority are unchanged. This moves existing cleanup before its dependent quit-completion assertion rather than extending a deadline or accepting a timeout. The native capture-ordering, TERM-refusal and genuinely hung-quit controls all pass (three examples, zero failures); their partial command exits 2 solely under the aggregate floors. The hung-quit refusal remains enforced. This native witness does not establish the cause of the historical Chrome timeout or constitute hosted browser acceptance.
+
+Both new native fixture examples are explicitly disclosed as lifecycle controls in the behavior map; all eleven product scenarios remain required and no scenario is waived. The actual BDD gate against the verified published branch baseline passes, and scoped RuboCop passes for all three changed Ruby files. Distinct source review, ordinary commit, the original full push, real Chrome controls and exact-head hosted checks remain required. The upstream runtime branch has committed its reviewed repair as `42332ec6b809c8f1af31bc22c6f5422657637c2b` and currently owns the shared heavy execution lane; the starter will not launch a competing aggregate or browser run.
+
+Independent source review found a new-helper initialization failure: after the real TERM-refusing child is spawned, native identity capture can refuse before a controller is returned. The reaching constructor-refusal test fails against that version because the original child remains unreaped. The corrected private helper uses `waitpid` on its original direct-child spawn result before any signal; a positively unreaped direct child cannot have its PID reused. It then sends bounded KILL and requires positive reaping. An already reaped child is never signalled, and an exit racing KILL must still be reaped. No unavailable observer result grants ownership over an arbitrary PID. The native test requires the original refusal to remain raised, actual `ECHILD` after cleanup, and positive PID and group absence; its failing-version ensure also positively cleans that same direct child.
+
+All four selected native lifecycle controls now run with zero failures; the partial RSpec exit remains 2 under unchanged aggregate coverage floors. Scoped three-file RuboCop and the actual BDD gate pass. The constructor-refusal example is disclosed as a fixture allocation control, with no product scenario waiver. The revised source remains subject to independent review before ordinary commit.
+
+The upstream original full push at `42332ec6` finished nonzero with its whole unit and coverage gates passing (1,417 unit files, 26,887 passing tests and two existing skips). One integration test failed on unexpected scratch marker-read diagnostics; 181 integration files and 3,289 tests passed with two existing skips. The upstream owner independently verified all 38 retained original process births, all seven groups and both exact scratch roots absent. Its source diagnosis found that a marker can disappear between native count reads. A separate minimal upstream repair must retain unreadable-marker refusal and the existing empty-stderr assertion. The heavy execution lane is now returned to the starter; no aggregate retry of that failed upstream head is authorized as acceptance.
+
+## Receipt-only cleanup and explicit browser allocation lifecycle
+
+The original full push of committed `5d84a1f` ended with exit 1: 677 examples
+ran with one failure, in the configuration control that clears prior owner-mode
+validation. The preceding setup-timer and Chrome quit failures did not recur.
+Coverage passed at 84.52% line and 74.32% branch under the original 80% and 70%
+floors, and every other original gate passed. This head did not publish; PR 88
+remains at `b1d52f9`. All six outer cleanup checks passed. Independent native
+readback found 163 recorded PID coordinates, 121 groups, 29 ports, the exact
+container, volume and scratch absent; no signals were sent. This covers recorded
+resources, not unrecorded process births. Earlier cleanup-reader receipts rejected
+the Docker absence message solely because of case-sensitive parsing; native
+`no such object` output and the corrected positive receipt are both retained.
+
+That configuration control allocates only an owned receipt scratch and never
+starts a browser. Nevertheless, teardown requests the full Chrome inventory,
+and its native observation timed out. A deterministic refusal control runs an
+actual private `ps` executable returning exit 42, proves the observer child is
+reaped and absent, and then reaches the same unnecessary inventory path during
+receipt-only cleanup. The new controls fail against the preceding committed
+fixture. A browser-allocation flag is now set before the first browser
+construction operation. Inventory is required whenever allocation has started
+or a page, driver controller or Chrome controller has already been retained.
+Before those states, this invocation has allocated no browser to inventory.
+No observation deadline, process identity check, ancestry check or signal
+authority changes. The existing native prefix-neighbor control explicitly enters
+the browser-allocation phase so its real inventory matching remains exercised.
+
+The nine mode-receipt controls pass after correction. The second new control
+refuses browser construction after entering allocation, then proves an actual
+unavailable native inventory still prevents scratch deletion. After restoring
+the real observer, normal owned cleanup emits the final receipt. The expected
+refusal has its separate in-memory cleanup record; it does not overwrite that
+final exclusive receipt. These are fixture lifecycle controls outside the browser
+behavior discovery roots; all eleven product scenarios remain required. The
+focused command exits 2 solely under unchanged aggregate coverage floors.
+
+## Published allocation correction and current hosted qualification
+
+The reviewed allocation correction is committed as `47950d7b3567833775695fb9b1e06ffa838c1faf`. Its first original full push failed with679 examples and10 failures: nine came from the private launcher's omitted required artifact directories, and one was a Bootstrap CDN timeout. That failed evidence remains retained;84.52% line/74.32% branch coverage and all other gates passed.
+
+After creating the original collector directories before invocation, the corrected original full push passed **679 examples, zero failures**, **84.65% line/75.33% branch coverage**, and every other original gate. Recorded native resources, ports, scratch, container and volume were independently verified absent. Commit47950d7 is published in PR88.
+
+Fresh hosted run37778568058 executed679 examples with three failures, all in Bun release-metadata acquisition (`curl` HTTP failure at `BunTool#release`). All browser controls passed. The hosted BDD contract had zero findings but rejected stale generated coverage files that recorded49 instead of52 disclosed tests. The genuine generators regenerated both reports, and ordinary commit79127c1 passed all commit hooks; its original push remains subject to terminal readback.
+
+The Bun preparation follow-up reads the versioned official `SHASUMS256.txt` release asset and requires exactly one digest for the accepted Linux archive, retaining checksum equality before extraction. It removes the unauthenticated GitHub API metadata dependency without changing native provisioning, accepted versions, isolation or time limits. Actual archive qualification and altered-byte refusal supplement the existing real Linux setup routes.
+
+The original79127c1 push completed679 examples with one failure: the public consumer command exceeded its existing65-second cleanup acknowledgement deadline. Its actual owned receipt records both successful consumers and successful cleanup83 seconds after the cleanup request. The BDD gate passed52 disclosed tests with zero findings; coverage remained84.52% line/74.32% branch. The failed push remains retained and79127c1 has not been published.
+
+The follow-up removes the two independent owned consumer directory trees concurrently, retaining each path's validation, secure removal, positive absence checks and propagated errors after both operations settle. Images and Docker ownership checks remain unchanged. The65-second acknowledgement deadline is unchanged. Native controls cover both actual trees and a substituted symlink; original full-suite and fresh hosted qualification remain required to establish that this resolves the observed timing failure.
+
+Fresh all-required hosted checks, substantive review, normal merge and the subsequent published-main README walkthrough remain required. No failure, threshold, ownership requirement or original hook is waived.

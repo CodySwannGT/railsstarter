@@ -680,6 +680,28 @@ module SmokeConsumer
 
   # Securely removes a named consumer path inside its unchanged exclusive ownership root.
   class OwnedConsumerPath
+    # Remove independent consumer trees concurrently and propagate failure after every removal settles.
+    # @param ownership [Ownership] exclusive validated ownership scope
+    # @param paths [Array<String>] separately allocated direct-child consumer paths
+    # @return [void]
+    # @raise [StandardError] an individual owned-directory removal fails
+    def self.remove_all(ownership, paths)
+      threads = []
+      begin
+        paths.each do |path|
+          threads << Thread.new do
+            new(ownership, path).remove
+          rescue StandardError => error
+            error
+          end
+        end
+      ensure
+        threads.each(&:join)
+      end
+      failure = threads.map(&:value).find { |result| result.is_a?(StandardError) }
+      raise failure if failure
+    end
+
     # Retain ownership and the named consumer path for secure removal checks.
     # @param ownership [Ownership] exclusive validated ownership scope
     # @param path [String] owned filesystem path
@@ -806,6 +828,90 @@ module SmokeConsumer
     end
   end
 
+  # Names only fixed library sources, never private paths, method names, or arguments.
+  class CleanupFailureLocations
+    # Fixed source basenames admitted to the private failure receipt.
+    SOURCES = %w[command.rb cleanup_authority.rb ownership.rb].freeze
+
+    # Retain the original exception without changing its backtrace or cause.
+    # @param error [Exception] actual observed cleanup failure
+    def initialize(error)
+      @error = error
+    end
+
+    # Extract at most twenty source positions from the fixed cleanup library.
+    # @return [Array<Hash>] allowlisted source basenames and native line numbers
+    def to_a
+      Array(@error.backtrace_locations).first(20).filter_map do |location|
+        source = source_for(location.absolute_path)
+        { 'source' => source, 'line' => location.lineno } if source
+      end
+    end
+
+    private
+
+    # Admit an absolute source only when it matches the fixed cleanup library.
+    # @param path [String, nil] original native exception source path
+    # @return [String, nil] admitted source basename, or no disclosure
+    def source_for(path)
+      SOURCES.find { |name| path == File.join(__dir__, name) }
+    end
+  end
+
+  # Retains bounded failure fingerprints without exposing private exception messages.
+  class CleanupFailure
+    # Retain the fixed cleanup stage and the actual rescued exception.
+    # @param stage [String] fixed stage assigned by the cleanup authority
+    # @param error [Exception] original observed failure, including its cause chain
+    def initialize(stage, error)
+      @stage = stage
+      @error = error
+      @current = nil
+    end
+
+    # Fingerprint at most four distinct exceptions, explicitly disclosing truncation.
+    # @return [Hash] stage and bounded class/message-digest observations
+    def to_h
+      causes = []
+      locations = []
+      queries = { 'process_queries' => [], 'command_deadlines' => [] }
+      seen = {}.compare_by_identity
+      @current = @error
+      while @current && causes.length < 4 && !seen.key?(@current)
+        seen[@current] = true
+        record(causes, locations, queries)
+        @current = @current.cause
+      end
+      { 'version' => 1, 'stage' => @stage, 'causes' => causes, 'cause_locations' => locations,
+        'cause_chain_truncated' => @current ? true : false, **queries }
+    end
+
+    private
+
+    # Append this actual cause's fingerprint, admitted positions, and typed query metrics.
+    # @param causes [Array<Hash>] bounded exception fingerprints
+    # @param locations [Array<Array<Hash>>] corresponding admitted native source positions
+    # @param queries [Hash{String => Array<Hash>}] bounded scalar progress without observed output
+    # @return [void]
+    def record(causes, locations, queries)
+      causes << { 'class' => @current.class.name.to_s.byteslice(0, 256),
+                  'message_sha256' => Digest::SHA256.hexdigest(@current.message.to_s) }
+      locations << CleanupFailureLocations.new(@current).to_a
+      record_query(queries)
+    end
+
+    # Select the typed observation destination before reading its immutable scalar record.
+    # @param queries [Hash{String => Array<Hash>}] bounded process/command progress arrays
+    # @return [void]
+    def record_query(queries)
+      key = case @current
+            when ProcessQueryFailure then 'process_queries'
+            when CommandDeadlineFailure then 'command_deadlines'
+            end
+      queries.fetch(key) << @current.observation if key
+    end
+  end
+
   # Runs a detached cleanup watcher armed before consumer or Docker allocations.
   class CleanupAuthority
     # Fork the detached watcher and verify its armed identity before returning its PID.
@@ -844,16 +950,19 @@ module SmokeConsumer
     def initialize(ownership)
       @ownership = ownership
       @command = nil
+      @stage = 'arming'
     end
 
-    # Acknowledge arming, wait for cleanup triggers, and record only the exception class on failure.
+    # Acknowledge arming, wait for cleanup, and retain sanitized stage and failure fingerprints.
     # @return [void]
     def watch
       acknowledge
+      @stage = 'waiting'
       sleep 0.1 until cleanup_due?
       cleanup
     rescue StandardError => error
-      @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => false, 'error' => error.class.name)
+      @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => false,
+                                            'error' => error.class.name, 'failure' => CleanupFailure.new(@stage, error).to_h)
     end
 
     private
@@ -884,29 +993,45 @@ module SmokeConsumer
     # @return [void]
     def cleanup
       @command = Command.new(timeout: 60)
-      GuardianDeparture.new(@ownership).settle
-      stopped = ProcessTree.stop(@ownership.read.fetch('processes'))
-      process_result = verify_processes_nonrunning(stopped)
+      process_result = remove_processes
       removed = remove_collections
       remove_destinations
+      @stage = 'acknowledgement'
       @ownership.write_once('cleanup.json', 'token' => @ownership.token, 'clean' => true, 'removed' => removed,
                                             'consumer_roots_absent' => true, **process_result)
+    end
+
+    # Preserve each native process-cleanup step and identify its actual failure stage.
+    # @return [Hash{String => Boolean}] positive registered-process observations
+    def remove_processes
+      @stage = 'guardian_settle'
+      GuardianDeparture.new(@ownership).settle
+      @stage = 'process_stop'
+      stopped = ProcessTree.stop(@ownership.read.fetch('processes'))
+      @stage = 'process_verify'
+      verify_processes_nonrunning(stopped)
     end
 
     # Remove and verify absence of each owned container, volume, and network collection.
     # @return [Hash{String => Array<String>}]
     def remove_collections
-      { 'container' => ContainerCollection.new(@ownership, @command).remove_all,
-        'volume' => VolumeCollection.new(@ownership, @command).remove_all,
-        'network' => NetworkCollection.new(@ownership, @command).remove_all }
+      @stage = 'containers'
+      containers = ContainerCollection.new(@ownership, @command).remove_all
+      @stage = 'volumes'
+      volumes = VolumeCollection.new(@ownership, @command).remove_all
+      @stage = 'networks'
+      networks = NetworkCollection.new(@ownership, @command).remove_all
+      { 'container' => containers, 'volume' => volumes, 'network' => networks }
     end
 
     # Remove verified owned image tags and consumer directories.
     # @return [void]
     def remove_destinations
+      @stage = 'images'
       data = @ownership.read
       data.fetch('projects').each { |project| OwnedImage.new(@ownership, @command, project).remove }
-      data.fetch('consumers').each { |path| OwnedConsumerPath.new(@ownership, path).remove }
+      @stage = 'consumer_roots'
+      OwnedConsumerPath.remove_all(@ownership, data.fetch('consumers'))
     end
 
     # Require registered/stopped identities to be nonrunning and separately record positive absence.

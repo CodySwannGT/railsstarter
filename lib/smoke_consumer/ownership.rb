@@ -10,6 +10,7 @@ module SmokeConsumer
       @buffers = {}
       @pairs.each_key { |role| @buffers[role] = +''.b }
       @readers = @pairs.transform_values(&:reader)
+      @interruptions = 0
     end
 
     # Expose owned stdout/stderr endpoints and request descriptor/environment isolation.
@@ -42,6 +43,13 @@ module SmokeConsumer
       @pairs.each_value(&:close)
     end
 
+    # Expose bounded stream progress without retaining any observed process output.
+    # @return [Hash] drained byte counts, unfinished roles, and native read interruptions
+    def observation
+      { 'output_bytes' => @buffers.fetch(:output).bytesize, 'error_bytes' => @buffers.fetch(:error).bytesize,
+        'open_streams' => @readers.keys.map(&:to_s), 'read_interruptions' => @interruptions }
+    end
+
     private
 
     # Drain a ready ps stream, reject output beyond 8 MiB, and retire it on EOF.
@@ -54,8 +62,23 @@ module SmokeConsumer
     rescue EOFError
       @readers.delete(role)
       reader.close
-    rescue IO::WaitReadable, Errno::EINTR
+    rescue IO::WaitReadable
       nil
+    rescue Errno::EINTR
+      @interruptions += 1
+    end
+  end
+
+  # Retains bounded progress for a refused process query while preserving its original cause.
+  class ProcessQueryFailure < Error
+    attr_reader :observation
+
+    # Retain the original message and fixed query metrics, never the observer's output.
+    # @param message [String] original observer refusal message
+    # @param observation [Hash] fixed process, timing, status, and stream-progress fields
+    def initialize(message, observation)
+      super(message)
+      @observation = observation.freeze
     end
   end
 
@@ -68,27 +91,49 @@ module SmokeConsumer
       @streams = QueryStreams.new
       @pid = nil
       @status = nil
+      @stage = 'spawning'
+      @started = nil
     end
 
-    # Run a fresh C-locale ps observation, bound collection/reaping, and require successful clean output.
+    # Isolate ps from managed groups: platforms may run it with a different effective UID.
+    # Keep fresh C-locale observation, bounded collection/reaping, and successful clean output.
     # @return [String]
     def call
-      environment = SmokeConsumer.environment.merge('LC_ALL' => 'C', 'LANG' => 'C')
-      @pid = Process.spawn(environment, 'ps', '-eo', 'pid=,ppid=,pgid=,uid=,lstart=,stat=', **@streams.child_options)
-      @streams.parent_ready
-      output, error = @streams.collect(Deadline.new(2))
-      reap
+      output, error = observe
       raise Error, 'Process observer failed or denied access' unless @status.success? && error.empty?
 
       output
     rescue Errno::ENOENT, Errno::EACCES => error
       raise Error, "Process observer unavailable: #{error.class}"
+    rescue Error => error
+      raise ProcessQueryFailure.new(error.message, observation)
     ensure
       DirectChild.new(@pid).terminate if @pid && !@status
       @streams.close
     end
 
     private
+
+    # Launch the same isolated ps child, drain under its original deadline, then reap.
+    # @return [Array(String, String)] separate observed stdout and stderr buffers
+    def observe
+      @started = SmokeConsumer.clock
+      environment = SmokeConsumer.environment.merge('LC_ALL' => 'C', 'LANG' => 'C')
+      @pid = Process.spawn(environment, 'ps', '-eo', 'pid=,ppid=,pgid=,uid=,lstart=,stat=', pgroup: true, **@streams.child_options)
+      @streams.parent_ready
+      @stage = 'draining'
+      streams = @streams.collect(Deadline.new(2))
+      @stage = 'reaping'
+      reap
+      streams
+    end
+
+    # Snapshot existing observations before termination without polling, reaping, or retrying.
+    # @return [Hash] bounded diagnostic values, with unobserved exit status explicitly nil
+    def observation
+      { 'pid' => @pid, 'stage' => @stage, 'elapsed_seconds' => SmokeConsumer.clock - @started,
+        'exitstatus' => @status&.exitstatus, 'streams' => @streams.observation }
+    end
 
     # Wait nonblockingly for the direct observer under a two-second deadline.
     # @return [void]

@@ -10,6 +10,7 @@ require 'net/http'
 require 'securerandom'
 require 'rbconfig'
 require 'timeout'
+require_relative 'startup_diagnostics'
 require 'time'
 
 # Public caller prerequisites shared by supported macOS and Linux runners.
@@ -74,11 +75,18 @@ end
 
 # Bounded ps transport owns and reaps only its unreaped direct subprocess.
 class RequestSecurityObservation
-  class Failure < RuntimeError; end
+  class Failure < RuntimeError
+    attr_reader :observation
 
-  def self.capture(arguments, timeout: 1) = new(timeout).capture(arguments)
+    # Attach immutable sanitized observer progress to the original refusal.
+    def retain(observation) = @observation = observation.freeze
+  end
 
-  def initialize(timeout)
+  # Run one bounded native observation with a fixed operation classification.
+  def self.capture(arguments, timeout: 1, operation: 'capture') = new(timeout, operation).capture(arguments)
+
+  # Validate the deadline and initialize state before any observer is spawned.
+  def initialize(timeout, operation = 'capture')
     raise Failure, 'Process observation requires a finite positive timeout' unless timeout.is_a?(Numeric) && timeout.finite? && timeout.positive?
 
     @timeout = timeout
@@ -86,6 +94,10 @@ class RequestSecurityObservation
     @scratch_identity = nil
     @pid = nil
     @status = nil
+    @operation = %w[capture identity groups metadata profiles].include?(operation) ? operation : 'capture'
+    @stage = 'spawning'
+    @started = nil
+    @failure = nil
   end
 
   def setup_scratch
@@ -96,18 +108,66 @@ class RequestSecurityObservation
     @status = nil
   end
 
+  # Capture native ps output and stop and remove only this observer's resources.
   def capture(arguments)
+    reset_observation
     setup_scratch
+    @started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     @pid = Process.spawn({ 'LC_ALL' => 'C' }, 'ps', *arguments, pgroup: true,
                                                                 out: [File.join(@scratch, 'stdout'), 'wx', 0o600], err: [File.join(@scratch, 'stderr'), 'wx', 0o600])
+    @stage = 'waiting'
     raise Failure, 'Process observation timed out' unless RequestSecurityDeadline.wait(@timeout) { reap? }
 
+    @stage = 'reading'
     { output: read('stdout'), error: read('stderr'), exit: @status.exitstatus }
+  rescue Failure => error
+    retain_failure(error)
+    raise
   rescue SystemCallError => error
-    raise Failure, "Process observation unavailable: #{error.class}", cause: nil
+    raise retain_failure(Failure.new("Process observation unavailable: #{error.class}")), cause: nil
   ensure
     stop
+    @failure&.retain(failure_observation)
     cleanup if @scratch
+  end
+
+  # Clear prior failure progress before the next native observation.
+  def reset_observation
+    @failure = nil
+    @elapsed = nil
+    @stage = 'spawning'
+    @started = nil
+  end
+
+  # Retain the actual failure and monotonic elapsed time before owned cleanup.
+  def retain_failure(error)
+    @failure = error
+    @elapsed = elapsed
+    error
+  end
+
+  # Return monotonic elapsed time, or nil before observation starts.
+  def elapsed
+    Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started if @started
+  end
+
+  # Fixed failure progress only; no arguments, environment, paths or process output.
+  def failure_observation
+    { operation: @operation, stage: @stage, observer_pid: @pid, elapsed: @elapsed, reaped: !@status.nil?,
+      exit: @status&.exitstatus, signal: @status&.termsig, output_bytes: output_size('stdout'), error_bytes: output_size('stderr') }
+  end
+
+  # Read size only from a private regular capture beneath unchanged owned scratch.
+  def output_size(name)
+    return unless @scratch
+
+    directory = File.lstat(@scratch)
+    return unless directory.directory? && @scratch_identity == [directory.dev, directory.ino]
+
+    output = File.lstat(File.join(@scratch, name))
+    output.size if output.file? && output.uid == Process.uid && (output.mode & 0o777) == 0o600
+  rescue Errno::ENOENT, Errno::EACCES
+    nil
   end
 
   def cleanup
@@ -171,8 +231,9 @@ class RequestSecurityObservation
     false
   end
 
+  # Read fresh PID/parent/group/birth identity, distinguishing absence from refusal.
   def self.identity(pid)
-    result = capture(['-p', pid, '-o', 'pid=,ppid=,pgid=,lstart='])
+    result = capture(['-p', pid, '-o', 'pid=,ppid=,pgid=,lstart='], operation: 'identity')
     output, error, exit_status = result.values_at(:output, :error, :exit)
     return '' if exit_status == 1 && output.empty? && error.empty?
 
@@ -183,8 +244,9 @@ class RequestSecurityObservation
     identity
   end
 
+  # Require a successful native process-group inventory containing numeric rows.
   def self.groups
-    rows = successful(capture(['-axo', 'pgid='])).split
+    rows = successful(capture(['-axo', 'pgid='], operation: 'groups')).split
     raise Failure, 'Process observation malformed group table' unless rows.all? { |value| value.match?(/\A\d+\z/) }
 
     rows
@@ -194,7 +256,7 @@ class RequestSecurityObservation
   def self.metadata(pids)
     raise Failure, 'Invalid browser PID inventory' unless pids.size.between?(1, 128) && pids.uniq == pids && pids.all? { |pid| pid.is_a?(Integer) && pid.positive? }
 
-    result = capture(['-ww', '-p', pids.join(','), '-o', 'pid=,ppid=,pgid=,uid=,lstart='])
+    result = capture(['-ww', '-p', pids.join(','), '-o', 'pid=,ppid=,pgid=,uid=,lstart='], operation: 'metadata')
     successful(result).lines.each_with_object({}) do |line, rows|
       row = metadata_row(line)
       pid = row.fetch(:pid)
@@ -214,8 +276,9 @@ class RequestSecurityObservation
     { pid: pid, ppid: parent, pgid: group, uid: uid, birth: fields.last(5).join(' ') }.freeze
   end
 
+  # Select exact profile arguments from a validated native process table.
   def self.profiles(profile)
-    successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='])).lines.filter_map do |line|
+    successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='], operation: 'profiles')).lines.filter_map do |line|
       fields = line.strip.split(/\s+/, 8)
       identity = fields.first(7)
       raise Failure, 'Process observation incomplete profile table' unless fields.length == 8 && valid_identity?(identity, numbers: 2)
@@ -228,6 +291,7 @@ end
 # A later renderer is owned through retained native anchors and complete ancestry.
 # The profile flag is necessary, but can never make an unrelated process ours.
 class RequestSecurityBrowserInventory
+  # Retain profile identities and require one root beneath the two native anchors.
   def initialize(anchors, rows)
     @anchors = anchors
     @profiles = rows.map { |line| profile_identity(line) }
@@ -240,6 +304,7 @@ class RequestSecurityBrowserInventory
     @root = roots.first
   end
 
+  # Recheck retained anchors and every profile against fresh native metadata.
   def validate(metadata)
     @anchors.each do |pid, expected|
       raise 'Browser retained anchor identity changed or unavailable' unless metadata[pid] == expected
@@ -252,6 +317,7 @@ class RequestSecurityBrowserInventory
 
   private
 
+  # Require matching identity, current UID and root group before ancestry checks.
   def verify_profile(profile, metadata)
     actual = metadata[profile[:pid]]
     raise 'Browser profile/native identity changed or unavailable' unless actual && profile.all? { |key, value| actual[key] == value }
@@ -260,6 +326,7 @@ class RequestSecurityBrowserInventory
     verify_ancestry(profile, metadata)
   end
 
+  # Parse only complete native PID/parent/birth profile identity rows.
   def profile_identity(line)
     fields = line.split
     raise 'Malformed browser profile identity' unless RequestSecurityObservation.valid_identity?(fields, numbers: 2)
@@ -267,6 +334,7 @@ class RequestSecurityBrowserInventory
     { pid: fields[0].to_i, ppid: fields[1].to_i, birth: fields.last(5).join(' ') }
   end
 
+  # Require a complete acyclic chain of profile members back to the retained root.
   def verify_ancestry(profile, metadata)
     members = @profiles.map { |row| row.fetch(:pid) }
     visited = []
@@ -374,12 +442,14 @@ module RequestSecurityCleanup
   # @return [void]
   def stop
     @cleanup_errors = []
+    @observer_failures = []
     attempt_cleanup(:driver_quit) { quit_browser }
     attempt_cleanup(:chrome) { stop_chrome }
     attempt_cleanup(:driver) { @driver_process&.terminate(timeout: @cleanup_timeout) }
     attempt_cleanup(:server) { stop_server }
     attempt_cleanup(:quit_thread) { finish_quit_thread }
     @log&.close
+    @startup_diagnostics&.close
     attempt_cleanup(:absence) { cleanup }
     persist_cleanup
     raise @cleanup_errors.join('; ') unless @cleanup_errors.empty?
@@ -391,19 +461,22 @@ module RequestSecurityCleanup
     yield
   rescue StandardError => error
     @cleanup_errors << "#{stage}: #{error.class}: #{error.message}"
+    @observer_failures << { stage: stage, observation: error.observation } if error.is_a?(RequestSecurityObservation::Failure) && error.observation
   end
 
   def quit_browser
     return unless @page
 
+    # Capture authenticated roots before destructive quit can change the inventory.
+    browser_roots = captured_chrome_processes.select { |process| process.identity.split[1] == @driver_pid }
     @quit_thread = Thread.new do
       @page.driver.quit
     rescue StandardError => error
       @quit_error = error
     end
-    # ChromeDriver must reap its child while our authenticated TERM wakes a
-    # custom-profile browser whose graceful close can exceed this deadline.
-    captured_chrome_processes.select { |process| process.identity.split[1] == @driver_pid }.each(&:request_termination)
+    # Keep ChromeDriver alive to reap its child while the existing authenticated
+    # TERM/KILL sequence finishes a browser that refuses graceful shutdown.
+    browser_roots.each { |process| process.terminate(timeout: @cleanup_timeout) }
     raise 'driver quit timed out' unless RequestSecurityDeadline.wait(@cleanup_timeout) { !@quit_thread.alive? }
     raise @quit_error if @quit_error
   end
@@ -454,11 +527,9 @@ module RequestSecurityCleanup
 
   def persist_cleanup
     @cleanup_record ||= { scratch: @scratch, scratch_removed: false }
-    @cleanup_record[:database_mode] = @database_mode
-    @cleanup_record[:errors] = @cleanup_errors
-    @cleanup_record[:process_identities] = captured_process_identities
+    @cleanup_record.merge!(database_mode: @database_mode, errors: @cleanup_errors, observer_failures: @observer_failures,
+                           process_identities: captured_process_identities, ports: @ports)
     @cleanup_record[:profile] = File.join(@scratch, 'chrome') if @scratch
-    @cleanup_record[:ports] = @ports
     dir = ENV.fetch('REQUEST_SECURITY_ARTIFACT_DIR', nil)
     return unless dir && @token
 
@@ -525,7 +596,7 @@ class RequestSecurity
   # @return [void]
   def setup_scratch
     @root = @throttle_environment.fetch('REQUEST_RATE_ROOT', File.expand_path('../../..', __dir__))
-    @scratch = Dir.mktmpdir('railsstarter-request-security-browser-')
+    @scratch = BrowserFixtureScratch.create
     File.chmod(0o700, @scratch)
     @token = SecureRandom.hex(16)
     @ports = Array.new(2) do
@@ -622,13 +693,15 @@ class RequestSecurity
   end
 
   def start_browser
+    @browser_allocation_started = true
     options = Selenium::WebDriver::Chrome::Options.new
     options.binary = @chrome_binary
     options.add_argument('--headless=new')
     options.add_argument('--window-size=800,900')
     options.add_argument("--user-data-dir=#{File.join(@scratch, 'chrome')}")
     options.add_option('goog:loggingPrefs', browser: 'ALL', performance: 'ALL')
-    service = Selenium::WebDriver::Service.chrome(path: @driver_binary)
+    @startup_diagnostics = BrowserStartupDiagnostics.new(@scratch, @token)
+    service = @startup_diagnostics.service(@driver_binary)
     driver_name = :"request_security_#{@token}"
     Capybara.register_driver(driver_name) { |app| Capybara::Selenium::Driver.new(app, browser: :chrome, options: options, service: service) }
     @page = Capybara::Session.new(driver_name)
@@ -637,6 +710,9 @@ class RequestSecurity
     @page.driver.browser
     record_browser_ownership
     instrument_browser
+  rescue StandardError => error
+    @startup_diagnostics&.retain(error, browser: @chrome_binary, driver: @driver_binary)
+    raise
   end
 
   def record_browser_ownership
@@ -662,6 +738,7 @@ class RequestSecurity
     capture_browser_anchors
   end
 
+  # Capture the driver and its unique Chrome root as fresh immutable native anchors.
   def capture_browser_anchors
     roots = @chrome_processes.select { |process| process.identity.split[1] == @driver_pid }
     raise 'Browser captured root is ambiguous' unless roots.one?
@@ -672,6 +749,7 @@ class RequestSecurity
     @browser_anchors = metadata.freeze
   end
 
+  # Compare fresh native UID and identity with the originally captured process.
   def verify_browser_capture(process, actual)
     identity = process.identity.split
     expected = { pid: process.pid, ppid: identity[1].to_i, pgid: identity[2].to_i, uid: Process.uid, birth: identity.last(5).join(' ') }
@@ -694,9 +772,12 @@ class RequestSecurity
   end
 
   def owned_browser_processes
+    return [] unless @browser_allocation_started || @page || @driver_process || @chrome_processes
+
     RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}")
   end
 
+  # Admit later profile members only after validating the complete native ancestry.
   def captured_chrome_processes
     captured = Array(@chrome_processes)
     rows = owned_browser_processes
@@ -708,6 +789,7 @@ class RequestSecurity
     @chrome_processes = captured + later
   end
 
+  # Bind a later child's signals to its admitted identity and fresh ownership check.
   def capture_later_browser(pid, actual)
     admitted = actual.merge(birth: actual.fetch(:birth).dup.freeze).freeze
     process = RequestSecurityProcess.new(pid, owner_check: -> { later_browser_owned?(pid, admitted) })
@@ -715,6 +797,7 @@ class RequestSecurity
     process
   end
 
+  # Read fresh metadata for the retained anchors and all observed profile members.
   def validated_browser_profiles(rows)
     raise 'Missing retained browser anchors' unless @browser_anchors
 
@@ -724,6 +807,7 @@ class RequestSecurity
     metadata
   end
 
+  # Require current profile membership and unchanged admitted identity before signaling.
   def later_browser_owned?(pid, admitted)
     return false if RequestSecurityObservation.identity(pid.to_s).empty?
 
