@@ -367,6 +367,176 @@
       "file": "spec/browser/request_rate_limits_spec.rb",
       "evidence": "observes real HTTP quota rejection in Chrome while exact health remains available",
       "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-009",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "admits only a fresh complete census after a genuine later Chrome leaf departs between native observations",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-010",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "recomputes later admission from the fresh pair instead of retaining a departed candidate",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-011",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses live omitted native metadata without obtaining another census",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-011",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses failed absence observations instead of replacing missing metadata",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-011",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses malformed profile rows mixed with missing metadata",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-011",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses native metadata observation errors before any absence classification",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-011",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses duplicate profile members before attempting an absence retry",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-012",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a missing retained anchor before any absence probe",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-012",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses a surviving member whose ancestry requires the missing member",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-012",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses cyclic surviving ancestry mixed with a missing leaf",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-012",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses departure of an entire branch instead of treating missing ancestors as leaves",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-013",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses mixed departure and a present #{field} violation before probing absence",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-013",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses cross-census #{field} drift even when the fresh pair agrees",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-013",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses any reappearance of a PID after positive absence",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-014",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "does not reset the original observation budget after departure",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-014",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "exhausts one shared budget under repeated departure churn without admitting a partial pair",
+      "level": "behavioral"
+    },
+    {
+      "scenario": "BDD-BROWSERCENSUS-014",
+      "runner": "rspec-capybara-selenium",
+      "platforms": [
+        "web"
+      ],
+      "file": "spec/browser/request_security_spec.rb",
+      "evidence": "refuses admission when strict final validation consumes the remaining observation budget",
+      "level": "behavioral"
     }
   ]
 }

@@ -2,8 +2,8 @@
   "schemaVersion": 3,
   "asOf": "2026-10-07",
   "scenarios": {
-    "declared": 11,
-    "required": 11,
+    "declared": 17,
+    "required": 17,
     "excluded": 0,
     "blocked": 0,
     "referenceOnly": 0,
@@ -12,23 +12,23 @@
   "traceability": {
     "note": "Obligations whose aligned automation is mapped AND whose evidence string still resolves — a mapping whose test was renamed or deleted stops counting here immediately, even in bootstrap where the matching defect is only a warning. This is TRACEABILITY coverage, not execution coverage and not a pass rate.",
     "overall": {
-      "covered": 11,
-      "total": 11,
+      "covered": 17,
+      "total": 17,
       "percentage": 100,
       "exact": 100
     },
     "byPlatform": {
       "web": {
-        "covered": 11,
-        "total": 11,
+        "covered": 17,
+        "total": 17,
         "percentage": 100,
         "exact": 100
       }
     },
     "byRunner": {
       "rspec-capybara-selenium": {
-        "covered": 11,
-        "total": 11,
+        "covered": 17,
+        "total": 17,
         "percentage": 100,
         "exact": 100
       }
@@ -38,7 +38,7 @@
     "supplied": false,
     "note": "No execution evidence supplied. Traceability below proves aligned automation exists, not that it ran or passed.",
     "sources": [],
-    "mappedTests": 9
+    "mappedTests": 26
   },
   "testInventory": {
     "note": "Tests found by walking the roots declared in testDiscovery. A discovered test must be named by a mapping or by an exclusion carrying a reason; anything else is an undisclosed test, not a clean repo.",
@@ -49,8 +49,8 @@
       "spec/browser",
       "spec/fixtures/browser"
     ],
-    "discovered": 52,
-    "disclosed": 52,
+    "discovered": 69,
+    "disclosed": 69,
     "dynamicTitles": 0,
     "undisclosed": [],
     "exclusions": [
@@ -291,13 +291,19 @@
     "ok": true
   },
   "trackers": {
-    "scenariosWithTag": 11,
+    "scenariosWithTag": 17,
     "scenariosWithoutTag": 0,
     "tags": [
       {
         "tag": "gh-78",
         "url": "https://github.com/CodySwannGT/railsstarter/issues/78",
         "scenarios": [
+          "BDD-BROWSERCENSUS-009",
+          "BDD-BROWSERCENSUS-010",
+          "BDD-BROWSERCENSUS-011",
+          "BDD-BROWSERCENSUS-012",
+          "BDD-BROWSERCENSUS-013",
+          "BDD-BROWSERCENSUS-014",
           "BDD-REQUESTCSP-001",
           "BDD-REQUESTCSP-002",
           "BDD-REQUESTCSP-003",
@@ -315,6 +321,18 @@
           "BDD-BOOTSTRAP-001",
           "BDD-BOOTSTRAP-002",
           "BDD-BOOTSTRAP-003"
+        ]
+      },
+      {
+        "tag": "gh-82",
+        "url": "https://github.com/CodySwannGT/railsstarter/issues/82",
+        "scenarios": [
+          "BDD-BROWSERCENSUS-009",
+          "BDD-BROWSERCENSUS-010",
+          "BDD-BROWSERCENSUS-011",
+          "BDD-BROWSERCENSUS-012",
+          "BDD-BROWSERCENSUS-013",
+          "BDD-BROWSERCENSUS-014"
         ]
       }
     ]
