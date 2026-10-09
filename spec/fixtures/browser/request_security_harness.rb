@@ -232,8 +232,8 @@ class RequestSecurityObservation
   end
 
   # Read fresh PID/parent/group/birth identity, distinguishing absence from refusal.
-  def self.identity(pid)
-    result = capture(['-p', pid, '-o', 'pid=,ppid=,pgid=,lstart='], operation: 'identity')
+  def self.identity(pid, timeout: 1)
+    result = capture(['-p', pid, '-o', 'pid=,ppid=,pgid=,lstart='], timeout: timeout, operation: 'identity')
     output, error, exit_status = result.values_at(:output, :error, :exit)
     return '' if exit_status == 1 && output.empty? && error.empty?
 
@@ -253,10 +253,10 @@ class RequestSecurityObservation
   end
 
   # Native UID/group/birth readback qualifies ancestry, never profile text alone.
-  def self.metadata(pids)
+  def self.metadata(pids, timeout: 1)
     raise Failure, 'Invalid browser PID inventory' unless pids.size.between?(1, 128) && pids.uniq == pids && pids.all? { |pid| pid.is_a?(Integer) && pid.positive? }
 
-    result = capture(['-ww', '-p', pids.join(','), '-o', 'pid=,ppid=,pgid=,uid=,lstart='], operation: 'metadata')
+    result = capture(['-ww', '-p', pids.join(','), '-o', 'pid=,ppid=,pgid=,uid=,lstart='], timeout: timeout, operation: 'metadata')
     successful(result).lines.each_with_object({}) do |line, rows|
       row = metadata_row(line)
       pid = row.fetch(:pid)
@@ -277,8 +277,8 @@ class RequestSecurityObservation
   end
 
   # Select exact profile arguments from a validated native process table.
-  def self.profiles(profile)
-    successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='], operation: 'profiles')).lines.filter_map do |line|
+  def self.profiles(profile, timeout: 1)
+    successful(capture(['-ww', '-axo', 'pid=,ppid=,lstart=,command='], timeout: timeout, operation: 'profiles')).lines.filter_map do |line|
       fields = line.strip.split(/\s+/, 8)
       identity = fields.first(7)
       raise Failure, 'Process observation incomplete profile table' unless fields.length == 8 && valid_identity?(identity, numbers: 2)
@@ -344,6 +344,108 @@ class RequestSecurityBrowserInventory
 
       visited << pid
       pid = metadata.fetch(pid).fetch(:ppid)
+    end
+  end
+end
+
+# Chrome leaves can depart between the two native observations. An absent leaf
+# authorizes only a wholly fresh census, never admission from a partial snapshot.
+class RequestSecurityBrowserCensus
+  def initialize(anchors, &observe_profiles)
+    @anchors = anchors
+    @observe_profiles = observe_profiles
+    @deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 2
+    @seen_profiles = {}
+    @seen_metadata = {}
+    @absent = []
+  end
+
+  # Every attempt shares the original two observations' finite total budget.
+  def profiles
+    rows = @observe_profiles.call(remaining)
+    remaining
+    rows
+  end
+
+  def collect(rows)
+    raise 'Missing retained browser anchors' unless @anchors
+
+    loop do
+      inventory = RequestSecurityBrowserInventory.new(@anchors, rows)
+      profiles = profile_identities(rows)
+      metadata = RequestSecurityObservation.metadata((profiles.keys + @anchors.keys).uniq, timeout: remaining)
+      remaining
+      remember(profiles, metadata)
+      missing = profiles.keys - metadata.keys
+      return verified_pair(rows, metadata, inventory) if missing.empty?
+
+      verify_survivors(rows, metadata)
+      verify_missing_leaves(profiles, missing)
+      verify_absence(missing)
+      rows = self.profiles
+    end
+  end
+
+  private
+
+  def verified_pair(rows, metadata, inventory)
+    inventory.validate(metadata)
+    remaining
+    [rows, metadata]
+  end
+
+  # Each native command is capped at its original one second and shared remainder.
+  def remaining
+    seconds = @deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    raise RequestSecurityObservation::Failure, 'Browser census observation budget exhausted' unless seconds.positive?
+
+    [1, seconds].min
+  end
+
+  # The strict inventory constructor already parsed and bounded these exact rows.
+  def profile_identities(rows)
+    rows.to_h do |line|
+      fields = line.split
+      pid = fields.first.to_i
+      [pid, { pid: pid, ppid: fields[1].to_i, birth: fields.last(5).join(' ').freeze }.freeze]
+    end
+  end
+
+  # History can refuse changed identities, but never provide current authority.
+  def remember(profiles, metadata)
+    raise 'Browser census positively absent PID reappeared' if @absent.intersect?(profiles.keys + metadata.keys)
+
+    remember_identities(@seen_profiles, profiles)
+    remember_identities(@seen_metadata, metadata)
+  end
+
+  def remember_identities(seen, rows)
+    rows.each do |pid, actual|
+      raise 'Browser census observed identity changed' if seen.key?(pid) && seen[pid] != actual
+
+      seen[pid] ||= actual.transform_values { |value| value.is_a?(String) ? value.dup.freeze : value }.freeze
+    end
+  end
+
+  # A missing ancestor cannot be excused: all survivors must still have a complete
+  # independently qualified chain to the unchanged retained Chrome root.
+  def verify_survivors(rows, metadata)
+    survivors = rows.select { |line| metadata.key?(line.split.first.to_i) }
+    RequestSecurityBrowserInventory.new(@anchors, survivors).validate(metadata)
+  end
+
+  def verify_missing_leaves(profiles, missing)
+    parents = profiles.values.map { |profile| profile.fetch(:ppid) }
+    raise 'Browser census missing non-leaf member' if missing.intersect?(parents)
+  end
+
+  # Missing metadata alone is not absence. Failed or live observations refuse.
+  def verify_absence(missing)
+    missing.each do |pid|
+      raise 'Browser census missing metadata belongs to a live PID' unless RequestSecurityObservation.identity(pid.to_s, timeout: remaining).empty?
+
+      remaining
+      @absent << pid
     end
   end
 end
@@ -771,22 +873,28 @@ class RequestSecurity
     JS
   end
 
-  def owned_browser_processes
+  def owned_browser_processes(timeout: 1)
     return [] unless @browser_allocation_started || @page || @driver_process || @chrome_processes
 
-    RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}")
+    RequestSecurityObservation.profiles("--user-data-dir=#{File.join(@scratch, 'chrome')}", timeout: timeout)
   end
 
   # Admit later profile members only after validating the complete native ancestry.
   def captured_chrome_processes
     captured = Array(@chrome_processes)
-    rows = owned_browser_processes
-    unexpected = rows.map { |line| line.split.first.to_i } - captured.map(&:pid)
+    census = RequestSecurityBrowserCensus.new(@browser_anchors) { |timeout| owned_browser_processes(timeout: timeout) }
+    rows = census.profiles
+    unexpected = unexpected_browser_pids(rows, captured)
     return captured if unexpected.empty?
 
-    metadata = validated_browser_profiles(rows)
+    rows, metadata = census.collect(rows)
+    unexpected = unexpected_browser_pids(rows, captured)
     later = unexpected.map { |pid| capture_later_browser(pid, metadata.fetch(pid)) }
     @chrome_processes = captured + later
+  end
+
+  def unexpected_browser_pids(rows, captured)
+    rows.map { |line| line.split.first.to_i } - captured.map(&:pid)
   end
 
   # Bind a later child's signals to its admitted identity and fresh ownership check.
