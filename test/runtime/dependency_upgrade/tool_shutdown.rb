@@ -17,7 +17,9 @@ class DependencyToolShutdown
   # @return [Boolean] positive reap and native absence inside the original bound
   def stop
     @deadline = clock + 10
-    @native.signal_tool_group(@pid, 'TERM')
+    reap
+    require_time!
+    @native.signal_tool_group(@pid, 'TERM') unless @reaped
     loop do
       require_time!
       reap
@@ -44,6 +46,7 @@ class DependencyToolShutdown
     return if @reaped || @killed
 
     reap
+    require_time!
     return if @reaped
 
     @native.signal_tool_group(@pid, 'KILL')

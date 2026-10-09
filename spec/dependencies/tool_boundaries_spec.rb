@@ -46,6 +46,31 @@ RSpec.context 'when exercising development tool boundaries' do
     expect { Process.kill(0, -pid) }.to raise_error(Errno::ESRCH)
   end
 
+  # @return [Array<String>] record real signal calls without replacing them
+  def recorded_tool_signals
+    signals = []
+    allow(DependencyResource).to receive(:signal_tool_group).and_wrap_original do |native, pid, name|
+      signals << name
+      native.call(pid, name)
+    end
+    signals
+  end
+
+  # Inject expiry only after the actual escalation waitability observation.
+  # @param shutdown [DependencyToolShutdown] this example's fresh native owner
+  # @return [void] a failure control, never genuine runtime qualification
+  def expire_during_escalation(shutdown)
+    expired = false
+    allow(shutdown).to(receive(:clock).and_wrap_original { |native| native.call + (expired ? 11 : 0) })
+    allow(shutdown).to receive(:escalate).and_wrap_original do |native|
+      allow(shutdown).to receive(:reap).and_wrap_original do |wait|
+        wait.call
+        expired = true
+      end
+      native.call
+    end
+  end
+
   it 'waits for a delayed native tool group member after its leader is reaped' do
     leader = ready_tool_child(true, 'exit')
     member = ready_tool_child(leader, 'sleep 0.3; exit')
@@ -124,17 +149,39 @@ RSpec.context 'when exercising development tool boundaries' do
 
   it 'refuses sustained denied observations without signalling after the original leader reap' do
     leader = ready_tool_child(true, 'exit')
-    signals = []
-    allow(DependencyResource).to receive(:signal_tool_group).and_wrap_original do |native, pid, name|
-      signals << name
-      native.call(pid, name)
-    end
+    signals = recorded_tool_signals
     allow(DependencyResource).to receive(:tool_group_absent?).and_raise(Errno::EPERM)
     expect { DependencyResource.stop_tool_group!(leader) }.to raise_error(Timeout::Error) do |error|
       expect(error.cause).to be_a(Errno::EPERM)
     end
     expect(signals).to eq(['TERM'])
     expect { Process.waitpid(leader, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+  ensure
+    reap_tool_child(leader)
+    expect_tool_group_absent(leader) if leader
+  end
+
+  it 'refuses deadline expiry during the escalation waitability check without KILL' do
+    leader = ready_tool_child(true, 'nil')
+    shutdown = DependencyToolShutdown.new(leader, DependencyResource)
+    signals = recorded_tool_signals
+    expire_during_escalation(shutdown)
+    expect { shutdown.stop }.to raise_error(Timeout::Error)
+    expect(signals).to eq(['TERM'])
+    expect(Process.waitpid(leader, Process::WNOHANG)).to be_nil
+    expect(Process.kill(0, leader)).to eq(1)
+  ensure
+    reap_tool_child(leader)
+    expect_tool_group_absent(leader) if leader
+  end
+
+  it 'refuses an already-reaped original child before any group signal' do
+    leader = ready_tool_child(true, 'exit')
+    Process.kill('TERM', leader)
+    expect(Process.waitpid(leader)).to eq(leader)
+    signals = recorded_tool_signals
+    expect { DependencyResource.stop_tool_group!(leader) }.to raise_error(Errno::ECHILD)
+    expect(signals).to be_empty
   ensure
     reap_tool_child(leader)
     expect_tool_group_absent(leader) if leader
