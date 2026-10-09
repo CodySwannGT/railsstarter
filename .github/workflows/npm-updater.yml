@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   selected_update:
-    uses: CodySwannGT/lisa/.github/workflows/npm-updater.yml@af002345155507fcf6df70d2a15b5ddcb8b8a5be # v4.73.1
+    uses: CodySwannGT/lisa/.github/workflows/npm-updater.yml@b6e498697c1081dc2470f21285994b5c55a1ae25 # v4.73.2
     with:
       expected_workflow_contract_major: '1'
       npm-version: '10.9.9'
