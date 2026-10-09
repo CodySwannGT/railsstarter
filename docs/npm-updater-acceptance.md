@@ -10,6 +10,8 @@ Repository Actions PR creation must be enabled for this explicit dispatch. Recor
 
 Read the produced PR and verify the genuine Actions bot author, canonical work-item trailer and backlink, exact manifest and lock changes, signed-provider evidence, and every current-head protected check. The required checks are:
 
+- `CodeRabbit`
+- `GitGuardian Security Checks`
 - `Quality Checks / Lint`
 - `Quality Checks / Code Quality`
 - `Quality Checks / Security`
