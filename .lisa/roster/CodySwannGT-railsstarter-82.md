@@ -1,6 +1,6 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
-This delivery amendment records the current Codex roster before independent review of the Lisa 4.73.2 adoption. Earlier implementation and upstream alias investigation already occurred; this file does not claim to predate them. Root owns commits, push, PR, native policy checks, merge, hosted acceptance and cleanup. Reviewers share the checkout, preserve others' edits and perform read-only work.
+This delivery amendment records the current Codex roster before independent review of the Lisa 4.73.4 adoption. Earlier implementation and upstream alias investigation already occurred; this file does not claim to predate them. Root owns commits, push, PR, native policy checks, merge, hosted acceptance and cleanup. Reviewers share the checkout, preserve others' edits and perform read-only work.
 
 INCLUDE - explorer - Read-only source and release research remains applicable to the producer and alias evidence.
 INCLUDE - lisa-quality-specialist - Independently review the consumer changes and project-rule compliance.
@@ -56,3 +56,9 @@ The hosted MySQL job failed 1 of 690 examples at the strict profile/native ident
 PR #90 is merged at `8812c02b28b24e12b8064f9507597a1a4a180213`; its reviewed source and all eleven protected checks passed, including 713 hosted MySQL examples. Genuine producer run `37909063164` then passed preparation and allocation for temporary Bot leaf #91, with an authentic fresh origin signature. Its original gate failed at `gate-validate` with native exit 1 before publication. This is not ordinary-hook success, and its sanitized log does not identify the child failure. The original Actions setting is restored.
 
 The debug specialist owns read-only diagnosis and fresh, positively owned controls. It must identify an executed evidence chain or report the remaining diagnostic gap, preserve all original guards and bounds, and avoid recovery, adoption or signals against failed cohorts. Root owns Git, external writes, upstream ticketing, source-change assignments and eventual cleanup. Reusable fixes belong upstream in Lisa before starter adoption. Desktop signature verification and successful preparation do not replace the failed hosted gate or close #82.
+
+## Released reader adoption amendment — 2026-10-09
+
+Root qualified actual published Lisa 4.73.4 at `1ee980d2b49cee63024ac8c221d0affcb26da1c5`, including the merged bounded canonical-reader repair. The archive matches all 151 release-source scripts and 106 authenticated graph members. Explicit full apply matched 151 installed and 148 applied scripts. Both fresh frozen installers preserved lock bytes and retained patched Handlebars 4.7.10; the audit still reports 34 tooling findings with no critical entry.
+
+Quality, security and verification specialists review the consumer diff and evidence independently before root commits and publishes the batched PR. They own read-only review, preserve other edits and do not run duplicate heavy suites. Root owns policy writes, normal hooks, PR delivery and the fresh genuine Bot qualification. The old failed updater cohort remains terminal and must not be recovered or replayed. Fixture retirement follows successful fresh acceptance.
