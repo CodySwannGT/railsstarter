@@ -1,6 +1,6 @@
 # Selected npm updater acceptance
 
-Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.4 producer at immutable commit `1ee980d2b49cee63024ac8c221d0affcb26da1c5`, including the released npm alias, bundled-lock validation and bounded canonical-read repairs.
+Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.5 producer at immutable commit `c2f416b4787953f49a663a5d91d197041bca6ce9`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic.
 
 The owned fixture adds `is-number` 6.0.0 as a development dependency and selects its exact 7.0.0 update. Both versions are ordinary public registry packages. The fixture is removed after acceptance, together with its caller and committed selection. It does not become an application dependency or replace Lisa's full-apply update path.
 
