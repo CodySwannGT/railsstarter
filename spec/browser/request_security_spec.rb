@@ -643,6 +643,236 @@ RSpec.describe RequestSecurity do
       raise 'Later Chrome process group disagrees' unless identity[2] == root.identity.split[2]
     end
 
+    # A real leaf exits between two actual ps observations; no native row is mocked.
+    def native_departure_candidate(harness)
+      later_cross_site_child(harness)
+      anchors = harness.instance_variable_get(:@browser_anchors)
+      captured = harness.instance_variable_get(:@chrome_processes).map(&:pid)
+      details = harness.send(:validated_browser_profiles, harness.send(:owned_browser_processes))
+      parents = details.values.map { |row| row.fetch(:ppid) }
+      leaf = details.values.find { |row| captured.none?(row[:pid]) && !anchors.key?(row[:pid]) && parents.none?(row[:pid]) }
+      raise 'No genuine later non-anchor leaf available' unless leaf
+
+      [harness.send(:capture_later_browser, leaf[:pid], leaf), anchors]
+    end
+
+    def depart_between_native_observations(harness, child, anchors)
+      departed = false
+      allow(RequestSecurityObservation).to receive(:metadata).and_wrap_original do |observe, pids, **options|
+        if !departed && pids.include?(child.pid)
+          departed = true
+          child.terminate(timeout: harness.instance_variable_get(:@cleanup_timeout))
+          raise 'Controlled Chrome leaf remains' unless child.absent?
+          raise 'Retained anchors changed during departure' unless observe.call(anchors.keys) == anchors
+        end
+        observe.call(pids, **options)
+      end
+    end
+
+    # Synthetic adversarial observations never supply empirical process authority.
+    def departed_census_fixture
+      anchors, rows, details = browser_inventory_fixture
+      details[103] = details.fetch(102).merge(pid: 103)
+      rows << "103 101 #{details.fetch(103).fetch(:birth)}"
+      fresh = details.except(103).merge(105 => details.fetch(102).merge(pid: 105))
+      fresh_rows = [rows.first, rows[1], "105 101 #{fresh.fetch(105).fetch(:birth)}"]
+      [anchors, rows, details.except(103), fresh_rows, fresh]
+    end
+
+    def synthetic_census(anchors, rows, metadata)
+      observations = rows.dup
+      allow(RequestSecurityObservation).to receive(:metadata).and_return(*metadata)
+      allow(RequestSecurityObservation).to receive(:identity).and_return('')
+      allow(Process).to receive(:kill).and_call_original
+      RequestSecurityBrowserCensus.new(anchors) { |_timeout| observations.shift || rows.last }
+    end
+
+    def collect_census(census)
+      census.collect(census.profiles)
+    ensure
+      expect(Process).not_to have_received(:kill)
+    end
+
+    it('recomputes later admission from the fresh pair instead of retaining a departed candidate') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      harness = described_class.new
+      captured = [101, 102].map { |pid| instance_double(RequestSecurityProcess, pid: pid) }
+      harness.instance_variable_set(:@browser_anchors, anchors)
+      harness.instance_variable_set(:@chrome_processes, captured)
+      allow(harness).to receive(:owned_browser_processes).and_return(rows, fresh_rows)
+      allow(RequestSecurityObservation).to receive(:metadata).and_return(first, fresh)
+      allow(RequestSecurityObservation).to receive(:identity).with('103', any_args).and_return('')
+      later = instance_double(RequestSecurityProcess, pid: 105)
+      allow(harness).to receive(:capture_later_browser).with(105, fresh.fetch(105)).and_return(later)
+      allow(Process).to receive(:kill).and_call_original
+
+      expect(harness.send(:captured_chrome_processes)).to eq(captured + [later])
+      expect(harness).to have_received(:capture_later_browser).with(105, fresh.fetch(105)).once
+      expect(Process).not_to have_received(:kill)
+    end
+
+    it('refuses live omitted native metadata without obtaining another census') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      allow(RequestSecurityObservation).to receive(:identity).with('103', any_args).and_return('103 101 100 Wed Oct 7 03:52:44 2026')
+      expect { collect_census(census) }.to raise_error(/missing.*live/)
+      expect(RequestSecurityObservation).to have_received(:metadata).once
+    end
+
+    %i[birth ppid uid pgid].each do |field|
+      it("refuses mixed departure and a present #{field} violation before probing absence") do
+        anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+        first[102] = first.fetch(102).merge(field => field == :birth ? 'Wed Oct 7 03:52:45 2026' : first.fetch(102).fetch(field) + 1)
+        census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+        expect { collect_census(census) }.to raise_error(/identity|owner|ancestry/)
+        expect(RequestSecurityObservation).not_to have_received(:identity)
+      end
+    end
+
+    it('refuses a surviving member whose ancestry requires the missing member') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      rows[1] = "102 103 #{first.fetch(102).fetch(:birth)}"
+      first[102] = first.fetch(102).merge(ppid: 103)
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      expect { collect_census(census) }.to raise_error(/ancestry/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    it('refuses a missing retained anchor before any absence probe') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows, fresh_rows], [first.except(100), fresh])
+      expect { collect_census(census) }.to raise_error(/anchor identity/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    it('refuses cyclic surviving ancestry mixed with a missing leaf') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      rows[1] = "102 102 #{first.fetch(102).fetch(:birth)}"
+      first[102] = first.fetch(102).merge(ppid: 102)
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      expect { collect_census(census) }.to raise_error(/ancestry/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    %i[birth ppid uid pgid].each do |field|
+      it("refuses cross-census #{field} drift even when the fresh pair agrees") do
+        anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+        changed = field == :birth ? 'Wed Oct 7 03:52:45 2026' : fresh.fetch(102).fetch(field) + 1
+        fresh[102] = fresh.fetch(102).merge(field => changed)
+        fresh_rows[1] = "102 #{fresh.fetch(102).fetch(:ppid)} #{fresh.fetch(102).fetch(:birth)}"
+        census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+        expect { collect_census(census) }.to raise_error(/identity.*changed/)
+      end
+    end
+
+    it('refuses any reappearance of a PID after positive absence') do
+      anchors, rows, first, _, fresh = departed_census_fixture
+      fresh[103] = fresh.fetch(102).merge(pid: 103)
+      census = synthetic_census(anchors, [rows, rows], [first, fresh.except(105)])
+      expect { collect_census(census) }.to raise_error(/absent.*reappeared/)
+    end
+
+    it('refuses failed absence observations instead of replacing missing metadata') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      allow(RequestSecurityObservation).to receive(:identity).and_raise(RequestSecurityObservation::Failure, 'Process observation malformed identity')
+      expect { collect_census(census) }.to raise_error(RequestSecurityObservation::Failure, /malformed/)
+      expect(RequestSecurityObservation).to have_received(:metadata).once
+    end
+
+    it('refuses malformed profile rows mixed with missing metadata') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows + ['malformed'], fresh_rows], [first, fresh])
+      expect { collect_census(census) }.to raise_error(/profile identity/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    it('does not reset the original observation budget after departure') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      clock = 0
+      allow(Process).to receive(:clock_gettime).with(Process::CLOCK_MONOTONIC) { clock }
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      allow(RequestSecurityObservation).to receive(:identity) do
+        clock = 3
+        ''
+      end
+      expect { collect_census(census) }.to raise_error(RequestSecurityObservation::Failure, /budget/)
+      expect(RequestSecurityObservation).to have_received(:metadata).once
+    end
+
+    it('refuses departure of an entire branch instead of treating missing ancestors as leaves') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      rows[2] = "103 102 #{first.fetch(102).fetch(:birth)}"
+      census = synthetic_census(anchors, [rows, fresh_rows], [first.except(102), fresh])
+      expect { collect_census(census) }.to raise_error(/non-leaf/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    it('exhausts one shared budget under repeated departure churn without admitting a partial pair') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      clock = 0
+      timeouts = []
+      allow(Process).to receive(:clock_gettime).with(Process::CLOCK_MONOTONIC) { clock }
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh.except(105)])
+      allow(RequestSecurityObservation).to receive(:metadata) do |_pids, timeout:|
+        timeouts << timeout
+        clock += 1
+        timeouts.size == 1 ? first : fresh.except(105)
+      end
+      expect { collect_census(census) }.to raise_error(RequestSecurityObservation::Failure, /budget/)
+      expect(timeouts).to eq([1, 1])
+    end
+
+    it('refuses admission when strict final validation consumes the remaining observation budget') do
+      anchors, rows, details = browser_inventory_fixture
+      clock = 0
+      allow(Process).to receive(:clock_gettime).with(Process::CLOCK_MONOTONIC) { clock }
+      census = synthetic_census(anchors, [rows], [details])
+      allow(RequestSecurityBrowserInventory).to receive(:new).and_wrap_original do |construct, *arguments|
+        inventory = construct.call(*arguments)
+        allow(inventory).to receive(:validate).and_wrap_original do |validate, metadata|
+          result = validate.call(metadata)
+          clock = 3
+          result
+        end
+        inventory
+      end
+      expect { collect_census(census) }.to raise_error(RequestSecurityObservation::Failure, /budget/)
+    end
+
+    it('refuses native metadata observation errors before any absence classification') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows, fresh_rows], [first, fresh])
+      allow(RequestSecurityObservation).to receive(:metadata).and_raise(RequestSecurityObservation::Failure, 'Malformed browser native metadata')
+      expect { collect_census(census) }.to raise_error(RequestSecurityObservation::Failure, /Malformed/)
+      expect(RequestSecurityObservation).not_to have_received(:identity)
+    end
+
+    it('refuses duplicate profile members before attempting an absence retry') do
+      anchors, rows, first, fresh_rows, fresh = departed_census_fixture
+      census = synthetic_census(anchors, [rows + [rows.last], fresh_rows], [first, fresh])
+      expect { collect_census(census) }.to raise_error(/profile inventory/)
+      expect(RequestSecurityObservation).not_to have_received(:metadata)
+    end
+
+    it('admits only a fresh complete census after a genuine later Chrome leaf departs between native observations') do
+      harness = described_class.new
+      child, anchors = native_departure_candidate(harness)
+      depart_between_native_observations(harness, child, anchors)
+
+      expect { harness.send(:captured_chrome_processes) }.not_to raise_error
+      expect({ absent: child.absent?, signals: child.signals }).to eq(absent: true, signals: ['TERM'])
+      expect(harness.instance_variable_get(:@chrome_processes).map(&:pid)).not_to include(child.pid)
+      expect(RequestSecurityObservation.metadata(anchors.keys)).to eq(anchors)
+      harness.stop
+      expect(harness.cleanup_record).to include(scratch_removed: true, driver_absent_after_quit: true,
+                                                server_absent: true, quit_thread_absent: true, browser_processes_after_quit: [],
+                                                errors: [], observer_failures: [])
+      RSpec.configuration.reporter.message('NATIVE_BROWSER_CENSUS_DEPARTURE_PASS: fresh complete census after genuine later Chrome leaf departure; owned cleanup verified')
+    ensure
+      harness&.stop unless harness&.cleanup_record&.dig(:scratch_removed)
+    end
+
     def finish_cross_site_fixture(harness, chrome, resume)
       resume&.kill
       resume&.join(1)
