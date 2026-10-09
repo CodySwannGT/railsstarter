@@ -92,4 +92,51 @@ RSpec.context 'when exercising development tool boundaries' do
                                                       'process_group_absent' => true))
     expect(report.fetch('cleanup')).to include('container_absent' => true, 'volume_absent' => true, 'children_reaped' => true, 'scratch_absent' => true)
   end
+
+  it 'reaps a TERM-resistant native leader and proves absence within the original budget' do
+    leader = ready_tool_child(true, 'nil')
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    expect(DependencyResource.stop_tool_group!(leader)).to be(true)
+    expect(Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to be < 10
+    expect { Process.waitpid(leader, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+    expect_tool_group_absent(leader)
+  ensure
+    reap_tool_child(leader)
+    expect_tool_group_absent(leader) if leader
+  end
+
+  it 'requires subsequent native absence after a denied observation control' do
+    leader = ready_tool_child(true, 'exit')
+    observations = 0
+    allow(DependencyResource).to receive(:tool_group_absent?).and_wrap_original do |native, pid|
+      observations += 1
+      raise Errno::EPERM if observations == 1
+
+      native.call(pid)
+    end
+    expect(DependencyResource.stop_tool_group!(leader)).to be(true)
+    expect(observations).to be >= 2
+    expect_tool_group_absent(leader)
+  ensure
+    reap_tool_child(leader)
+    expect_tool_group_absent(leader) if leader
+  end
+
+  it 'refuses sustained denied observations without signalling after the original leader reap' do
+    leader = ready_tool_child(true, 'exit')
+    signals = []
+    allow(DependencyResource).to receive(:signal_tool_group).and_wrap_original do |native, pid, name|
+      signals << name
+      native.call(pid, name)
+    end
+    allow(DependencyResource).to receive(:tool_group_absent?).and_raise(Errno::EPERM)
+    expect { DependencyResource.stop_tool_group!(leader) }.to raise_error(Timeout::Error) do |error|
+      expect(error.cause).to be_a(Errno::EPERM)
+    end
+    expect(signals).to eq(['TERM'])
+    expect { Process.waitpid(leader, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+  ensure
+    reap_tool_child(leader)
+    expect_tool_group_absent(leader) if leader
+  end
 end
