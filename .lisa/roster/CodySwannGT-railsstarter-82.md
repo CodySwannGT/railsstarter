@@ -1,0 +1,48 @@
+# Roster Decision — CodySwannGT/railsstarter#82
+
+This delivery amendment records the current Codex roster before independent review of the Lisa 4.73.1 adoption. Earlier implementation and upstream alias investigation already occurred; this file does not claim to predate them. Root owns commits, push, PR, native policy checks, merge, hosted acceptance and cleanup. Reviewers share the checkout, preserve others' edits and perform read-only work.
+
+INCLUDE - explorer - Read-only source and release research remains applicable to the producer and alias evidence.
+INCLUDE - lisa-quality-specialist - Independently review the consumer changes and project-rule compliance.
+INCLUDE - lisa-security-specialist - Independently review immutable release identity, provenance and protected-check preservation.
+INCLUDE - lisa-product-specialist - Review acceptance scope and distinguish adoption from genuine hosted Bot completion.
+INCLUDE - lisa-verification-specialist - Independently verify real producer behavior and frozen installers.
+INCLUDE - lisa-learner - Capture only evidence-backed durable learnings through the executable contract.
+EXCLUDE - default - Specific exposed specialists cover the current responsibilities.
+EXCLUDE - worker - Root owns this bounded release adoption; source implementation already shipped upstream.
+EXCLUDE - casey - No customer account work.
+EXCLUDE - chief - Root already coordinates this single repository delivery.
+EXCLUDE - felix - No finance work.
+EXCLUDE - lex - No legal or contract work.
+EXCLUDE - mark - No marketing work.
+EXCLUDE - parker - No people operations work.
+EXCLUDE - sally - No sales work.
+EXCLUDE - lisa-architecture-specialist - No new architecture in the release adoption.
+EXCLUDE - lisa-bug-fixer - Alias implementation and red/green controls already shipped upstream.
+EXCLUDE - lisa-builder - No new feature implementation in this adoption.
+EXCLUDE - lisa-confluence-prd-intake - No Confluence intake.
+EXCLUDE - lisa-debug-specialist - Alias cause is established by executed controls.
+EXCLUDE - lisa-eval-specialist - No factory evaluation change.
+EXCLUDE - lisa-git-history-analyzer - Narrow ancestry and release identity are already proven; reviewers can inspect relevant history.
+EXCLUDE - lisa-github-agent - Root continues the already claimed leaf rather than starting another lifecycle.
+EXCLUDE - lisa-github-build-intake - No new build intake.
+EXCLUDE - lisa-github-prd-intake - No PRD intake.
+EXCLUDE - lisa-jira-agent - Tracker is GitHub.
+EXCLUDE - lisa-jira-build-intake - No Jira intake.
+EXCLUDE - lisa-learning-judge - Empty candidate set needs no judgment gate.
+EXCLUDE - lisa-learnings-synthesizer - No shipped-initiative debrief.
+EXCLUDE - lisa-linear-agent - Tracker is GitHub.
+EXCLUDE - lisa-linear-build-intake - No Linear intake.
+EXCLUDE - lisa-linear-prd-intake - No Linear PRD intake.
+EXCLUDE - lisa-notion-prd-intake - No Notion intake.
+EXCLUDE - lisa-ops-specialist - No AWS deployment is authorized or needed.
+EXCLUDE - lisa-performance-specialist - No performance behavior changed.
+EXCLUDE - lisa-pr-mining-specialist - No PR-mining debrief.
+EXCLUDE - lisa-skill-evaluator - No learning promotion.
+EXCLUDE - lisa-spec-conformance-specialist - Product reviewer covers the narrow acceptance boundary.
+EXCLUDE - lisa-test-specialist - Meaningful alias controls already passed upstream; existing consumer controls and full hooks cover adoption.
+EXCLUDE - lisa-tracker-mining-specialist - No tracker-mining debrief.
+
+Reuse the completed native quality and verification teammates for independent consumer review; add native security/product specialists as capacity permits. No Claude LLM sessions or model overrides. The previously recorded upstream source roster and proofs remain separate from this consumer delivery.
+
+Acceptance remains unfinished until the adopted release reaches main, the real hosted updater creates a genuine Bot proposal that passes every protected check, and the temporary fixture/caller is removed through ordinary reviewed delivery. Source review, frozen installs and merged adoption alone cannot close #82.
