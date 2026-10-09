@@ -1,0 +1,22 @@
+# Host-owned, temporary acceptance caller for issue #82.
+# Remove this caller and its owned fixture after the genuine Bot check proof.
+name: npm updater acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  issues: write
+  pull-requests: write
+  attestations: write
+  id-token: write
+
+jobs:
+  selected_update:
+    uses: CodySwannGT/lisa/.github/workflows/npm-updater.yml@e451b4e04499124ad773727dfef04e3ae65d3a94 # v4.73.0
+    with:
+      expected_workflow_contract_major: '1'
+      npm-version: '10.9.9'
+      runtime-profile: rails-mysql

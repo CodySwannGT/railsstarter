@@ -6,6 +6,7 @@ require 'timeout'
 require 'active_record'
 require 'active_record/database_configurations'
 require 'active_support/configuration_file'
+require_relative 'tool_shutdown'
 
 # Validate rendered configuration including hidden replicas before any adapter.
 module DependencyResource
@@ -18,28 +19,7 @@ module DependencyResource
   # @param pid [Integer] the invocation's waitable direct group leader
   # @return [Boolean] native group absence after the owned leader is reaped
   def stop_tool_group!(pid)
-    signal_tool_group(pid, 'TERM')
-    Timeout.timeout(10) do
-      Process.waitpid(pid)
-      sleep 0.01 until tool_group_absent?(pid)
-    end
-    true
-  rescue Timeout::Error
-    raise unless tool_leader_waitable?(pid)
-
-    signal_tool_group(pid, 'KILL')
-    Process.waitpid(pid)
-    raise 'Owned tool process group remained' unless tool_group_absent?(pid)
-
-    true
-  end
-
-  # @param pid [Integer] only a still-waitable original child permits escalation
-  # @return [Boolean] ECHILD never authorizes reuse of the old numeric leader
-  def tool_leader_waitable?(pid)
-    Process.waitpid(pid, Process::WNOHANG).nil?
-  rescue Errno::ECHILD
-    false
+    DependencyToolShutdown.new(pid, self).stop
   end
 
   # @param pid [Integer] the exclusively created group

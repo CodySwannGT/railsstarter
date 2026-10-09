@@ -5,7 +5,8 @@
     "": {
       "name": "your-project",
       "devDependencies": {
-        "@codyswann/lisa": "^4.71.10",
+        "@codyswann/lisa": "^4.73.0",
+        "is-number": "6.0.0",
       },
     },
   },
@@ -137,7 +138,7 @@
 
     "@bcoe/v8-coverage": ["@bcoe/v8-coverage@1.0.2", "", {}, "sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA=="],
 
-    "@codyswann/lisa": ["@codyswann/lisa@4.71.10", "", { "dependencies": { "@ast-grep/cli": "^0.40.4", "@commitlint/cli": "^20.5.0", "@commitlint/config-conventional": "^20.5.0", "@decimalturn/toml-patch": "^1.1.1", "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0", "@eslint/eslintrc": "^3.3.7", "@eslint/js": "^9.39.5", "@inquirer/prompts": "^7.0.0", "@jest/globals": "^30.0.0", "@jest/test-sequencer": "^30.2.0", "@types/fs-extra": "^11.0.0", "@types/jest": "^30.0.0", "@types/lodash.merge": "^4.6.0", "@types/node": "^22.0.0", "@vitest/coverage-v8": "^4.1.11", "commander": "^12.0.0", "esbuild-register": "^3.6.0", "eslint": "^9.39.5", "eslint-config-expo": "^10.0.0", "eslint-config-prettier": "^10.0.0", "eslint-import-resolver-typescript": "^4.4.4", "eslint-plugin-functional": "^9.0.0", "eslint-plugin-import": "^2.32.0", "eslint-plugin-jsdoc": "^61.5.0", "eslint-plugin-jsx-a11y": "^6.10.0", "eslint-plugin-prettier": "^5.5.0", "eslint-plugin-react": "^7.37.0", "eslint-plugin-react-compiler": "^19.1.0-rc.2", "eslint-plugin-react-hooks": "^7.0.0", "eslint-plugin-react-perf": "^3.3.0", "eslint-plugin-sonarjs": "4.0.3", "eslint-plugin-tailwindcss": "^3.18.0", "fs-extra": "^11.0.0", "globals": "^16.0.0", "husky": "^8.0.0", "jest": "^30.0.0", "jiti": "^2.4.0", "js-yaml": "^4.3.1", "jscodeshift": "0.15.2", "jsonc-parser": "^3.3.1", "knip": "5.82.1", "lint-staged": "^16.2.7", "lodash.merge": "^4.6.2", "minimatch": "^10.2.5", "picocolors": "^1.0.0", "prettier": "3.8.0", "semver": "^7.8.1", "smol-toml": "1.7.1", "standard-version": "^9.5.0", "tailwindcss": "^3.4.19", "ts-jest": "^29.4.9", "ts-morph": "^27.0.2", "tsx": "^4.0.0", "typescript": "^6.0.3", "typescript-eslint": "^8.0.0", "vitest": "^4.1.11" }, "bin": { "lisa": "dist/index.js", "lisa-test-run": "dist/cli/lisa-test-run.js", "setup-deploy-key": "scripts/setup-deploy-key.sh" } }, "sha512-f1aYRhtqEZ/Vps3A3GEah4T2ax8pDow6I6C2F5I0hXLwKV80y98+G5MG76bfxdP//+Yei4k187mRXIHkBch+kw=="],
+    "@codyswann/lisa": ["@codyswann/lisa@4.73.0", "", { "dependencies": { "@ast-grep/cli": "^0.40.4", "@commitlint/cli": "^20.5.0", "@commitlint/config-conventional": "^20.5.0", "@decimalturn/toml-patch": "^1.1.1", "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0", "@eslint/eslintrc": "^3.3.7", "@eslint/js": "^9.39.5", "@inquirer/prompts": "^7.0.0", "@jest/globals": "^30.0.0", "@jest/test-sequencer": "^30.2.0", "@types/fs-extra": "^11.0.0", "@types/jest": "^30.0.0", "@types/lodash.merge": "^4.6.0", "@types/node": "^22.0.0", "@vitest/coverage-v8": "^4.1.11", "commander": "^12.0.0", "esbuild-register": "^3.6.0", "eslint": "^9.39.5", "eslint-config-expo": "^10.0.0", "eslint-config-prettier": "^10.0.0", "eslint-import-resolver-typescript": "^4.4.4", "eslint-plugin-functional": "^9.0.0", "eslint-plugin-import": "^2.32.0", "eslint-plugin-jsdoc": "^61.5.0", "eslint-plugin-jsx-a11y": "^6.10.0", "eslint-plugin-prettier": "^5.5.0", "eslint-plugin-react": "^7.37.0", "eslint-plugin-react-compiler": "^19.1.0-rc.2", "eslint-plugin-react-hooks": "^7.0.0", "eslint-plugin-react-perf": "^3.3.0", "eslint-plugin-sonarjs": "4.0.3", "eslint-plugin-tailwindcss": "^3.18.0", "fs-extra": "^11.0.0", "globals": "^16.0.0", "husky": "^8.0.0", "jest": "^30.0.0", "jiti": "^2.4.0", "js-yaml": "^4.3.1", "jscodeshift": "0.15.2", "jsonc-parser": "^3.3.1", "knip": "5.82.1", "lint-staged": "^16.2.7", "lodash.merge": "^4.6.2", "minimatch": "^10.2.5", "picocolors": "^1.0.0", "prettier": "3.8.0", "semver": "^7.8.1", "smol-toml": "1.7.1", "standard-version": "^9.5.0", "tailwindcss": "^3.4.19", "ts-jest": "^29.4.9", "ts-morph": "^27.0.2", "tsx": "^4.0.0", "typescript": "^6.0.3", "typescript-eslint": "^8.0.0", "vitest": "^4.1.11" }, "bin": { "lisa": "dist/index.js", "lisa-test-run": "dist/cli/lisa-test-run.js", "setup-deploy-key": "scripts/setup-deploy-key.sh" } }, "sha512-mFuJpE2TjwENrISI2+Qzauj/haHidRBU8bg1/bUM+oDacLA957zTpRSCKXV3xH24PBlXRMGfPAAokCXltawgCg=="],
 
     "@commitlint/cli": ["@commitlint/cli@20.5.0", "", { "dependencies": { "@commitlint/format": "^20.5.0", "@commitlint/lint": "^20.5.0", "@commitlint/load": "^20.5.0", "@commitlint/read": "^20.5.0", "@commitlint/types": "^20.5.0", "tinyexec": "^1.0.0", "yargs": "^17.0.0" }, "bin": { "commitlint": "cli.js" } }, "sha512-yNkyN/tuKTJS3wdVfsZ2tXDM4G4Gi7z+jW54Cki8N8tZqwKBltbIvUUrSbT4hz1bhW/h0CdR+5sCSpXD+wMKaQ=="],
 
@@ -1181,7 +1182,7 @@
 
     "is-negative-zero": ["is-negative-zero@2.0.3", "", {}, "sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw=="],
 
-    "is-number": ["is-number@7.0.0", "", {}, "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng=="],
+    "is-number": ["is-number@6.0.0", "", {}, "sha512-Wu1VHeILBK8KAWJUAiSZQX94GmOE45Rg6/538fKwiloUu21KncEkYGPqob2oSZ5mUT73vLGrHQjKw3KMPwfDzg=="],
 
     "is-number-object": ["is-number-object@1.1.1", "", { "dependencies": { "call-bound": "^1.0.3", "has-tostringtag": "^1.0.2" } }, "sha512-lZhclumE1G6VYD8VHe35wFaIif+CTy5SJIi5+3y4psDgWu4wPDoBhF8NxUOinEc7pHgiTsT6MaBb92rKhhD+Xw=="],
 
@@ -2130,6 +2131,8 @@
     "tailwindcss/resolve": ["resolve@1.22.11", "", { "dependencies": { "is-core-module": "^2.16.1", "path-parse": "^1.0.7", "supports-preserve-symlinks-flag": "^1.0.0" }, "bin": "bin/resolve" }, "sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ=="],
 
     "test-exclude/glob": ["glob@10.5.0", "", { "dependencies": { "foreground-child": "^3.1.0", "jackspeak": "^3.1.2", "minimatch": "^9.0.4", "minipass": "^7.1.2", "package-json-from-dist": "^1.0.0", "path-scurry": "^1.11.1" }, "bin": "dist/esm/bin.mjs" }, "sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg=="],
+
+    "to-regex-range/is-number": ["is-number@7.0.0", "", {}, "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng=="],
 
     "tsconfig-paths/json5": ["json5@1.0.2", "", { "dependencies": { "minimist": "^1.2.0" }, "bin": "lib/cli.js" }, "sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA=="],
 
