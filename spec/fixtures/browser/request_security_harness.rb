@@ -476,10 +476,10 @@ class RequestSecurityProcess
   def terminate(timeout:)
     return if absent?
 
-    signal('TERM')
+    signal('TERM', timeout: timeout)
     return if RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
 
-    signal('KILL')
+    signal('KILL', timeout: timeout)
     raise "Owned PID #{@pid} remains after bounded KILL" unless RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
   end
 
@@ -508,11 +508,14 @@ class RequestSecurityProcess
     true
   end
 
-  def signal(name)
+  def signal(name, timeout: 0)
     return unless matching_identity?
 
     if @owner_check && !@owner_check.call
-      return if absent?
+      # Destructive driver quit can drop argv while its exited child awaits reap.
+      # Missing ownership authorizes no signal; wait only for positive exit proof
+      # within this signal phase's original timeout, or preserve the refusal.
+      return if RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
 
       raise "Owned PID #{@pid} profile ownership changed"
     end
