@@ -180,6 +180,12 @@ try {
   report.failure ??= "parse-or-configuration-failed";
   process.exitCode = 1;
 } finally {
-  if (scratch) rmSync(scratch, { recursive: true });
+  try {
+    if (scratch) rmSync(scratch, { recursive: true });
+  } catch {
+    report.outcome = "control-failed";
+    report.failure = "scratch-cleanup-failed";
+    process.exitCode = 1;
+  }
 }
 process.stdout.write(`${JSON.stringify(report)}\n`);

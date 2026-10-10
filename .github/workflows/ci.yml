@@ -51,7 +51,7 @@ jobs:
       actions: read
       issues: read
       attestations: read
-    steps: &npm-context-read-steps
+    steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
@@ -84,4 +84,24 @@ jobs:
       issues: read
       attestations: read
       pull-requests: read
-    steps: *npm-context-read-steps
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22.23.3"
+      - name: Prepare the original hash-pinned Linux GH executable
+        run: |
+          set -eu
+          directory=$(mktemp -d "$RUNNER_TEMP/lisa-context-gh.XXXXXX")
+          trap 'rm -rf -- "$directory"' EXIT
+          curl --fail --location --silent --show-error --max-time 60 --max-filesize 150000000 https://github.com/cli/cli/releases/download/v2.96.0/gh_2.96.0_linux_amd64.tar.gz --output "$directory/archive.tar.gz"
+          tar -xzOf "$directory/archive.tar.gz" gh_2.96.0_linux_amd64/bin/gh > "$directory/gh"
+          node scripts/diagnose-npm-context.mjs --check-gh "$directory/gh"
+          sudo install -m 755 -- "$directory/gh" /usr/local/bin/gh
+      - name: Run unchanged canonical read requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/diagnose-npm-context.mjs
