@@ -1,0 +1,1337 @@
+{
+  "generator": "lisa-bdd-feature-projection",
+  "scenarios": [
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTCSP-001",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 7,
+      "mappings": [
+        {
+          "evidence": "enforces request nonces while scripts, styles, navbar, flash and Turbo navigation work",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTCSP-001"
+        }
+      ],
+      "name": "Nonced importmap and precise asset sources preserve real navigation",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTCSP-001"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTCSP-001",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTCSP-002",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 13,
+      "mappings": [
+        {
+          "evidence": "blocks absent nonces, inline handlers and an unlisted script and style origin",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTCSP-002"
+        }
+      ],
+      "name": "Unauthorized scripts and styles cannot execute or apply",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTCSP-002"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTCSP-002",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTCSP-003",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 19,
+      "mappings": [
+        {
+          "evidence": "detects missing importmap nonce and required CDN source controls in real Chrome",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTCSP-003"
+        }
+      ],
+      "name": "Required nonce and source controls reach the browser boundary",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTCSP-003"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTCSP-003",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTSRI-004",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 25,
+      "mappings": [
+        {
+          "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/bootstrap_assets_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTSRI-004"
+        }
+      ],
+      "name": "Bootstrap stylesheet integrity remains enforced",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTSRI-004"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTSRI-004",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTSRI-005",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 31,
+      "mappings": [
+        {
+          "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/bootstrap_assets_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTSRI-005"
+        }
+      ],
+      "name": "Bootstrap script integrity remains enforced",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTSRI-005"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTSRI-005",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTQUOTA-006",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 37,
+      "mappings": [
+        {
+          "evidence": "preserves nonces, required resources and navbar flash Turbo navigation with the physical quota enabled",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_rate_limits_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTQUOTA-006"
+        }
+      ],
+      "name": "Physical quota preserves protected navigation",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTQUOTA-006"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTQUOTA-006",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTQUOTA-007",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 43,
+      "mappings": [
+        {
+          "evidence": "enforces the existing missing-importmap-nonce failure control with the physical quota enabled",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_rate_limits_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTQUOTA-007"
+        }
+      ],
+      "name": "Quota integration preserves the nonce failure control",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTQUOTA-007"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTQUOTA-007",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-REQUESTQUOTA-008",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 49,
+      "mappings": [
+        {
+          "evidence": "observes real HTTP quota rejection in Chrome while exact health remains available",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_rate_limits_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-REQUESTQUOTA-008"
+        }
+      ],
+      "name": "Established quota rejection leaves exact health available",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-REQUESTQUOTA-008"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-REQUESTQUOTA-008",
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-009",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 55,
+      "mappings": [
+        {
+          "evidence": "admits only a fresh complete census after a genuine later Chrome leaf departs between native observations",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-009"
+        }
+      ],
+      "name": "A genuine Chrome leaf departure permits a fresh owned census",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-009",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-009",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-010",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 62,
+      "mappings": [
+        {
+          "evidence": "recomputes later admission from the fresh pair instead of retaining a departed candidate",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-010"
+        }
+      ],
+      "name": "Later process admission uses only the validated fresh pair",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-010",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-010",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-011",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 68,
+      "mappings": [
+        {
+          "evidence": "refuses duplicate profile members before attempting an absence retry",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-011"
+        },
+        {
+          "evidence": "refuses failed absence observations instead of replacing missing metadata",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-011"
+        },
+        {
+          "evidence": "refuses live omitted native metadata without obtaining another census",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-011"
+        },
+        {
+          "evidence": "refuses malformed profile rows mixed with missing metadata",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-011"
+        },
+        {
+          "evidence": "refuses native metadata observation errors before any absence classification",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-011"
+        }
+      ],
+      "name": "Missing observations alone cannot authorize another census",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-011",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-011",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-012",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 75,
+      "mappings": [
+        {
+          "evidence": "refuses a missing retained anchor before any absence probe",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-012"
+        },
+        {
+          "evidence": "refuses a surviving member whose ancestry requires the missing member",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-012"
+        },
+        {
+          "evidence": "refuses cyclic surviving ancestry mixed with a missing leaf",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-012"
+        },
+        {
+          "evidence": "refuses departure of an entire branch instead of treating missing ancestors as leaves",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-012"
+        }
+      ],
+      "name": "Departure recovery requires complete ancestry and a non-anchor leaf",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-012",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-012",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-013",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 82,
+      "mappings": [
+        {
+          "evidence": "refuses any reappearance of a PID after positive absence",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-013"
+        },
+        {
+          "evidence": "refuses cross-census #{field} drift even when the fresh pair agrees",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-013"
+        },
+        {
+          "evidence": "refuses mixed departure and a present #{field} violation before probing absence",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-013"
+        }
+      ],
+      "name": "Departure never hides an identity violation or permits PID replacement",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-013",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-013",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Request policy protected starter navigation",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BROWSERCENSUS-014",
+      "inheritedTags": [
+        "gh-78",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 89,
+      "mappings": [
+        {
+          "evidence": "does not reset the original observation budget after departure",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-014"
+        },
+        {
+          "evidence": "exhausts one shared budget under repeated departure churn without admitting a partial pair",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-014"
+        },
+        {
+          "evidence": "refuses admission when strict final validation consumes the remaining observation budget",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/request_security_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BROWSERCENSUS-014"
+        }
+      ],
+      "name": "Every census attempt and final validation shares one finite deadline",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BROWSERCENSUS-014",
+        "gh-82"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-request-security-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BROWSERCENSUS-014",
+        "gh-78",
+        "gh-82",
+        "ratified-request-security-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 78,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-78",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/78"
+        },
+        {
+          "number": 82,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-82",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/82"
+        }
+      ],
+      "waivers": []
+    }
+  ],
+  "schemaVersion": "lisa-bdd-feature-projection-v1",
+  "sourceFile": "bdd/features/request-security.feature"
+}

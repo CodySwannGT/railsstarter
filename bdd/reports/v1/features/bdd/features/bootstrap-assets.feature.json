@@ -1,0 +1,240 @@
+{
+  "generator": "lisa-bdd-feature-projection",
+  "scenarios": [
+    {
+      "feature": "Starter Bootstrap assets and interactions",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BOOTSTRAP-001",
+      "inheritedTags": [
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 6,
+      "mappings": [
+        {
+          "evidence": "loads source CDN assets and expands navigation, dismisses flash and initializes importmap",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/bootstrap_assets_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BOOTSTRAP-001"
+        }
+      ],
+      "name": "Loaded CDN assets support navigation, flash and importmap",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BOOTSTRAP-001"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-bootstrap-cdn-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BOOTSTRAP-001",
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 81,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-81",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/81"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Starter Bootstrap assets and interactions",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BOOTSTRAP-002",
+      "inheritedTags": [
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 16,
+      "mappings": [
+        {
+          "evidence": "blocks a corrupt stylesheet integrity while unrelated importmap initializes",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/bootstrap_assets_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BOOTSTRAP-002"
+        }
+      ],
+      "name": "Corrupt stylesheet integrity is blocked by the browser",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BOOTSTRAP-002"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-bootstrap-cdn-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BOOTSTRAP-002",
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 81,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-81",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/81"
+        }
+      ],
+      "waivers": []
+    },
+    {
+      "feature": "Starter Bootstrap assets and interactions",
+      "featureIdTags": [],
+      "featureLine": 2,
+      "id": "BDD-BOOTSTRAP-003",
+      "inheritedTags": [
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "lifecycle": [],
+      "line": 23,
+      "mappings": [
+        {
+          "evidence": "blocks corrupt script integrity and cannot expand navigation or dismiss flash",
+          "evidenceResolution": {
+            "ok": true
+          },
+          "execution": {
+            "runId": null,
+            "status": "not supplied",
+            "supplied": false
+          },
+          "file": "spec/browser/bootstrap_assets_spec.rb",
+          "level": "behavioral",
+          "platforms": [
+            "web"
+          ],
+          "runner": "rspec-capybara-selenium",
+          "scenario": "BDD-BOOTSTRAP-003"
+        }
+      ],
+      "name": "Corrupt script integrity is blocked by the browser",
+      "obligations": [
+        {
+          "covered": true,
+          "gap": false,
+          "platform": "web",
+          "runners": [
+            "rspec-capybara-selenium"
+          ],
+          "waived": false
+        }
+      ],
+      "ownTags": [
+        "BDD-BOOTSTRAP-003"
+      ],
+      "platforms": [
+        "web"
+      ],
+      "primarySteps": [
+        "Given",
+        "When",
+        "Then"
+      ],
+      "provenance": [
+        "ratified-bootstrap-cdn-acceptance"
+      ],
+      "required": true,
+      "retirements": [],
+      "tags": [
+        "BDD-BOOTSTRAP-003",
+        "gh-81",
+        "ratified-bootstrap-cdn-acceptance",
+        "web"
+      ],
+      "trackers": [
+        {
+          "number": 81,
+          "repo": null,
+          "scheme": "gh",
+          "tag": "gh-81",
+          "url": "https://github.com/CodySwannGT/railsstarter/issues/81"
+        }
+      ],
+      "waivers": []
+    }
+  ],
+  "schemaVersion": "lisa-bdd-feature-projection-v1",
+  "sourceFile": "bdd/features/bootstrap-assets.feature"
+}
