@@ -4,6 +4,22 @@ name: npm updater acceptance
 
 on:
   workflow_dispatch:
+    inputs:
+      cancel_issue:
+        description: Exact stale prepublication proposal issue for signed cancellation
+        required: false
+        type: string
+        default: ''
+      cancel_proposal_key:
+        description: Exact original proposal key, required with a cancellation issue
+        required: false
+        type: string
+        default: ''
+      cancel_expected_main:
+        description: Exact current main SHA, required with a cancellation issue
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -15,8 +31,11 @@ permissions:
 
 jobs:
   selected_update:
-    uses: CodySwannGT/lisa/.github/workflows/npm-updater.yml@b6e498697c1081dc2470f21285994b5c55a1ae25 # v4.73.2
+    uses: CodySwannGT/lisa/.github/workflows/npm-updater.yml@53bb5c2d3aaceb76f28df9b73b8c0b331928d776 # v4.73.7
     with:
       expected_workflow_contract_major: '1'
       npm-version: '10.9.9'
       runtime-profile: rails-mysql
+      cancel_issue: ${{ inputs.cancel_issue }}
+      cancel_proposal_key: ${{ inputs.cancel_proposal_key }}
+      cancel_expected_main: ${{ inputs.cancel_expected_main }}
