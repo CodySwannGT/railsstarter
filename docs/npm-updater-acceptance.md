@@ -1,6 +1,8 @@
 # Selected npm updater acceptance
 
-Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.7 producer at immutable commit `53bb5c2d3aaceb76f28df9b73b8c0b331928d776`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
+Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.8 producer at immutable commit `def59eafbe542ca14d755b959104a2122a5aab6a`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
+
+The allocation job has a finite 120-minute budget for serial authenticated checkpoint transport. The earlier fresh dispatch reached GitHub's 15-minute job limit before completing cancellation; it is retained as a failed attempt. Signature freshness remains 3,600 seconds, and each new role is signed after its preceding transport. A merged timeout repair does not establish successful cancellation, recovery or publication.
 
 The owned fixture adds `is-number` 6.0.0 as a development dependency and selects its exact 7.0.0 update. Both versions are ordinary public registry packages. The fixture is removed after acceptance, together with its caller and committed selection. It does not become an application dependency or replace Lisa's full-apply update path.
 
