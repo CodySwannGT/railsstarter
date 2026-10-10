@@ -1,6 +1,8 @@
 # Selected npm updater acceptance
 
-Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.8 producer at immutable commit `def59eafbe542ca14d755b959104a2122a5aab6a`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
+Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published Lisa 4.73.9 producer at immutable commit `1db4b5f0e5e55ddc3ed5229e15ed337f1236081c`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
+
+The current release exposes a closed inner authentication failure phase while preserving the native outer stage and exit status. The earlier genuine hosted gate failures remain failed evidence. Their underlying cause and successful producer acceptance are still pending.
 
 The allocation job has a finite 120-minute budget for serial authenticated checkpoint transport. The earlier fresh dispatch reached GitHub's 15-minute job limit before completing cancellation; it is retained as a failed attempt. Signature freshness remains 3,600 seconds, and each new role is signed after its preceding transport. A merged timeout repair does not establish successful cancellation, recovery or publication.
 

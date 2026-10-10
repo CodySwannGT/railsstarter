@@ -219,7 +219,9 @@ module SmokeConsumer
       ['4.73.7', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.73.7.tgz',
        'sha512-LXwHnHu8xXcDdZ128xtDjCi8NiSDDgqq3x5uZAHo4T3e+MWqfKme4F4UJa9kv9NHhCmyw+aUucUwkne3ffmpOQ=='].freeze,
       ['4.73.8', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.73.8.tgz',
-       'sha512-OW5tOKU4teOSS9M0IxGKUKhZmij124LQFZrFU7lvGr7fpr+MiihvgwyxSKMHaLelZ8mV2sfsw7GeYaZYMbko9A=='].freeze
+       'sha512-OW5tOKU4teOSS9M0IxGKUKhZmij124LQFZrFU7lvGr7fpr+MiihvgwyxSKMHaLelZ8mV2sfsw7GeYaZYMbko9A=='].freeze,
+      ['4.73.9', 'https://registry.npmjs.org/@codyswann/lisa/-/lisa-4.73.9.tgz',
+       'sha512-89j2vykG7CaCBO9xOkG1EYZ+vjnTVqT+I/NJhxm/m877Yq+Mt4Ef1XLSUHiphfX4d3PdU3LAWV4inrsLZLlCuQ=='].freeze
     ].freeze
     # Historical full-apply/bootstrap and suppression markers rejected unless the exact release qualifies.
     APPLYING = %r{LISA_BOOTSTRAP=1|--skip-git-check|--full-apply|2>/dev/null \|\| true|(?:\A|\s)apply(?:\s|\z)}
