@@ -42,4 +42,17 @@ jobs:
           fi
           bun run bdd:coverage:write
           bun run bdd:matrix
-          git diff --exit-code -- bdd/coverage-report.json docs/e2e-bdd-coverage.md docs/bdd-scenario-matrix.md
+          report_paths=(
+            bdd/coverage-report.json
+            docs/e2e-bdd-coverage.md
+            docs/bdd-scenario-matrix.md
+            bdd/reports/v1/features
+            docs/e2e-bdd-coverage
+            docs/bdd-scenario-matrix
+          )
+          git diff --exit-code -- "${report_paths[@]}"
+          untracked_reports=$(git ls-files --others -- "${report_paths[@]}")
+          if [ -n "$untracked_reports" ]; then
+            printf 'Generated BDD reports must be committed:\n%s\n' "$untracked_reports"
+            exit 1
+          fi
