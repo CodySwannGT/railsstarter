@@ -74,3 +74,7 @@ The diagnostic release preserves authentication policy and only exposes closed p
 ## Canonical context diagnosis — 2026-10-10
 
 The original claim is reused and the resolver attached `codex/82-canonical-context-fix` at merged main `7ca95181e9175d1e136c781709ac5be656e554f6`. Root owns a temporary host diagnostic helper and two dispatch-only CI jobs comparing the exact canonical GitHub reads with the gate's current read permissions and with only pull-request read added. The explorer prepares the bounded read-only control; the verification specialist independently reviews its source, actual hosted results and required-check preservation. No signing, publishing, fixture authority replacement or application installation belongs in this control. Its result is diagnosis, not updater acceptance. Root owns ordinary hooks, reviewed branch delivery, hosted dispatch, the necessary upstream fix and batched adoption/cleanup.
+
+## Native accept readiness correction — 2026-10-10
+
+The ordinary full push ran 713 examples and failed only the real Puma socket control: `accept_nonblock` returned EAGAIN before readiness. The bug fixer owns only `spec/smoke/consumer_smoke_spec.rb` and must retain real native accept, payload and AWS-tripwire assertions while adding a finite readiness wait. Root owns this roster, normal Git delivery and acceptance. The verification specialist independently reviews the correction. No application or socket-tripwire production guard changes are admitted.

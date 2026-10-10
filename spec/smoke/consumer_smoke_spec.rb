@@ -729,6 +729,8 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
         begin
           server = TCPServer.new('0.0.0.0', 0)
           client = TCPSocket.new('127.0.0.1', server.addr[1], connect_timeout: 1)
+          # A connected client may precede listener readiness for a nonblocking accept.
+          raise 'Native listener was not ready' unless IO.select([server], nil, nil, 1)
           accepted = server.accept_nonblock
           client.write('listener')
           raise 'Missing native listener payload' unless accepted.read(8) == 'listener'
@@ -751,6 +753,8 @@ RSpec.describe SmokeConsumer do # rubocop:disable RSpec/SpecFilePathFormat -- ex
         begin
           server = binder.add_tcp_listener('0.0.0.0', 0)
           client = TCPSocket.new('127.0.0.1', server.addr[1], connect_timeout: 1)
+          # A connected client may precede listener readiness for a nonblocking accept.
+          raise 'Native Puma listener was not ready' unless IO.select([server], nil, nil, 1)
           accepted = server.accept_nonblock
           client.write('puma')
           raise 'Missing native Puma payload' unless accepted.read(4) == 'puma'
