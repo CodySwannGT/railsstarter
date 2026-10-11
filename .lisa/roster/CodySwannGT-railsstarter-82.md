@@ -78,3 +78,9 @@ The original claim is reused and the resolver attached `codex/82-canonical-conte
 ## Native accept readiness correction — 2026-10-10
 
 The ordinary full push ran 713 examples and failed only the real Puma socket control: `accept_nonblock` returned EAGAIN before readiness. The bug fixer owns only `spec/smoke/consumer_smoke_spec.rb` and must retain real native accept, payload and AWS-tripwire assertions while adding a finite readiness wait. Root owns this roster, normal Git delivery and acceptance. The verification specialist independently reviews the correction. No application or socket-tripwire production guard changes are admitted.
+
+## Qualified 4.74.5 adoption amendment — 2026-10-11
+
+This amendment precedes consumer source and lock writes. Root owns the native qualified release adoption, exact callers/signer, append-only archive tuple, documentation, plan/roster metadata, normal Git/provider delivery and the original six composed hosted criteria. Source implementation and tests already shipped upstream in Lisa PR #4423. Authentic 4.74.5 release qualification covers 151 packaged scripts, the 148-script overlay, 106 graph members and eleven reviewed runtime modules.
+
+Reuse the existing independent quality reviewer for read-only review of the actual consumer diff and native qualification/install/apply evidence. Reuse independent verification for genuinely uncovered runtime requirements; avoid duplicate heavy suites. Reviewers own only ignored receipts, are not alone in the shared checkout, preserve others' work, and distinguish adoption from hosted acceptance. Root performs native installers, original cohort validation, explicit full-Fleet apply and owned cleanup, then normal hooks and protected delivery. No feature builder or Claude session is needed for this bounded adoption.

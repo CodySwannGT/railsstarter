@@ -55,3 +55,13 @@ Original claim and main-only integration remain in force. Adopt authentic Lisa 4
 5. Complete the original protected Bot PR, retry, no-selection and distinct-proposal acceptance, followed by ordinary reviewed removal of owned temporary fixtures. Close #82 and the parent audit only after actual completion.
 
 The prior failed hosted attempts remain terminal. No unchanged retry, fake success, credential substitution, Snyk scanner claim or AWS deployment is authorized by this amendment. Refer to the per-ticket roster for the current root, quality and verification responsibilities.
+
+## Qualified native diagnostics adoption — 2026-10-11
+
+Continue the original claim and native binding on `codex/82-post-merge-acceptance` at merged main `84df3663e0c7c53cc21da5aa6be48e63ca9b98a7`. Lisa PR #4423 merged normally at `27245a0a24568efe54baa98244c9728b5af8e5f2`, with all fifteen required checks and the exact-head local substitute for CodeRabbit's observed rate limit. Actual push-triggered publication run 38168384322 attempt 1 completed successfully and published Lisa 4.74.5 at `ef8f7f2dc99790e757388c1836738c538a5aacef`.
+
+Registry/source qualification verified the actual archive integrity and SHA256 `e41a3780bfa1fa1569f85888959cf1c8abe31bd3edbc2396ff669817399e5670`, all 151 source scripts, the 148-script overlay, all 106 helper-graph members, and the eleven frozen runtime modules. It is publication evidence, not consumer or hosted acceptance evidence.
+
+Root will prepare native coherent npm/Bun locks in a positively owned candidate, pin the authentic immutable callers and signer, install the published SDK, and run its original explicit full-Fleet apply without blanket template refresh. Preserve historical archive tuples, original policy, fixture selection, SessionStart cadence, protections and foreign work. Verify both frozen installers, original cross-lock agreement, delivered script bytes, native apply receipt and actual audit counts. Independent review and normal commit/push/PR/current-head checks precede protected merge.
+
+After adoption reaches actual main, run all original hosted updater criteria, including authenticated retirement of failed leaf #99, identical-proposal reuse, genuine protected Bot PR publication/merge, no-selection behavior, and a later distinct proposal with real interruption and authenticated cancellation. Retire only owned temporary fixtures through ordinary reviewed delivery. Keep #82, source #4347 and parent #60 open until the complete evidence exists. Snyk remains a no-op; no AWS deployment is part of this amendment.
