@@ -8,6 +8,10 @@ RSpec.describe 'Anonymous request quota through actual middleware and HTTP' do
   before { harness.start }
   after { harness.stop }
 
+  # Decode the actual transport response for quota and ingress assertions.
+  # @param response [Net::HTTPResponse] Response received from the owned listener.
+  # @return [Hash] Parsed fixture JSON body.
+  # @raise [JSON::ParserError] If the real response is not valid JSON.
   def payload(response)
     JSON.parse(response.body)
   end
@@ -38,12 +42,25 @@ RSpec.describe 'Anonymous request quota through actual middleware and HTTP' do
   end
 
   it 'uses real pinned Thruster append behavior and rejects missing or untrusted direct topology' do
-    front, port = harness.spawn_thruster('REQUEST_INGRESS_PROFILE' => 'thruster', 'THRUSTER_TRUSTED_PEERS' => '::1/128')
-    response = harness.response(front, '/__quota', { 'X-Forwarded-For' => 'spoof, 10.9.8.7' })
-    expect(payload(response).fetch('ip')).to eq('127.0.0.1')
-    expect(payload(response).dig('headers', 'HTTP_X_FORWARDED_FOR')).to end_with('127.0.0.1')
-    expect(harness.response(port, '/__quota', {}, host: '::1').code).to eq('400')
-    expect(harness.response(port, '/__quota', { 'X-Forwarded-For' => '10.9.8.7' }).code).to eq('403')
+    %w[ipv4 ipv6].each do |family|
+      host = family == 'ipv4' ? '127.0.0.1' : '::1'
+      front, port = harness.spawn_thruster('REQUEST_INGRESS_PROFILE' => 'thruster', 'THRUSTER_TRUSTED_PEERS' => '127.0.0.1/32,::1/128', 'REQUEST_RATE_LISTENER' => family)
+      response = harness.response(front, '/__quota', { 'X-Forwarded-For' => 'spoof, 10.9.8.7' })
+      expect(response.code).to eq('200')
+      expect(payload(response)).to include('ip' => '127.0.0.1', 'headers' => include('REMOTE_ADDR' => host, 'HTTP_X_FORWARDED_FOR' => end_with('127.0.0.1')))
+      expect(harness.response(port, '/__quota', {}, host: host).code).to eq('400')
+    end
+    port = harness.spawn_server('REQUEST_INGRESS_PROFILE' => 'thruster', 'THRUSTER_TRUSTED_PEERS' => '::1/128')
+    untrusted = harness.response(port, '/__quota', { 'X-Forwarded-For' => '10.9.8.7' })
+    expect(untrusted.code).to eq('403')
+    expect(payload(untrusted).fetch('error')).to eq('untrusted_ingress_peer')
+  end
+
+  it 'rejects unsupported fixture listener families before binding an HTTP socket' do
+    unsupported = { 'REQUEST_RATE_LISTENER' => 'wildcard' }
+    expect { harness.spawn_server(unsupported) }.to raise_error(ArgumentError, 'Unknown rate-limit fixture listener family')
+    expect { harness.spawn_thruster(unsupported) }.to raise_error(ArgumentError, 'Unknown rate-limit fixture listener family')
+    expect { harness.command('server', unsupported.merge('REQUEST_RATE_PORT' => '0')) }.to raise_error(RuntimeError, /Unknown rate-limit fixture listener family/)
   end
 
   it 'uses the actual local ALB append model and refuses malformed client suffixes and wrong immediate peers' do
@@ -57,12 +74,19 @@ RSpec.describe 'Anonymous request quota through actual middleware and HTTP' do
   end
 
   it 'checks the ALB hop behind real Thruster and ignores attacker-controlled earlier prefixes' do
-    thruster, port = harness.spawn_thruster('REQUEST_INGRESS_PROFILE' => 'alb_thruster', 'THRUSTER_TRUSTED_PEERS' => '::1/128', 'ALB_TRUSTED_PEERS' => '::1/128')
-    front = harness.spawn_alb(thruster)
-    response = harness.response(front, '/__quota', { 'X-Forwarded-For' => 'spoof, 10.9.8.7' }, host: '::1')
-    expect(payload(response).fetch('ip')).to eq('::1')
-    expect(harness.response(thruster, '/__quota', { 'X-Forwarded-For' => '10.9.8.7' }).code).to eq('403')
-    expect(harness.response(port, '/__quota', { 'X-Forwarded-For' => '::1' }, host: '::1').code).to eq('400')
+    %w[ipv4 ipv6].each do |family|
+      host = family == 'ipv4' ? '127.0.0.1' : '::1'
+      thruster, port = harness.spawn_thruster(
+        'REQUEST_INGRESS_PROFILE' => 'alb_thruster', 'THRUSTER_TRUSTED_PEERS' => '127.0.0.1/32,::1/128', 'ALB_TRUSTED_PEERS' => '::1/128', 'REQUEST_RATE_LISTENER' => family
+      )
+      front = harness.spawn_alb(thruster)
+      response = harness.response(front, '/__quota', { 'X-Forwarded-For' => 'spoof, 10.9.8.7' }, host: '::1')
+      expect(response.code).to eq('200')
+      expect(payload(response).fetch('ip')).to eq('::1')
+      expect(payload(response).dig('headers', 'REMOTE_ADDR')).to eq(host)
+      expect(harness.response(thruster, '/__quota', { 'X-Forwarded-For' => '10.9.8.7' }).code).to eq('403')
+      expect(harness.response(port, '/__quota', { 'X-Forwarded-For' => '::1' }, host: host).code).to eq('400')
+    end
   end
 
   it 'starts a new fixed window naturally while preserving the previous physical bucket' do
