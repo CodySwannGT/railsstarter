@@ -466,6 +466,154 @@ RSpec.describe RequestSecurity do
       reaper&.terminate(timeout: 2)
     end
 
+    # Native quit removes argv before waitpid removes the child's actual PID.
+    # The observation wrapper controls scheduling only, retaining every ps result.
+    # @param phase [String] TERM or KILL boundary exercised by the native child
+    # @return [Array] harness, captured root, direct-child reaper and release queue
+    # @raise [StandardError] native child setup or captured ownership cannot be verified
+    def native_profile_departure_harness(phase)
+      harness = described_class.new(cleanup_timeout: 0.3)
+      harness.setup_scratch
+      profile = "--user-data-dir=#{File.join(harness.instance_variable_get(:@scratch), 'chrome')}"
+      reaper = native_profile_child(profile, phase)
+      state = { profile_missing: false, released: false, departure: Queue.new, allow_reap: Queue.new }
+      root = nil
+      root = RequestSecurityProcess.new(reaper.pid, owner_check: -> { native_departure_owned?(phase, root, profile, state) })
+      release_native_reaper_after_readback(reaper.pid, state)
+      driver = native_profile_quit_driver(phase, root, reaper, profile, state)
+      configure_native_departure_harness(harness, root, driver)
+      [harness, root, reaper, state[:allow_reap]]
+    end
+
+    # Install the captured root and controlled quit double in this owned fixture.
+    # @param harness [RequestSecurity] fixture with its private scratch already allocated
+    # @param root [RequestSecurityProcess] original child captured before quit
+    # @param driver [Object] driver double whose quit controls native exit and reaping
+    # @return [Object] capture stub registration, ignored by the fixture caller
+    def configure_native_departure_harness(harness, root, driver)
+      harness.instance_variable_set(:@page, instance_double(Capybara::Session, driver: driver))
+      harness.instance_variable_set(:@driver_pid, Process.pid.to_s)
+      harness.instance_variable_set(:@chrome_processes, [root])
+      allow(harness).to receive(:captured_chrome_processes).and_return([root])
+    end
+
+    # Spawn an owned direct child with the profile argument and bounded readiness.
+    # TERM exits normally; the KILL control first ignores TERM. Allocation failure
+    # cleans only the spawned child, and both pipe endpoints close on every path.
+    # @param profile [String] exact private Chrome profile flag supplied as an argument
+    # @param phase [String] TERM or KILL boundary defining the child's TERM handler
+    # @return [RequestSecurityProcess] captured direct child available for native reaping
+    # @raise [StandardError] spawn, capture, readiness or owned-child cleanup fails
+    def native_profile_child(profile, phase)
+      reader, writer = IO.pipe
+      code = 'trap("TERM") { exit }; puts "ready"; STDOUT.flush; sleep 60'
+      code = 'trap("TERM") {}; puts "ready"; STDOUT.flush; sleep 60' if phase == 'KILL'
+      pid = Process.spawn(RbConfig.ruby, '-e', code, '--', profile, pgroup: true, out: writer)
+      reaper = RequestSecurityProcess.new(pid, child: true)
+      writer.close
+      raise 'Native profile child did not become ready' unless reader.wait_readable(3) && reader.gets == "ready\n"
+
+      reaper
+    rescue StandardError
+      reaper ? reaper.terminate(timeout: 0.3) : reap_unobserved_native_child(pid)
+      raise
+    ensure
+      reader&.close unless reader&.closed?
+      writer&.close unless writer&.closed?
+    end
+
+    # Observe the exact profile without replacing native process observations.
+    # The KILL control first permits TERM, then waits for driver-reported departure
+    # and records whether the original child lost its profile before reaping.
+    # @param phase [String] TERM or KILL signal boundary under test
+    # @param root [RequestSecurityProcess] original captured child and signal history
+    # @param profile [String] exact private profile flag required for ownership
+    # @param state [Hash] shared departure queue and profile observation flags
+    # @return [Boolean] whether the original PID still carries the owned profile
+    # @raise [RuntimeError] quit has not reported profile departure within three seconds
+    def native_departure_owned?(phase, root, profile, state)
+      return RequestSecurityObservation.profiles(profile).any? { |row| row.split.first.to_i == root.pid } if phase == 'KILL' && root.signals.empty?
+
+      raise 'Native quit did not remove the owned profile' unless RequestSecurityDeadline.wait(3) { !state[:departure].empty? }
+
+      state[:profile_missing] = RequestSecurityObservation.profiles(profile).none? { |row| row.split.first.to_i == root.pid }
+      !state[:profile_missing]
+    end
+
+    # Release native waitpid only after a real readback sees the departed child's PID.
+    # The wrapper forwards every original observer result unchanged; it controls
+    # scheduling without granting process ownership or fabricating exit evidence.
+    # @param pid [Integer] original direct-child PID whose unreaped exit is observed
+    # @param state [Hash] profile-missing flag, one-time release flag and reaper queue
+    # @return [Object] native identity wrapper registration, ignored by the caller
+    # @raise [RuntimeError] wrapped readback loses the unreaped PID before release
+    def release_native_reaper_after_readback(pid, state)
+      allow(RequestSecurityObservation).to receive(:identity).and_wrap_original do |observe, observed_pid, **options|
+        actual = observe.call(observed_pid, **options)
+        if observed_pid == pid.to_s && state[:profile_missing] && !state[:released]
+          raise 'Native unreaped exit lost its PID before readback' if actual.empty?
+
+          state[:released] = true
+          state[:allow_reap] << true
+        end
+        actual
+      end
+    end
+
+    # Build a quit double that drives real exit, profile departure and child reaping.
+    # Its KILL path waits for the root's verified TERM; both paths retain the exited
+    # PID until the observer releases waitpid after an unchanged native readback.
+    # @param phase [String] TERM or KILL sent through the owned direct-child reaper
+    # @param root [RequestSecurityProcess] original captured child and signal history
+    # @param reaper [RequestSecurityProcess] direct-child owner permitted to signal
+    # @param profile [String] exact private profile flag checked after native exit
+    # @param state [Hash] departure and readback-release queues shared with the observer
+    # @return [Object] Selenium driver double with the controlled native quit callback
+    # @raise [RuntimeError] quit callback cannot observe TERM or profile departure within three seconds
+    def native_profile_quit_driver(phase, root, reaper, profile, state)
+      driver = instance_double(Capybara::Selenium::Driver)
+      allow(driver).to receive(:quit) do
+        raise 'Native root TERM was not observed' if phase == 'KILL' && !RequestSecurityDeadline.wait(3) { root.signals.include?('TERM') }
+
+        reaper.send(:signal, phase)
+        raise 'Native exited child retains its profile' unless RequestSecurityDeadline.wait(3) do
+          RequestSecurityObservation.profiles(profile).none? { |row| row.split.first.to_i == root.pid }
+        end
+
+        state[:departure] << true
+        state[:allow_reap].pop
+        Process.waitpid2(root.pid)
+      end
+      driver
+    end
+
+    # Assert positive PID/group absence, prior native reap and owned scratch cleanup.
+    # @param harness [RequestSecurity] stopped fixture retaining its cleanup record
+    # @param root [RequestSecurityProcess] original captured child after driver quit
+    # @return [void]
+    # @raise [RSpec::Expectations::ExpectationNotMetError] any native cleanup proof is missing
+    def expect_native_profile_departure_cleaned(harness, root)
+      expect(root.absent?).to be(true)
+      expect { Process.waitpid(root.pid, Process::WNOHANG) }.to raise_error(Errno::ECHILD)
+      expect { Process.kill(0, -root.pid) }.to raise_error(Errno::ESRCH)
+      expect(harness.cleanup_record).to include(scratch_removed: true, quit_thread_absent: true, errors: [])
+    end
+
+    %w[TERM KILL].each do |phase|
+      it("waits for native quit to reap a departed profile before the #{phase} signal boundary") do
+        harness, root, reaper, allow_reap = native_profile_departure_harness(phase)
+
+        expect { harness.stop }.not_to raise_error
+        expect(root.signals).to eq(phase == 'TERM' ? [] : ['TERM'])
+        expect_native_profile_departure_cleaned(harness, root)
+      ensure
+        allow_reap << true if allow_reap && allow_reap.empty?
+        harness&.instance_variable_get(:@quit_thread)&.join(3)
+        reaper&.terminate(timeout: 0.3)
+        harness&.stop unless harness&.cleanup_record
+      end
+    end
+
     # The real child refuses TERM and remains owned until bounded KILL and reap.
     def native_term_refusal_child
       reader, writer = IO.pipe

@@ -471,15 +471,22 @@ class RequestSecurityProcess
   # @return [void] fresh identity/profile checks also apply to asynchronous shutdown
   def request_termination = signal('TERM')
 
-  # @param timeout [Numeric]
+  # Stop only the captured process, allowing bounded TERM before verified KILL.
+  # Each signal phase keeps its original timeout for positive exit proof when
+  # profile validation fails; missing profile ownership never permits a signal.
+  # Direct-child reaping is allowed only for the originally captured child.
+  # @param timeout [Numeric] monotonic wait budget for each signal and exit phase
   # @return [void]
+  # @raise [RuntimeError] identity or profile ownership changes, or bounded KILL leaves the PID present
+  # @raise [RequestSecurityObservation::Failure] native identity observation refuses
+  # @raise [SystemCallError] native signaling or direct-child reaping fails
   def terminate(timeout:)
     return if absent?
 
-    signal('TERM')
+    signal('TERM', timeout: timeout)
     return if RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
 
-    signal('KILL')
+    signal('KILL', timeout: timeout)
     raise "Owned PID #{@pid} remains after bounded KILL" unless RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
   end
 
@@ -508,11 +515,23 @@ class RequestSecurityProcess
     true
   end
 
-  def signal(name)
+  # Send one signal only after fresh captured-identity and optional ownership checks.
+  # Failed profile ownership permits only bounded positive reap/absence readback;
+  # it never authorizes signaling an exited or live process with changed ownership.
+  # @param name [String] OS signal sent only to the captured matching PID
+  # @param timeout [Numeric] existing signal-phase budget for exit proof after ownership fails
+  # @return [Array<String>, nil] recorded signals after sending, or nil after verified absence
+  # @raise [RuntimeError] captured identity changes or failed profile ownership persists
+  # @raise [RequestSecurityObservation::Failure] native ownership or identity observation refuses
+  # @raise [SystemCallError] signaling fails without positive process absence
+  def signal(name, timeout: 0)
     return unless matching_identity?
 
     if @owner_check && !@owner_check.call
-      return if absent?
+      # Destructive driver quit can drop argv while its exited child awaits reap.
+      # Missing ownership authorizes no signal; wait only for positive exit proof
+      # within this signal phase's original timeout, or preserve the refusal.
+      return if RequestSecurityDeadline.wait(timeout) { reap_or_absent? }
 
       raise "Owned PID #{@pid} profile ownership changed"
     end
