@@ -182,6 +182,9 @@ end
 
 # Actual Puma/middleware transport endpoint; no alternate IP policy is used here.
 class RateLimitHttpServer
+  # Serve the genuine Rails middleware on the configured exact loopback listeners.
+  # @return [void] Remains in the native Puma join until shutdown.
+  # @raise [ArgumentError] If the listener family is unsupported, before socket binding.
   def self.run
     routes
     require 'puma'
@@ -192,6 +195,9 @@ class RateLimitHttpServer
     server.run.join
   end
 
+  # Resolve fixture-only listener addresses without widening the ingress trust policy.
+  # @return [Array<String>] Both loopback addresses by default, or the selected family.
+  # @raise [ArgumentError] If REQUEST_RATE_LISTENER is not dual, ipv4 or ipv6.
   def self.listener_hosts
     case ENV.fetch('REQUEST_RATE_LISTENER', 'dual')
     when 'dual' then %w[127.0.0.1 ::1]

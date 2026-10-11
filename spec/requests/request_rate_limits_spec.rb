@@ -8,6 +8,10 @@ RSpec.describe 'Anonymous request quota through actual middleware and HTTP' do
   before { harness.start }
   after { harness.stop }
 
+  # Decode the actual transport response for quota and ingress assertions.
+  # @param response [Net::HTTPResponse] Response received from the owned listener.
+  # @return [Hash] Parsed fixture JSON body.
+  # @raise [JSON::ParserError] If the real response is not valid JSON.
   def payload(response)
     JSON.parse(response.body)
   end

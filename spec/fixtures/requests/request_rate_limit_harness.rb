@@ -276,6 +276,11 @@ class RequestRateLimitHarness
     results
   end
 
+  # Start an owned Rails listener and wait for actual health on its selected family.
+  # @param extra [Hash{String => String}] Isolated fixture environment overrides.
+  # @return [Integer] Ready listener port.
+  # @raise [ArgumentError] If the requested listener family is unsupported.
+  # @raise [RuntimeError] If the child exits or the bounded readiness wait fails.
   def spawn_server(extra = {})
     host = listener_host(extra)
     port = free_port
@@ -300,6 +305,11 @@ class RequestRateLimitHarness
     spawn_transport('alb', arguments('alb'), environment('REQUEST_RATE_TARGET_PORT' => target.to_s), host: '::1')
   end
 
+  # Start the pinned Thruster process with a real Rails upstream on the selected family.
+  # @param settings [Hash{String => String}] Fixture ingress and listener settings.
+  # @return [Array<Integer>] Thruster front port and Rails upstream port.
+  # @raise [ArgumentError] If the requested listener family is unsupported.
+  # @raise [RuntimeError] If readiness or unique upstream identity cannot be proved.
   def spawn_thruster(settings)
     host = listener_host(settings)
     target = free_port
@@ -312,6 +322,12 @@ class RequestRateLimitHarness
     [front, target]
   end
 
+  # Register Thruster's uniquely observed Rails child for identity-checked teardown.
+  # @param parent [RequestSecurityProcess] Observed Thruster parent identity.
+  # @param target [Integer] Actual upstream listener port.
+  # @param host [String] Address used to prove the selected listener closes.
+  # @return [Array<Hash>] Updated owned process inventory.
+  # @raise [RuntimeError] If the real upstream child is absent or ambiguous.
   def capture_upstream(parent, target, host: '127.0.0.1')
     children = IO.popen(['ps', '-axo', 'pid=,ppid=,command=']).read.lines.select do |line|
       line.split[1] == parent.pid.to_s && line.include?(File.join(__dir__, 'request_rate_limit_server.rb'))
@@ -322,6 +338,11 @@ class RequestRateLimitHarness
     @processes << { process: upstream, port: target, role: 'Thruster upstream Rails', host: host }
   end
 
+  # Resolve the closed listener selector before allocating a server process.
+  # Dual listeners use IPv4 for readiness and cleanup probes; IPv6 uses its exact address.
+  # @param settings [Hash{String => String}] Optional REQUEST_RATE_LISTENER selector.
+  # @return [String] Exact loopback address for the selected listener.
+  # @raise [ArgumentError] If the selector is not dual, ipv4 or ipv6.
   def listener_host(settings)
     family = settings.fetch('REQUEST_RATE_LISTENER', 'dual')
     raise ArgumentError, 'Unknown rate-limit fixture listener family' unless %w[dual ipv4 ipv6].include?(family)
@@ -355,6 +376,13 @@ class RequestRateLimitHarness
     socket&.close
   end
 
+  # Issue a real bounded HTTP request and retain its socket inputs and response.
+  # @param port [Integer] Owned target listener port.
+  # @param path [String] Request path, including any query string.
+  # @param headers [Hash{String => String}] Literal HTTP request headers.
+  # @param local_host [String, nil] Optional actual client socket bind address.
+  # @param host [String] Actual target loopback address.
+  # @return [Net::HTTPResponse] Native HTTP response.
   def response(port, path = '/__quota', headers = {}, local_host: nil, host: '127.0.0.1')
     http = Net::HTTP.new(host, port)
     http.local_host = local_host if local_host
