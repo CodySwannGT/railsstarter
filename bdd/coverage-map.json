@@ -138,6 +138,11 @@
     },
     {
       "file": "spec/browser/request_security_spec.rb",
+      "evidence": "waits for native quit to reap a departed profile before the #{phase} signal boundary",
+      "reason": "Native fixture teardown control for an exited but unreaped child at the TERM and KILL boundaries; verifies bounded positive exit proof without authorizing a signal after profile ownership fails, while product browser scenarios remain separately required."
+    },
+    {
+      "file": "spec/browser/request_security_spec.rb",
       "evidence": "cleans a verified later cross-site Chrome child while its captured root is suspended",
       "reason": "Owned browser teardown regression for verified later native descendants; validates process lifecycle rather than a product request or CSP requirement."
     },
