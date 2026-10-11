@@ -277,14 +277,15 @@ class RequestRateLimitHarness
   end
 
   def spawn_server(extra = {})
+    host = listener_host(extra)
     port = free_port
     log = File.join(@scratch, "server-#{port}.log")
     pid = Process.spawn(environment(extra.merge('REQUEST_RATE_PORT' => port.to_s)), RbConfig.ruby,
                         File.join(__dir__, 'request_rate_limit_server.rb'), 'server', pgroup: true, out: [log, 'wx', 0o600], err: [:child, :out])
     process = RequestSecurityProcess.new(pid, child: true)
-    @processes << { process: process, port: port, log: log, role: 'Rails' }
+    @processes << { process: process, port: port, log: log, role: 'Rails', host: host }
     ready = RequestSecurityDeadline.wait(30) do
-      response(port, '/up').code == '200'
+      response(port, '/up', {}, host: host).code == '200'
     rescue Errno::ECONNREFUSED
       raise File.read(log) if process.exited?
 
@@ -300,24 +301,32 @@ class RequestRateLimitHarness
   end
 
   def spawn_thruster(settings)
+    host = listener_host(settings)
     target = free_port
     executable = Gem.bin_path('thruster', 'thrust')
     extra = environment(settings.merge('REQUEST_RATE_PORT' => target.to_s, 'THRUSTER_TARGET_PORT' => target.to_s,
                                        'THRUSTER_FORWARD_HEADERS' => 'true', 'THRUSTER_HTTPS_PORT' => '0'))
     front = spawn_transport('Thruster', [RbConfig.ruby, executable, *arguments('server')], extra)
     parent = @processes.last.fetch(:process)
-    capture_upstream(parent, target)
+    capture_upstream(parent, target, host: host)
     [front, target]
   end
 
-  def capture_upstream(parent, target)
+  def capture_upstream(parent, target, host: '127.0.0.1')
     children = IO.popen(['ps', '-axo', 'pid=,ppid=,command=']).read.lines.select do |line|
       line.split[1] == parent.pid.to_s && line.include?(File.join(__dir__, 'request_rate_limit_server.rb'))
     end
     raise 'Thruster real upstream identity ambiguous' unless children.one?
 
     upstream = RequestSecurityProcess.new(children.first.split.first.to_i)
-    @processes << { process: upstream, port: target, role: 'Thruster upstream Rails' }
+    @processes << { process: upstream, port: target, role: 'Thruster upstream Rails', host: host }
+  end
+
+  def listener_host(settings)
+    family = settings.fetch('REQUEST_RATE_LISTENER', 'dual')
+    raise ArgumentError, 'Unknown rate-limit fixture listener family' unless %w[dual ipv4 ipv6].include?(family)
+
+    family == 'ipv6' ? '::1' : '127.0.0.1'
   end
 
   def spawn_transport(role, arguments, extra, host: '127.0.0.1')
@@ -352,7 +361,7 @@ class RequestRateLimitHarness
     http.open_timeout = 2
     http.read_timeout = 5
     response = http.start { |session| session.get(path, headers) }
-    @observations << { http: { port: port, path: path, host: host, input_headers: headers, status: response.code, headers: response.to_hash, body: response.body } }
+    @observations << { http: { port: port, path: path, host: host, local_host: local_host, input_headers: headers, status: response.code, headers: response.to_hash, body: response.body } }
     response
   end
 

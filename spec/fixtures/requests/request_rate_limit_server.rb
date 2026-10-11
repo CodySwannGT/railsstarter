@@ -187,10 +187,18 @@ class RateLimitHttpServer
     require 'puma'
     server = Puma::Server.new(observer)
     port = Integer(ENV.fetch('REQUEST_RATE_PORT'))
-    server.add_tcp_listener('127.0.0.1', port)
-    server.add_tcp_listener('::1', port)
+    listener_hosts.each { |host| server.add_tcp_listener(host, port) }
     trap('TERM') { server.stop(true) }
     server.run.join
+  end
+
+  def self.listener_hosts
+    case ENV.fetch('REQUEST_RATE_LISTENER', 'dual')
+    when 'dual' then %w[127.0.0.1 ::1]
+    when 'ipv4' then ['127.0.0.1']
+    when 'ipv6' then ['::1']
+    else raise ArgumentError, 'Unknown rate-limit fixture listener family'
+    end
   end
 
   def self.routes
