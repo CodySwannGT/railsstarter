@@ -1,5 +1,9 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
+## Dependabot and cleanup amendment — 2026-10-12
+
+The operator rejected the custom updater approach. Reuse the existing team and claim. `cancellation_transport_quality` completed bounded input resolution and now owns only removal of the temporary caller, the dedicated configuration blocks, and the direct test fixture through native npm/Bun lockfile tools. It preserves shared Lisa scripts, application dependencies and unrelated edits. Root owns plan/docs, Dependabot configuration after lockfile ownership is established, ordinary delivery and lifecycle records. `cancellation_security_constraints` independently reviews the final cleanup and retained protections. `anchor_startup_builder` provides read-only upstream tracking analysis pending the operator's PR-record versus separate-issue preference. Historical custom-producer scenarios remain recorded as incomplete rather than represented as successful. No Claude session or updater dispatch is admitted.
+
 ## Provider diagnostics adoption — 2026-10-12
 
 Continue the original claim and main-only integration from merged main `507a3aae571c0b7e5cd8c487fe1942744ce0e548`. Actual source PR #4435 and release run `38205092578` delivered authentic Lisa 4.75.1 at `da9f544cbc289f30711c26f846e4b2d78d7f0332`; the official apply and both frozen installers passed locally. Root owns plan/documentation, ordinary hooks, one batched PR, protected merge, genuine hosted acceptance and owned cleanup.

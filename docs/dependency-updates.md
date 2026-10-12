@@ -6,7 +6,7 @@ Lisa's installed plugin provides a local `SessionStart` updater. With the plugin
 
 The repository maintainer (currently `CodySwannGT`) reviews Lisa updates at session startup and reviews the npm release at least weekly when no supported startup updater is running. Read the registry version with `npm view @codyswann/lisa@latest version`. Use the published package, rather than installing a Git branch or an unpublished candidate. Installing a package does not apply its project templates: run the installed Lisa CLI's explicit full apply and inspect its full-apply receipt and doctor result.
 
-After the temporary acceptance fixture is retired, this Lisa-only manifest has session-triggered updates and the maintainer's weekly fallback. No scheduled npm Bot remains. Qualifying the generic updater with a temporary package does not make that fixture the starter's permanent update coverage.
+This Lisa-only manifest has session-triggered updates and the maintainer's weekly fallback. Installing a newer Lisa package alone does not perform its required full-template apply.
 
 ## Keep both lockfiles coherent
 
@@ -16,8 +16,12 @@ After the Bun update, synchronize the npm lock with `npm install --package-lock-
 
 Keep dependency changes in their own ordinary commit, with the real work-item binding and required trailer. Batch that commit with related changes in a PR into `main`. The assembled PR still needs its current-head quality, MySQL, behavior, README walkthrough, credential and review checks before merge. Update tooling does not grant review approval or permission to skip those checks.
 
-## Additional npm packages
+## Dependabot for additional npm packages
 
-Lisa's generic selected npm updater requires a nonempty selection of ordinary npm packages and rejects Lisa itself. Do not create an empty caller or restore the retired scheduled `lisa-update.yml` for this Lisa-only manifest.
+Use Dependabot for ordinary JavaScript dependency update PRs. GitHub supports the `bun` ecosystem for the committed text `bun.lock`. Retain the existing daily Bundler and GitHub Actions entries. Select one JavaScript ecosystem for the shared manifest rather than scheduling competing npm and Bun updates.
 
-When a consumer adds other npm dependencies, choose its updater ownership and cadence explicitly. The supported Lisa selected updater uses exact selected versions, a host-owned caller and qualified immutable signer metadata. Qualify a genuine Actions Bot PR with canonical work-item metadata and the consumer's actual required checks before enabling that caller. Preserve Bundler and Actions coverage, existing protection rules and ordinary review. A fixture's successful publication does not establish the consumer's own checks.
+The Bun updater updates the manifest and Bun lock; it does not synchronize the npm lock. The maintainer must regenerate `package-lock.json` using the command above, inspect the intended cohort and verify both frozen installers before merging an update. Keep Lisa's full-apply ownership explicit when selecting dependencies for automated updates. Do not assume a dependency-version PR applied Lisa's templates.
+
+Lisa's genuine Dependabot tracking policy is being resolved under issue #82. Until that support is delivered and verified, standard Dependabot commits without issue trailers do not pass the current Work-Item Traceability check. Preserve the required checks and ordinary protected merge. Do not use a bot-like branch, author email or body marker to exempt an ordinary contribution.
+
+The old custom producer caller, configuration and direct test fixture are being removed. Do not restore them or dispatch the custom producer from historical acceptance notes. This guide records the current direction, not a claim that new Dependabot coverage has already passed hosted acceptance.

@@ -1,5 +1,15 @@
 # Updater delivery and hosted acceptance
 
+## Current Dependabot reassessment — 2026-10-12
+
+The operator rejected building a custom updater where Dependabot can supply dependency update PRs. The original ticket permits Dependabot coverage; the previous custom approach and six supplemental scenarios below are historical, incomplete evidence. Do not resume custom updater release, adoption or hosted dispatch from those instructions.
+
+Current delivery starts from merged main `328c01517cedfd70239c542066ad666fe99140aa`. Remove the owned temporary workflow/configuration/direct `is-number` fixture, retain Lisa and application dependencies, and use native lockfile tools with lifecycle writes suppressed for dependency resolution. The builder must prove native frozen installs and original cross-lock agreement; it must not infer consistency from two independent frozen installs alone. No shared managed-script bulk deletion.
+
+Dependabot configuration must retain Bundler and Actions, document ownership/cadence for JavaScript locks and Lisa full-template application, and use supported provider-authenticated tracking. The choice of Dependabot PR tracking versus a separate issue remains pending; do not silently alter that policy. Quality/security/runtime gates remain required. Root owns normal small commits and a batched PR after independent review; merge and original ticket closure require actual current-head protected checks and original two-scenario acceptance evidence.
+
+Required access: live GitHub issue/PR reads succeeded, native registry and installed Node 24.21.0/Bun 1.3.8 are available. Cleanup proof: actual native removal and coherence/frozen installers, then ordinary hook/CI execution. Dependabot detection proof must come from an actual provider run/update PR or native official updater execution, not configuration presence. No application deployment.
+
 ## Current bounded package-output adoption — 2026-10-12
 
 Lisa PR #4436 merged normally at `826858876b3efdc13c9b4d3cc494d2abba21895b`. All fifteen required checks and genuine CodeRabbit review passed. Actual release run `38215268147`, attempt 1, published 4.75.2 at `e4797df073b798d9623b27837f1a4f83ce306426`. Native qualification matched the archive to reviewed source, 152 packaged scripts, 149 applied scripts, 107 helper members and twelve reviewed runtime modules.
