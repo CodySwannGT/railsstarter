@@ -2,7 +2,7 @@
 
 ## Current direction — 2026-10-12
 
-The operator rejected the custom updater approach in favor of Dependabot. The temporary acceptance caller, its dedicated `npmUpdater`/`automationProvenance` configuration, and the direct `is-number` test fixture are being removed. The source follow-up PR is draft and unmerged. Do not dispatch the old caller or resume its release/adoption sequence from this document.
+The operator rejected the custom updater approach in favor of Dependabot. The temporary acceptance caller, its dedicated `npmUpdater`/`automationProvenance` configuration, and the direct `is-number` test fixture are being removed. The source follow-up issue and PR are closed as abandoned; that PR was not merged. Do not dispatch the old caller or resume its release/adoption sequence from this document.
 
 The original [issue #82](https://github.com/CodySwannGT/railsstarter/issues/82) allows Dependabot coverage and requires coherent locks and supported validation. Those requirements remain open. Dependabot configuration, JavaScript lock ownership, and genuine Dependabot tracking support must be validated before this work is complete. A standard dependency version update also does not perform Lisa's separate full-template application.
 
