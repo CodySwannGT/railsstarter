@@ -11,8 +11,7 @@
     "bdd:matrix": "BDD_COVERAGE_ROOT=. node node_modules/@codyswann/lisa/expo/copy-overwrite/scripts/bdd-matrix.mjs --write"
   },
   "devDependencies": {
-    "@codyswann/lisa": "^4.75.2",
-    "is-number": "6.0.0"
+    "@codyswann/lisa": "^4.75.2"
   },
   "trustedDependencies": [
     "@codyswann/lisa"

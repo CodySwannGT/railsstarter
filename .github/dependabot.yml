@@ -10,3 +10,12 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+- package-ecosystem: bun
+  directory: "/"
+  schedule:
+    interval: daily
+  cooldown:
+    default-days: 3
+    exclude:
+    - "@codyswann/lisa"
+  open-pull-requests-limit: 10

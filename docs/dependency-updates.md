@@ -1,12 +1,12 @@
 # Dependency updates
 
-The starter's permanent npm dependency is `@codyswann/lisa`. Lisa owns its update path. Keep Bundler and GitHub Actions updates in `.github/dependabot.yml`; both run daily with a limit of ten open pull requests per ecosystem.
+The starter's permanent npm dependency is `@codyswann/lisa`. Dependabot checks Bundler, GitHub Actions and Bun daily, with a limit of ten open version-update pull requests per ecosystem. Security-update pull requests have a separate limit. Bun coverage includes Lisa and future ordinary JavaScript dependencies. The repository maintainer (currently `CodySwannGT`) owns review, npm lock synchronization and Lisa's full-template apply before merging a Lisa update.
 
 Lisa's installed plugin provides a local `SessionStart` updater. With the plugin enabled in a supported coding runtime, it checks npm's latest release at startup, updates an eligible clean checkout and runs a full apply. CI does not update Lisa. A dirty checkout, a shared `node_modules` symlink or an explicitly disabled updater leaves the update for a later eligible session. Preserve existing work and use an isolated checkout when necessary.
 
 The repository maintainer (currently `CodySwannGT`) reviews Lisa updates at session startup and reviews the npm release at least weekly when no supported startup updater is running. Read the registry version with `npm view @codyswann/lisa@latest version`. Use the published package, rather than installing a Git branch or an unpublished candidate. Installing a package does not apply its project templates: run the installed Lisa CLI's explicit full apply and inspect its full-apply receipt and doctor result.
 
-After the temporary acceptance fixture is retired, this Lisa-only manifest has session-triggered updates and the maintainer's weekly fallback. No scheduled npm Bot remains. Qualifying the generic updater with a temporary package does not make that fixture the starter's permanent update coverage.
+The startup updater and weekly maintainer check also support Lisa updates. Reuse an existing Dependabot proposal when it selects the intended release rather than creating a second update PR. Installing a newer Lisa package alone does not perform its required full-template apply.
 
 ## Keep both lockfiles coherent
 
@@ -16,8 +16,16 @@ After the Bun update, synchronize the npm lock with `npm install --package-lock-
 
 Keep dependency changes in their own ordinary commit, with the real work-item binding and required trailer. Batch that commit with related changes in a PR into `main`. The assembled PR still needs its current-head quality, MySQL, behavior, README walkthrough, credential and review checks before merge. Update tooling does not grant review approval or permission to skip those checks.
 
-## Additional npm packages
+## Dependabot for JavaScript packages
 
-Lisa's generic selected npm updater requires a nonempty selection of ordinary npm packages and rejects Lisa itself. Do not create an empty caller or restore the retired scheduled `lisa-update.yml` for this Lisa-only manifest.
+The configured `bun` ecosystem covers the shared manifest and committed text `bun.lock`. The daily Bundler and GitHub Actions entries remain enabled. Do not schedule a competing npm updater for the same manifest.
 
-When a consumer adds other npm dependencies, choose its updater ownership and cadence explicitly. The supported Lisa selected updater uses exact selected versions, a host-owned caller and qualified immutable signer metadata. Qualify a genuine Actions Bot PR with canonical work-item metadata and the consumer's actual required checks before enabling that caller. Preserve Bundler and Actions coverage, existing protection rules and ordinary review. A fixture's successful publication does not establish the consumer's own checks.
+GitHub applies a three-day cooldown to version updates by default. The Bun entry excludes `@codyswann/lisa` from that cooldown so the daily check can propose a newly published Lisa release. Other Bun packages retain the three-day delay. Review and apply the selected released package before merging. See [GitHub's cooldown reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown).
+
+The Bun updater updates the manifest and Bun lock; it does not synchronize the npm lock. The maintainer must regenerate `package-lock.json` using the command above, inspect the intended cohort and verify both frozen installers before merging an update. Keep Lisa's full-apply ownership explicit when selecting dependencies for automated updates. Do not assume a dependency-version PR applied Lisa's templates.
+
+Lisa's genuine Dependabot tracking policy is being delivered under issue #82. The chosen policy uses a GitHub-authenticated Dependabot-created PR as the entire update's tracking record, including maintainer amendments. `.lisa.config.json` opts in with `workItem.dependabotTracking: "pull-request"`; the released reusable workflow must support that option before enabling delivery is merged. Its default behavior remains separate issue tracking. Preserve the required checks and ordinary protected merge. Do not use a bot-like branch, author email or body marker to exempt an ordinary contribution.
+
+The enabling configuration must reach `main` before Dependabot reads it. For the initial acceptance run, install the compatible released reusable workflow first and let Dependabot propose the real outstanding Lisa package update. Keep the existing SDK until that proposal, then review the current npm release, synchronize the npm lock and run its full-template apply on the update branch. Do not add an unnecessary dependency merely to generate a test PR. Complete the genuine update's current-head checks and ordinary merge before declaring issue #82 complete.
+
+The old custom producer caller, configuration and direct test fixture are being removed. Do not restore them or dispatch the custom producer from historical acceptance notes. This guide records the current direction, not a claim that new Dependabot coverage has already passed hosted acceptance.

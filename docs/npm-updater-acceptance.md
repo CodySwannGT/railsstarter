@@ -1,5 +1,15 @@
 # Selected npm updater acceptance
 
+## Current direction — 2026-10-12
+
+The operator rejected the custom updater approach in favor of Dependabot. The temporary acceptance caller, its dedicated `npmUpdater`/`automationProvenance` configuration, and the direct `is-number` test fixture are being removed. The source follow-up issue and PR are closed as abandoned; that PR was not merged. Do not dispatch the old caller or resume its release/adoption sequence from this document.
+
+The original [issue #82](https://github.com/CodySwannGT/railsstarter/issues/82) allows Dependabot coverage and requires coherent locks and supported validation. Those requirements remain open. Dependabot configuration, JavaScript lock ownership, and genuine Dependabot tracking support must be validated before this work is complete. A standard dependency version update also does not perform Lisa's separate full-template application.
+
+## Historical custom-updater attempts
+
+The following records preserve previous attempts and their limitations. They do not describe the current implementation plan or establish successful custom-updater acceptance.
+
 Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published [Lisa 4.75.2](https://github.com/CodySwannGT/lisa/releases/tag/v4.75.2) producer at immutable commit `e4797df073b798d9623b27837f1a4f83ce306426`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
 
 The current release retains bounded failed-hook names and numeric RSpec counts when a native push is refused. Those hints are marked as child-reported information and grant no publication authority. Provider failures also retain fixed request-purpose/method labels and bounded child-reported HTTP hints; these do not establish the cause, change provider calls or grant authority. The earlier failed hosted runs remain failed evidence; successful composed acceptance still requires a fresh actual run.

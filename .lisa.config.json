@@ -7,6 +7,9 @@
   "harness": "fleet",
   "tracker": "github",
   "source": "github",
+  "workItem": {
+    "dependabotTracking": "pull-request"
+  },
   "deploy": {
     "branches": {
       "production": "main"
@@ -109,42 +112,5 @@
         ]
       }
     }
-  },
-  "npmUpdater": {
-    "version": 1,
-    "repository": "CodySwannGT/railsstarter",
-    "directory": ".",
-    "target": "main",
-    "maintainer": "CodySwannGT",
-    "packages": [
-      {
-        "name": "is-number",
-        "version": "7.0.0"
-      }
-    ],
-    "lisaOwner": "verified-local-full-apply",
-    "runtime": {
-      "profile": "rails-mysql",
-      "database": "railsdb",
-      "browser": true,
-      "dockerFixtures": true
-    }
-  },
-  "automationProvenance": {
-    "enabled": true,
-    "version": 1,
-    "repository": "CodySwannGT/railsstarter",
-    "repositoryId": "1178955229",
-    "ownerId": "292923",
-    "claimActorId": "41898282",
-    "signerWorkflow": "CodySwannGT/lisa/.github/workflows/npm-updater.yml",
-    "signerDigest": "e4797df073b798d9623b27837f1a4f83ce306426",
-    "callerWorkflow": "CodySwannGT/railsstarter/.github/workflows/npm-updater.yml",
-    "allowedTriggers": [
-      "workflow_dispatch"
-    ],
-    "maxAgeSeconds": 3600,
-    "ghExecutable": "/usr/local/bin/gh",
-    "ghSha256": "56b8bbbb27b066ecb33dbef9a256dc9d1314adaeff0908a752feba6c34053b40"
   }
 }
