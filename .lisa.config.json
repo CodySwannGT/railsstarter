@@ -7,6 +7,9 @@
   "harness": "fleet",
   "tracker": "github",
   "source": "github",
+  "workItem": {
+    "dependabotTracking": "pull-request"
+  },
   "deploy": {
     "branches": {
       "production": "main"

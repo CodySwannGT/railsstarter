@@ -10,6 +10,8 @@ Dependabot configuration retains Bundler and Actions and adds daily Bun coverage
 
 Required access: live GitHub issue/PR reads succeeded, native registry and installed Node 24.21.0/Bun 1.3.8 are available. Cleanup proof: actual native removal and coherence/frozen installers, then ordinary hook/CI execution. Dependabot detection proof must come from an actual provider run/update PR or native official updater execution, not configuration presence. No application deployment.
 
+Rollout: PR #105 batches cleanup, daily Bun configuration, the base-owned PR-record opt-in and the compatible immutable released quality workflow. Keep the currently installed Lisa SDK until Dependabot proposes its real outstanding update; both validators retain work-item contract1.1.0. The subsequent genuine update PR supplies detection evidence without a permanent test dependency. On that branch the maintainer synchronizes the npm lock, applies the actual released SDK fully and uses existing local commit/push contracts. Final latest-version adoption, coherent locks and every current-head protected check remain required before #82 closure. This is delivery sequencing, not a reduced completion condition.
+
 ## Current bounded package-output adoption — 2026-10-12
 
 Lisa PR #4436 merged normally at `826858876b3efdc13c9b4d3cc494d2abba21895b`. All fifteen required checks and genuine CodeRabbit review passed. Actual release run `38215268147`, attempt 1, published 4.75.2 at `e4797df073b798d9623b27837f1a4f83ce306426`. Native qualification matched the archive to reviewed source, 152 packaged scripts, 149 applied scripts, 107 helper members and twelve reviewed runtime modules.
