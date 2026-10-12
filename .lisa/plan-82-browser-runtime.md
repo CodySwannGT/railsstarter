@@ -14,7 +14,36 @@ Current GitHub cooldown documentation specifies a default three-day version-upda
 
 Rollout: PR #105 batches cleanup, daily Bun configuration, the base-owned PR-record opt-in and the compatible immutable released quality workflow. Keep the currently installed Lisa SDK until Dependabot proposes its real outstanding update; both validators retain work-item contract1.1.0. The subsequent genuine update PR supplies detection evidence without a permanent test dependency. On that branch the maintainer synchronizes the npm lock, applies the actual released SDK fully and uses existing local commit/push contracts. Final latest-version adoption, coherent locks and every current-head protected check remain required before #82 closure. This is delivery sequencing, not a reduced completion condition.
 
-## Current bounded package-output adoption — 2026-10-12
+## Active delivery prerequisite: verified Docker batch cleanup
+
+The normal configuration push at `ba36f3dc30fb7b5d6c2b89f7bfb16043af02295d` ran 716 examples with one failure. Both genuine fresh consumers completed two setup runs, HTTP checks and real worker jobs; cleanup then reached a native command deadline in the fully verified container batch removal. The original failure remains in `tmp/consumer-smoke/consumer-smoke-5744134c3e9cf0a5f487415a18d33360/cleanup.json`. Later native Docker inventory confirms those exact labelled containers are absent. This is a delivery prerequisite, not successful cleanup or ticket acceptance.
+
+Task: investigate and, only if established, restore the original per-resource removal allowance when resources are batched. Ownership: builder owns `lib/smoke_consumer/cleanup_authority.rb` and `spec/smoke_consumer/cleanup_authority_behaviors_spec.rb`; root owns plan/roster, operator recovery, review, normal commits/push and provider delivery.
+
+- `metadata.relevant_documentation`: `DockerCollection#remove` gives each verified resource ten seconds; `ImmutableDockerCollection#remove_batch` currently gives the entire verified set ten seconds; `CleanupAuthority#cleanup` and `Command#limit` retain the independent sixty-second cleanup ceiling. Read the genuine failed receipt and existing immutable-ID/foreign-resource refusal specs before editing.
+- `testing_requirements`: reaching RED/GREEN regression at the actual command deadline boundary, focused ownership/refusal cases, and genuine native Docker inspection/removal/absence evidence where practical. Protocol fixtures alone do not establish native Docker cleanup. Preserve the original failed run and distinguish operator recovery from original cleanup success.
+- Invariants: keep fresh full-ID inspection, token/project/name/registered-ID checks, final absence verification, no parent-image pruning and the existing sixty-second global cleanup ceiling. No test suppression, blind third retry or speculative deadline increase.
+- Completion condition: evidence establishes the batching contract defect, the smallest repair passes the regression and native boundary proof, independent review covers the exact diff, and the normal full push plus current-head protected CI pass. Original #82 acceptance and latest Lisa adoption remain required afterward.
+- `metadata.learnings`: `[]` until durable learning is independently established.
+
+```json
+{
+  "plan": "plan-82-browser-runtime",
+  "type": "bug",
+  "acceptance_criteria": ["Restore ten seconds per fully verified immutable resource while preserving the existing shared sixty-second cleanup ceiling", "Preserve full-ID ownership checks, foreign-resource refusal, final absence verification and original failure receipts"],
+  "relevant_documentation": "lib/smoke_consumer/cleanup_authority.rb DockerCollection#remove, ImmutableDockerCollection#remove_batch and CleanupAuthority#cleanup; lib/smoke_consumer/command.rb Command#limit; tmp/105-cleanup-batch-budget-l7tqu3kl/diagnosis.json; original cleanup failure receipt listed above",
+  "testing_requirements": ["Reaching RED/GREEN at the native command deadline boundary", "Existing immutable ownership/refusal suite", "Native Docker batch removal and explicit absence readback", "Normal full push and current-head protected checks"],
+  "skills": ["lisa-tdd-implementation"],
+  "learnings": [],
+  "verification": {
+    "type": "cli-test",
+    "command": "bin/smoke-consumer",
+    "expected": "Two genuine disposable consumers finish setup, HTTP and worker checks; original cleanup removes only owned resources and reports clean true within the unchanged global ceiling"
+  }
+}
+```
+
+## Historical bounded package-output adoption — 2026-10-12
 
 Lisa PR #4436 merged normally at `826858876b3efdc13c9b4d3cc494d2abba21895b`. All fifteen required checks and genuine CodeRabbit review passed. Actual release run `38215268147`, attempt 1, published 4.75.2 at `e4797df073b798d9623b27837f1a4f83ce306426`. Native qualification matched the archive to reviewed source, 152 packaged scripts, 149 applied scripts, 107 helper members and twelve reviewed runtime modules.
 

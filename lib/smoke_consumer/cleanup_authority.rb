@@ -413,12 +413,13 @@ module SmokeConsumer
     end
 
     # Verify the complete inspected set before deleting any of its immutable identities.
+    # Preserve ten seconds per resource within Command's unchanged shared cleanup ceiling.
     # @param ids [Array<String>] freshly inventoried full immutable Docker identities
     # @return [void]
     def remove_batch(ids)
       type = self.class
       inspected(ids).each { |object| type::RESOURCE.new(object, ownership).verify }
-      command.call('docker', type::KIND, *type::REMOVE, *ids, timeout: 10)
+      command.call('docker', type::KIND, *type::REMOVE, *ids, timeout: 10 * ids.length)
     end
 
     # Require an exact one-to-one immutable identity match from kind-specific inspection.

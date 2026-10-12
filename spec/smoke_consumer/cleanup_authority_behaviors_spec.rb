@@ -80,6 +80,76 @@ RSpec.describe SmokeConsumer::CleanupAuthority do
     end
   end
 
+  context 'with native immutable batch deadlines' do
+    let(:identifiers) { ['a' * 64, 'b' * 64] }
+    let(:objects) do
+      %w[web worker].zip(identifiers).map do |service, identifier|
+        name = "#{project}-#{service}-1"
+        ownership.register_resource('container', identifier, name, project)
+        { 'Id' => identifier, 'Name' => "/#{name}", 'Config' => { 'Labels' => labels } }
+      end
+    end
+    let(:progress) { File.join(base, 'batch-progress') }
+    let(:command_ceiling) { Float::INFINITY }
+    let(:native_command) { SmokeConsumer::Command.new(timeout: 60, ownership: ownership, ceiling: command_ceiling) }
+    let(:collection) { SmokeConsumer::ContainerCollection.new(ownership, native_command) }
+    let(:list_arguments) { ['docker', *SmokeConsumer::ContainerCollection::LIST, '--filter', "label=#{SmokeConsumer::LABEL}=#{ownership.token}"] }
+    let(:remove_arguments) { ['docker', 'container', 'rm', '--force', *identifiers] }
+
+    # Protocol observations supply owned Docker identities; removal runs a real bounded child.
+    def prepare_native_batch
+      prepare_batch_inventory
+      allow(native_command).to receive(:call).with(*remove_arguments, any_args).and_wrap_original do |original, *_arguments, **options|
+        script = "ARGV.each { |id| sleep 6; File.open(#{progress.inspect}, 'a') { |file| file.puts(id) } }"
+        original.call(RbConfig.ruby, '-e', script, *identifiers, **options)
+      end
+    end
+
+    # A fresh final list must prove absence independently of the removal exit status.
+    def prepare_batch_inventory
+      allow(native_command).to receive(:call).with(*list_arguments, timeout: 10)
+                                             .and_return([identifiers.join("\n"), nil], ['', nil])
+      allow(native_command).to receive(:call).with('docker', 'container', 'inspect', *identifiers, timeout: 10)
+                                             .and_return([JSON.generate(objects), nil])
+    end
+
+    # Observe every originally registered native anchor after Command's normal teardown.
+    def require_batch_children_absent
+      identities = ownership.read.fetch('processes')
+      expect(identities).not_to be_empty
+      census = SmokeConsumer::ProcessCensus.observe
+      expect(identities.all? { |identity| census.process(identity.fetch('pid')).absent? }).to be(true)
+      warn "NATIVE_IMMUTABLE_BATCH_ANCHORS_ABSENT=#{identities.map { |identity| identity.slice('pid', 'pgid', 'birth') }.to_json}"
+    end
+
+    it 'retains ten seconds per verified resource across a native twelve-second batch' do
+      prepare_native_batch
+      expect(collection.remove_all).to eq(identifiers)
+      expect(File.readlines(progress, chomp: true)).to eq(identifiers)
+      warn 'NATIVE_IMMUTABLE_BATCH_ALLOWANCE_PASS'
+    rescue SmokeConsumer::CommandDeadlineFailure => error
+      warn "NATIVE_IMMUTABLE_BATCH_DEADLINE=#{error.observation.to_json}"
+      raise
+    ensure
+      require_batch_children_absent
+      warn "NATIVE_IMMUTABLE_BATCH_PROGRESS=#{File.exist?(progress) ? File.readlines(progress, chomp: true).length : 0}"
+    end
+
+    context 'with little time remaining in the shared command ceiling' do
+      let(:command_ceiling) { SmokeConsumer.clock + 1 }
+
+      it 'still refuses native removal at the shared command ceiling' do
+        prepare_native_batch
+        expect { collection.remove_all }.to raise_error(SmokeConsumer::CommandDeadlineFailure) do |error|
+          expect(error.observation).to include('exitstatus' => nil, 'termsig' => nil)
+        end
+        expect(File.exist?(progress)).to be(false)
+        require_batch_children_absent
+        warn 'NATIVE_IMMUTABLE_BATCH_SHARED_CEILING_PASS'
+      end
+    end
+  end
+
   context 'with an image protocol fixture' do
     let(:tag) { "#{project}-app:local" }
     let(:image) { SmokeConsumer::OwnedImage.new(ownership, command, project) }

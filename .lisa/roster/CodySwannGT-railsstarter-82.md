@@ -1,5 +1,9 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
+## Active Docker batch cleanup prerequisite — 2026-10-12
+
+The unchanged full push retry failed at nested consumer cleanup after both genuine consumers finished their runtime checks. `anchor_startup_builder` owns only `lib/smoke_consumer/cleanup_authority.rb`, `spec/smoke_consumer/cleanup_authority_behaviors_spec.rb` and ignored evidence. Complete task metadata is recorded in the active prerequisite section of `.lisa/plan-82-browser-runtime.md`. Restore the original per-resource allowance with reaching RED/GREEN evidence; preserve the independent sixty-second ceiling and all ownership checks. Root owns safe operator recovery, independent review, ordinary commit/push and protected delivery. Preserve other agents' changes. No new permission or Claude session is required; #82 and #60 remain open until their original acceptance is met.
+
 ## Dependabot and cleanup amendment — 2026-10-12
 
 The operator rejected the custom updater approach. Reuse the existing team and claim. `cancellation_transport_quality` completed bounded input resolution and now owns only removal of the temporary caller, the dedicated configuration blocks, and the direct test fixture through native npm/Bun lockfile tools. It preserves shared Lisa scripts, application dependencies and unrelated edits. Root owns plan/docs, Dependabot configuration after lockfile ownership is established, ordinary delivery and lifecycle records. `cancellation_security_constraints` independently reviews the final cleanup and retained protections. `anchor_startup_builder` provides read-only upstream tracking analysis pending the operator's PR-record versus separate-issue preference. Historical custom-producer scenarios remain recorded as incomplete rather than represented as successful. No Claude session or updater dispatch is admitted.
