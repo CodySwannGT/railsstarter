@@ -1,5 +1,13 @@
 # Updater delivery and hosted acceptance
 
+## Current bounded package-output adoption — 2026-10-12
+
+Lisa PR #4436 merged normally at `826858876b3efdc13c9b4d3cc494d2abba21895b`. All fifteen required checks and genuine CodeRabbit review passed. Actual release run `38215268147`, attempt 1, published 4.75.2 at `e4797df073b798d9623b27837f1a4f83ce306426`. Native qualification matched the archive to reviewed source, 152 packaged scripts, 149 applied scripts, 107 helper members and twelve reviewed runtime modules.
+
+Adopt that exact release coherently with both native lock generators, official full Fleet apply, immutable caller/signer pins and its smoke archive integrity. The updater now requests npm's bounded filename summary instead of an oversized JSON package inventory. Original process bounds, integrity verification, lifecycle-script exclusion and security policy remain enforced.
+
+The starting main is `fd52c0bd20978e65ad031939512cc2334b2ac881`, which merged PR #102. Root owns the normal commit, full push, one adoption PR, protected merge and original six hosted journeys. Reuse the existing quality and security reviewers for this complete consumer diff. Keep #82, Lisa #4347 and parent #60 open until hosted acceptance and owned fixture cleanup are proven. The earlier cancellation checkpoint cause remains unproved. No AWS deployment or protection bypass is part of this work.
+
 ## Current provider diagnostic adoption — 2026-10-12
 
 Lisa PR #4435 merged normally at `010956023364b78d10a4869f9a7cf64814181dd5` after all fifteen protected checks passed. Actual release run `38205092578`, attempt 1, succeeded and published 4.75.1 at `da9f544cbc289f30711c26f846e4b2d78d7f0332`. Native source/registry qualification verified the archive integrity, all 152 packaged scripts, the 149-script overlay, 107 helper members and eleven reviewed runtime modules.
