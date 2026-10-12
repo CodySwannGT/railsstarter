@@ -77,7 +77,7 @@ class WalkthroughContracts(unittest.TestCase):
             result = subprocess.run(["docker", "compose", "--project-name", project,
                 "--file", str(root / "compose.yaml"), "--env-file", str(root / ".env"),
                 "config", "--format", "json"], env=environment,
-                capture_output=True, text=True, timeout=2)
+                capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stderr)
             services = json.loads(result.stdout)["services"]
             build = services["web"]["build"]

@@ -14,7 +14,28 @@ Current GitHub cooldown documentation specifies a default three-day version-upda
 
 Rollout: PR #105 batches cleanup, daily Bun configuration, the base-owned PR-record opt-in and the compatible immutable released quality workflow. Keep the currently installed Lisa SDK until Dependabot proposes its real outstanding update; both validators retain work-item contract1.1.0. The subsequent genuine update PR supplies detection evidence without a permanent test dependency. On that branch the maintainer synchronizes the npm lock, applies the actual released SDK fully and uses existing local commit/push contracts. Final latest-version adoption, coherent locks and every current-head protected check remain required before #82 closure. This is delivery sequencing, not a reduced completion condition.
 
-## Active delivery prerequisite: verified Docker batch cleanup
+## Active delivery prerequisite: bounded native Compose qualification
+
+The final configuration head `4dcdc799f083eb98b79e71d17172a45a38831e06` passed the normal full push: 718 examples, zero failures, both project-wide coverage floors, all configured hooks and all six outer cleanup checks. Both genuine disposable consumers completed their checks and original cleanup reported clean true. The preceding uploaded head also passed hosted MySQL with 718 examples and zero failures. Both review threads are resolved and the exact final-head independent review is posted under the operator-authorized CodeRabbit rate-limit substitute.
+
+Hosted README qualification failed again before the walkthrough: run `38301760579`, job `114986103848`, named test `test_native_compose_resolves_the_shared_image_build_owner_and_cleanup_labels`, actual `docker compose config --format json` subprocess timeout after two seconds. The same failure occurred at the preceding head, then passed on one unchanged failed-job rerun. All five relevant inputs are unchanged. The test's introduction asserts ownership and shared images without a two-second speed requirement; ordinary native Docker reads already use thirty seconds. Diagnosis receipt: `tmp/105-readme-compose-recurrence-70exc3sd/receipt.json`, SHA256 `137b946cada0d1e7e059251868b4afd1213cd99430eb5bce359eafa187fc3b93`. The underlying hosted latency cause remains unknown.
+
+Builder owns only `test/runtime/onboarding_walkthrough/contracts_test.py`: align this read-only native Compose qualification timeout with the existing thirty-second Docker-read allowance. Preserve its actual command, private fixture, full original assertions, process-observation/reaping windows and all production/cleanup deadlines. Root owns this plan, review, ordinary commit/full push and PR delivery. Keep the existing named physical Compose test as the regression; do not add a test that merely mirrors a timeout literal. An ignored owned wrapper may execute and retain actual native Compose output before delaying completion past two seconds to demonstrate RED/GREEN; it is a deadline-boundary control, not an explanation of hosted Docker latency. Actual same-test GREEN in current-head hosted CI remains required.
+
+```json
+{
+  "plan": "plan-82-browser-runtime",
+  "type": "bug",
+  "acceptance_criteria": ["The physical Compose qualification permits completion within the existing thirty-second native Docker-read allowance", "Every original native UID/GID, image ownership and cleanup-label assertion remains intact", "Process observation/reaping and production cleanup deadlines remain unchanged", "The named physical Compose regression and all current-head protected checks pass before ordinary merge"],
+  "relevant_documentation": "test/runtime/onboarding_walkthrough/contracts_test.py named physical Compose test; test/runtime/onboarding_walkthrough/verify.py native Docker-read timeout; original introduction 71abaa5; genuine failed job114986103848 and retained diagnosis receipt",
+  "testing_requirements": ["Retain genuine hosted RED", "Execute the original physical Compose test with an owned delayed-completion native boundary control for reaching RED/GREEN", "Run the complete original 33 native qualification controls", "Verify original ownership/assertions and deadline invariants by independent diff review", "Normal full push and named same-test hosted GREEN"],
+  "skills": ["lisa-tdd-implementation"],
+  "learnings": [],
+  "verification": {"type": "cli-test", "command": "python3 -m unittest discover -s test/runtime/onboarding_walkthrough -p '*_test.py' -v", "expected": "All original native qualification controls pass; actual Compose ownership/shared-image assertions execute, bounded completion succeeds and no owned fixture process remains"}
+}
+```
+
+## Earlier verified Docker batch cleanup
 
 The normal configuration push at `ba36f3dc30fb7b5d6c2b89f7bfb16043af02295d` ran 716 examples with one failure. Both genuine fresh consumers completed two setup runs, HTTP checks and real worker jobs; cleanup then reached a native command deadline in the fully verified container batch removal. The original failure remains in `tmp/consumer-smoke/consumer-smoke-5744134c3e9cf0a5f487415a18d33360/cleanup.json`. Later native Docker inventory confirms those exact labelled containers are absent. This is a delivery prerequisite, not successful cleanup or ticket acceptance.
 

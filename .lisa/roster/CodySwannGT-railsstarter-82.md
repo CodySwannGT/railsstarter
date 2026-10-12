@@ -1,6 +1,10 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
-## Active Docker batch cleanup prerequisite — 2026-10-12
+## Active native Compose qualification prerequisite — 2026-10-12
+
+The normal full push at `4dcdc799f083eb98b79e71d17172a45a38831e06` passed 718 examples, zero failures, all hooks/coverage floors and original composed cleanup. Current hosted README qualification repeated the read-only Compose probe's two-second timeout before the walkthrough. `anchor_startup_builder` owns only `test/runtime/onboarding_walkthrough/contracts_test.py` and ignored native evidence; task metadata is recorded in the active plan section. Align only that probe with the existing thirty-second Docker-read allowance, retaining every physical ownership/shared-image assertion and all process/production deadlines. Reuse `cancellation_security_constraints` for independent review of the exact complete diff. Root owns plan/roster, ordinary commits/full push, review gates and protected merge. No blind job retry, custom updater, permission request or Claude session. #82 remains open for genuine Dependabot acceptance and latest SDK full apply after enabling configuration reaches main.
+
+## Earlier Docker batch cleanup prerequisite — 2026-10-12
 
 The unchanged full push retry failed at nested consumer cleanup after both genuine consumers finished their runtime checks. `anchor_startup_builder` owns only `lib/smoke_consumer/cleanup_authority.rb`, `spec/smoke_consumer/cleanup_authority_behaviors_spec.rb` and ignored evidence. Complete task metadata is recorded in the active prerequisite section of `.lisa/plan-82-browser-runtime.md`. Restore the original per-resource allowance with reaching RED/GREEN evidence; preserve the independent sixty-second ceiling and all ownership checks. Root owns safe operator recovery, independent review, ordinary commit/push and protected delivery. Preserve other agents' changes. No new permission or Claude session is required; #82 and #60 remain open until their original acceptance is met.
 
