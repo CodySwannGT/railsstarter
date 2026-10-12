@@ -1,5 +1,11 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
+## Provider diagnostics adoption — 2026-10-12
+
+Continue the original claim and main-only integration from merged main `507a3aae571c0b7e5cd8c487fe1942744ce0e548`. Actual source PR #4435 and release run `38205092578` delivered authentic Lisa 4.75.1 at `da9f544cbc289f30711c26f846e4b2d78d7f0332`; the official apply and both frozen installers passed locally. Root owns plan/documentation, ordinary hooks, one batched PR, protected merge, genuine hosted acceptance and owned cleanup.
+
+Reuse the existing quality and verification teammates for read-only review of the complete adoption diff and its exact source/registry/frozen-install evidence. Their ownership includes all changed paths, coherent locks, immutable workflow/signer agreement, historical smoke tuples, delivered script bytes and unchanged original policy. They preserve others' edits, avoid duplicate heavy suites and perform no provider writes. Existing independently reviewed security/source controls remain applicable to their exact frozen bytes. All original six hosted criteria and cleanup remain required; no source or local-adoption receipt closes a ticket.
+
 ## Published checkpoint transport adoption — 2026-10-12
 
 Continue the original claim and main-only integration from `7cd002305bd728f1a398026e1cecc08cc051fc38`. Root owns official adoption, remaining immutable pins, native hooks, one batched PR, protected merge, actual hosted acceptance and cleanup. Reuse the existing independent quality teammate for read-only review of the complete adoption diff and authentic package evidence. Its ownership includes source-byte identity, coherent locks, smoke SRI, caller/signer agreement, the release's scanner/hook changes and unchanged policies. It must preserve other edits and avoid duplicate heavy suites or provider writes. Existing security and verification evidence for the exact source fix remains applicable with its stated scope.

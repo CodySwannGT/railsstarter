@@ -1,6 +1,16 @@
-# PR #90 browser qualification repair
+# Updater delivery and hosted acceptance
 
-## Current checkpoint transport delivery — 2026-10-12
+## Current provider diagnostic adoption — 2026-10-12
+
+Lisa PR #4435 merged normally at `010956023364b78d10a4869f9a7cf64814181dd5` after all fifteen protected checks passed. Actual release run `38205092578`, attempt 1, succeeded and published 4.75.1 at `da9f544cbc289f30711c26f846e4b2d78d7f0332`. Native source/registry qualification verified the archive integrity, all 152 packaged scripts, the 149-script overlay, 107 helper members and eleven reviewed runtime modules.
+
+1. Complete locally: original candidate recipe, official full-Fleet apply and both independent frozen npm/Bun installations passed. All delivered scripts match the actual published source. Immutable caller/signer pins and the new smoke archive tuple select the same release. Patched Handlebars remains 4.7.10. The tooling audit retains 34 findings (23 moderate, 11 high, zero critical); it is not a scanner-pass claim.
+2. Pending: independent review of the complete consumer diff, ordinary commit and full push, one batched adoption PR, its eleven protected checks and normal merge into main. The clean starting main was `507a3aae571c0b7e5cd8c487fe1942744ce0e548`, which merged the earlier PR #101.
+3. Pending: fresh genuine hosted reproduction, identify and resolve the actual checkpoint failure, complete all original six acceptance journeys including literal interruption and identical retry, and retire only owned temporary fixtures through ordinary reviewed delivery.
+
+The new release records fixed provider request-purpose/method labels and bounded child-reported HTTP hints without granting authority or changing original calls, deadlines or policy. Source merge and successful local adoption do not prove the hosted cause or finish #82. Keep #82, Lisa #4347 and parent #60 open until every original requirement is verified. No AWS deployment, Snyk scanner-pass claim or protection bypass is part of this work. Earlier sections below retain their dated observations and are historical evidence.
+
+## Earlier checkpoint transport delivery — 2026-10-12
 
 The earlier milestones below remain historical evidence. The current source fix is merged as Lisa PR #4431 and authentically published as 4.74.9 at `2b38ee42dec186ce0c7b758445370c7e99ade576`; the starter adoption starts from merged main `7cd002305bd728f1a398026e1cecc08cc051fc38`.
 

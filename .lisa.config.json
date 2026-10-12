@@ -138,7 +138,7 @@
     "ownerId": "292923",
     "claimActorId": "41898282",
     "signerWorkflow": "CodySwannGT/lisa/.github/workflows/npm-updater.yml",
-    "signerDigest": "2b38ee42dec186ce0c7b758445370c7e99ade576",
+    "signerDigest": "da9f544cbc289f30711c26f846e4b2d78d7f0332",
     "callerWorkflow": "CodySwannGT/railsstarter/.github/workflows/npm-updater.yml",
     "allowedTriggers": [
       "workflow_dispatch"
