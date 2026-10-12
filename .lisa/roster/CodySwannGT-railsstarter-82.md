@@ -1,5 +1,13 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
+## Published checkpoint transport adoption — 2026-10-12
+
+Continue the original claim and main-only integration from `7cd002305bd728f1a398026e1cecc08cc051fc38`. Root owns official adoption, remaining immutable pins, native hooks, one batched PR, protected merge, actual hosted acceptance and cleanup. Reuse the existing independent quality teammate for read-only review of the complete adoption diff and authentic package evidence. Its ownership includes source-byte identity, coherent locks, smoke SRI, caller/signer agreement, the release's scanner/hook changes and unchanged policies. It must preserve other edits and avoid duplicate heavy suites or provider writes. Existing security and verification evidence for the exact source fix remains applicable with its stated scope.
+
+Lisa PR #4431 merged at `da830fc101e3f3bff89923b413c31c043ebcb2ba`, with all fifteen required checks and the exact-head local substitute for the observed CodeRabbit rate limit. Actual release run `38189088709` completed successfully, publishing 4.74.9 at `2b38ee42dec186ce0c7b758445370c7e99ade576`. Authentic qualification verified all 152 packaged scripts, the 149-script overlay and 107 helper-graph members against reviewed source. Official full apply and both frozen installers passed. The outer adoption script stopped only because official apply had already updated the CI pin; root completed the remaining pin phase without repeating adoption. The observed tooling audit retains 34 findings and no critical entry; it is not a scanner-pass claim.
+
+Source merge, publication and local adoption do not complete the original six hosted criteria. Keep #82, #4347 and #60 open until genuine publication, identical and interrupted retry, protected Bot checks/merge, no-selection behavior, distinct proposal and owned fixture cleanup are proven. No freshness window, guard, deadline, protection, fixture authority or AWS deployment changes belong to this adoption.
+
 This delivery amendment records the current Codex roster before independent review of the Lisa 4.73.4 adoption. Earlier implementation and upstream alias investigation already occurred; this file does not claim to predate them. Root owns commits, push, PR, native policy checks, merge, hosted acceptance and cleanup. Reviewers share the checkout, preserve others' edits and perform read-only work.
 
 INCLUDE - explorer - Read-only source and release research remains applicable to the producer and alias evidence.

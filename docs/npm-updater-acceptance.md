@@ -1,6 +1,6 @@
 # Selected npm updater acceptance
 
-Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published [Lisa 4.74.5](https://github.com/CodySwannGT/lisa/releases/tag/v4.74.5) producer at immutable commit `ef8f7f2dc99790e757388c1836738c538a5aacef`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
+Issue [#82](https://github.com/CodySwannGT/railsstarter/issues/82) requires a genuine updater PR to pass this repository's protected checks. The temporary acceptance setup uses the published [Lisa 4.74.9](https://github.com/CodySwannGT/lisa/releases/tag/v4.74.9) producer at immutable commit `2b38ee42dec186ce0c7b758445370c7e99ade576`, including the released npm alias, bundled-lock validation, bounded canonical reads and the independently timed optional diagnostic, with bounded process-group anchor admission and failed-admission recovery.
 
 The current release retains bounded failed-hook names and numeric RSpec counts when a native push is refused. Those hints are marked as child-reported information and grant no publication authority. The earlier failed hosted runs remain failed evidence; successful composed acceptance still requires a fresh actual run.
 
