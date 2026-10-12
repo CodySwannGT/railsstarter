@@ -20,6 +20,8 @@ Keep dependency changes in their own ordinary commit, with the real work-item bi
 
 The configured `bun` ecosystem covers the shared manifest and committed text `bun.lock`. The daily Bundler and GitHub Actions entries remain enabled. Do not schedule a competing npm updater for the same manifest.
 
+GitHub applies a three-day cooldown to version updates by default. The Bun entry excludes `@codyswann/lisa` from that cooldown so the daily check can propose a newly published Lisa release. Other Bun packages retain the three-day delay. Review and apply the selected released package before merging. See [GitHub's cooldown reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown).
+
 The Bun updater updates the manifest and Bun lock; it does not synchronize the npm lock. The maintainer must regenerate `package-lock.json` using the command above, inspect the intended cohort and verify both frozen installers before merging an update. Keep Lisa's full-apply ownership explicit when selecting dependencies for automated updates. Do not assume a dependency-version PR applied Lisa's templates.
 
 Lisa's genuine Dependabot tracking policy is being delivered under issue #82. The chosen policy uses a GitHub-authenticated Dependabot-created PR as the entire update's tracking record, including maintainer amendments. `.lisa.config.json` opts in with `workItem.dependabotTracking: "pull-request"`; the released reusable workflow must support that option before enabling delivery is merged. Its default behavior remains separate issue tracking. Preserve the required checks and ordinary protected merge. Do not use a bot-like branch, author email or body marker to exempt an ordinary contribution.

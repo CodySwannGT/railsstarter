@@ -14,4 +14,8 @@ updates:
   directory: "/"
   schedule:
     interval: daily
+  cooldown:
+    default-days: 3
+    exclude:
+    - "@codyswann/lisa"
   open-pull-requests-limit: 10
