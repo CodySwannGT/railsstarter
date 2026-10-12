@@ -1,5 +1,45 @@
 # Updater delivery and hosted acceptance
 
+## Active genuine Dependabot PR #111 adoption — 2026-10-12
+
+PR #105 is delivered: merge `cf781910c5bc6df9cbd7f8e3689b6fd6679ee45e` preserves reviewed head `bc0ab1e0485e4c1959a118b8b9cf35733af33dc5`. All eleven required checks passed, including hosted MySQL (718 examples, zero failures), all 33 README qualification controls, the literal walkthrough and owned cleanup. Genuine CodeRabbit approved that exact head. The earlier Compose prerequisite below is complete and retained as history.
+
+Dependabot automatically opened genuine PR #111 from `dependabot/bun/codyswann/lisa-4.79.2` at `802b3c8c316e299ec5c9ae87e466e371f4433896`. Native provider reads verify author `dependabot[bot]`, Bot id `49699333`, same-repository main base and base-owned `workItem.dependabotTracking: pull-request`. The real starter's outdated Lisa 4.75.2 is the detection input; this update supplies the original outdated-package scenario without a permanent artificial dependency. Its initial package.json/Bun proposal still has an old npm lock and failed the README walkthrough. Initial-head checks do not prove the forthcoming adoption.
+
+Continue the verified existing #82 claim in `/Users/cody/workspace/railsstarter-82-dependabot-111`, bound to that actual Bot branch. The builder owns native lock reconciliation, ordinary frozen Bun installation, actual full Fleet apply, its managed output and the appended qualified smoke release tuple. Root owns this plan/roster, normal Git hooks/full push, provider milestones and protected merge. The independent reviewer owns read-only review of the complete final diff. Preserve other agents' changes and host rules. No custom producer, Claude session, new issue, application deployment, disabled gate or administrative merge.
+
+Qualified release: Lisa 4.79.2 at `60186d6e78fa2316fac47897ab11cd2e42b2fc9b`; Node 24.21.0 and Bun 1.3.8. Official publisher run `38299805531` succeeded. Source qualification `/Users/cody/workspace/lisa-dependabot-tracking/tmp/4443-release-4.79.2-qualification-2fopny1u/receipt.json` verifies the official archive SRI, all 152 shipped scripts and 149 overlay destinations. The new owner's bounded learnings projection is empty. Existing original two acceptance scenarios remain authoritative; six retired producer scenarios below are historical and must not resume.
+
+```json
+{
+  "plan": "plan-82-browser-runtime",
+  "type": "task",
+  "acceptance_criteria": [
+    "An actual outdated npm package is detected with consistent locks and documented ownership/cadence",
+    "The genuine updater PR into main passes required work-item and merge checks through supported metadata without disabling gates",
+    "The selected latest Lisa 4.79.2 SDK is installed and fully applied with its authentic release identity",
+    "Both native frozen installers preserve the final manifest and lock bytes; original cross-lock identity validation passes",
+    "PR #111 is reviewed and normally merged after current-head required checks pass; #82 and #60 close only after final evidence readback"
+  ],
+  "relevant_documentation": "Original live #82 acceptance; README setup checklist; .claude/rules/PROJECT_RULES.md; installed Lisa full apply; qualified release receipt; scripts/lib/npm-update-bun.mjs; lib/smoke_consumer/toolchain.rb; original OwnedUpgrade full-push runner; genuine PR111 identity and main configuration",
+  "testing_requirements": [
+    "Native npm/Bun lock generation and verifyBunLock package identity agreement",
+    "Actual full Fleet apply receipt and offline doctor with actual warnings retained",
+    "Independent owned frozen npm/Bun installs, unchanged input hashes and authentic SDK/script inventory",
+    "Independent review of every changed path and unchanged host configuration/protections",
+    "Normal commit and full push, original suite/coverage/cleanup, current-head hosted CI/README/runtime/work-item checks",
+    "Actual normal protected merge and main ancestry; final original acceptance and tracker lifecycle audit"
+  ],
+  "skills": ["lisa-tdd-implementation", "lisa-git-commit", "lisa-drive-pr-to-merge", "lisa-github-sync"],
+  "learnings": [],
+  "verification": {
+    "type": "cli-test",
+    "command": "native npm lock generation; qualified verifyBunLock; bun install --frozen-lockfile; installed Lisa apply . --yes --harness fleet --full-apply --skip-git-check --refresh-templates; installed Lisa doctor . --offline --json; two independent owned frozen installs; normal git commit and original OwnedUpgrade git push; native PR111 checks/merge readback",
+    "expected": "Coherent authentic 4.79.2 cohort, complete full apply, all original policy gates and cleanup pass, genuine Dependabot PR111 merged into main and both original #82 acceptance scenarios proven"
+  }
+}
+```
+
 ## Current Dependabot reassessment — 2026-10-12
 
 The operator rejected building a custom updater where Dependabot can supply dependency update PRs. The original ticket permits Dependabot coverage; the previous custom approach and six supplemental scenarios below are historical, incomplete evidence. Do not resume custom updater release, adoption or hosted dispatch from those instructions.
