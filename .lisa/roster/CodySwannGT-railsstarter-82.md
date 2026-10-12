@@ -1,5 +1,25 @@
 # Roster Decision — CodySwannGT/railsstarter#82
 
+## Active genuine Dependabot PR #111 SDK adoption — 2026-10-12
+
+Reuse the existing team and canonical #82 claim. The input resolver verified the open claimed leaf and bound the actual Bot branch in `/Users/cody/workspace/railsstarter-82-dependabot-111`. PR #105 is merged with all eleven required checks passing; its Compose prerequisite is complete. The full task metadata precedes implementation in `.lisa/plan-82-browser-runtime.md`.
+
+`anchor_startup_builder` owns package.json/package-lock.json/bun.lock coherence, the ordinary qualified installation and official full Fleet apply's managed output, the append-only authentic 4.79.2 tuple in `lib/smoke_consumer/toolchain.rb`, and ignored adoption/install/doctor evidence. It must preserve host rules/configuration, daily Bun Dependabot coverage, the main-only mapping and all required gates. It is not alone: preserve root's plan/roster and other edits. No commit, push, tracker or PR writes by the builder.
+
+Root owns plan/roster, normal commits and the original full push, provider progress/backlinks, required-check and review resolution, ordinary protected merge and final #82/#60 lifecycle readbacks. `cancellation_security_constraints` returns from bounded input resolution and independently reviews the complete frozen consumer diff. `dependabot_learner` captures only any evidence-backed durable candidate at completion; an empty candidate set requires no new ledger entry. No duplicate heavy suites, custom updater, Claude session or application deployment.
+
+The complete per-type decision below remains the runtime inventory, with these current-phase amendments taking precedence over its historical reasons:
+
+INCLUDE - lisa-builder - Reuse the existing builder for the coherent official SDK adoption and frozen install evidence.
+INCLUDE - lisa-quality-specialist - Reuse the independent reviewer for all final paths and preserved host policy.
+INCLUDE - lisa-security-specialist - Review authentic package identity and genuine Bot tracking without weakening gates.
+INCLUDE - lisa-verification-specialist - Review actual frozen installer and full-apply evidence; root runs normal full push and hosted acceptance.
+INCLUDE - explorer - The existing source/package qualification supplies bounded release and code research; resolver supplies live input validation.
+INCLUDE - lisa-learner - Reuse the existing learner for the final evidence-backed candidate set.
+EXCLUDE - lisa-bug-fixer - No new application behavior repair is assigned in this adoption; diagnose an actual new failure before widening scope.
+EXCLUDE - lisa-debug-specialist - The custom producer is retired; no producer diagnosis is resumed.
+EXCLUDE - lisa-product-specialist - Root checks the original two acceptance scenarios without adding supplemental scenarios.
+
 ## Active native Compose qualification prerequisite — 2026-10-12
 
 The normal full push at `4dcdc799f083eb98b79e71d17172a45a38831e06` passed 718 examples, zero failures, all hooks/coverage floors and original composed cleanup. Current hosted README qualification repeated the read-only Compose probe's two-second timeout before the walkthrough. `anchor_startup_builder` owns only `test/runtime/onboarding_walkthrough/contracts_test.py` and ignored native evidence; task metadata is recorded in the active plan section. Align only that probe with the existing thirty-second Docker-read allowance, retaining every physical ownership/shared-image assertion and all process/production deadlines. Reuse `cancellation_security_constraints` for independent review of the exact complete diff. Root owns plan/roster, ordinary commits/full push, review gates and protected merge. No blind job retry, custom updater, permission request or Claude session. #82 remains open for genuine Dependabot acceptance and latest SDK full apply after enabling configuration reaches main.
