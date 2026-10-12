@@ -1,6 +1,6 @@
 # Dependency updates
 
-The starter's permanent npm dependency is `@codyswann/lisa`. Dependabot checks Bundler, GitHub Actions and Bun daily, with a limit of ten open pull requests per ecosystem. Bun coverage includes Lisa and future ordinary JavaScript dependencies. The repository maintainer (currently `CodySwannGT`) owns review, npm lock synchronization and Lisa's full-template apply before merging a Lisa update.
+The starter's permanent npm dependency is `@codyswann/lisa`. Dependabot checks Bundler, GitHub Actions and Bun daily, with a limit of ten open version-update pull requests per ecosystem. Security-update pull requests have a separate limit. Bun coverage includes Lisa and future ordinary JavaScript dependencies. The repository maintainer (currently `CodySwannGT`) owns review, npm lock synchronization and Lisa's full-template apply before merging a Lisa update.
 
 Lisa's installed plugin provides a local `SessionStart` updater. With the plugin enabled in a supported coding runtime, it checks npm's latest release at startup, updates an eligible clean checkout and runs a full apply. CI does not update Lisa. A dirty checkout, a shared `node_modules` symlink or an explicitly disabled updater leaves the update for a later eligible session. Preserve existing work and use an isolated checkout when necessary.
 
