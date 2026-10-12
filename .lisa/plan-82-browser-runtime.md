@@ -4,10 +4,11 @@
 
 The earlier milestones below remain historical evidence. The current source fix is merged as Lisa PR #4431 and authentically published as 4.74.9 at `2b38ee42dec186ce0c7b758445370c7e99ade576`; the starter adoption starts from merged main `7cd002305bd728f1a398026e1cecc08cc051fc38`.
 
-1. Preserve the successful official full apply and both frozen installers, then complete the remaining immutable caller/signer pins and actual smoke SRI cohort.
-2. Obtain independent review of the complete current adoption diff. Commit normally, run the original full push, and publish one batched PR through current-head checks and protected merge.
-3. Run the original six genuine hosted acceptance journeys against adopted main, including literal interruption and identical retry, with authentic provider and signature evidence.
-4. Retire only owned temporary fixtures through ordinary reviewed delivery. Close #82, #4347 and parent #60 only after the complete evidence exists.
+1. Complete: official full apply, both frozen installers, immutable caller/signer pins and the actual smoke SRI cohort are qualified for adoption commit `3289827a510470949894e3055091db0820fb9635`.
+2. Complete at that commit: independent review of all 19 adoption paths, normal commit hooks and the original full push, including 716 Rails examples with zero failures and all six owned runtime cleanup checks. The batched adoption PR is #101.
+3. Pending: finish current-head PR checks and review resolution, then verify ordinary protected merge. A later documentation commit does not inherit the earlier commit's push result.
+4. Pending: run the original six genuine hosted acceptance journeys against adopted main, including literal interruption and identical retry, with authentic provider and signature evidence.
+5. Pending: retire only owned temporary fixtures through ordinary reviewed delivery. Close #82, #4347 and parent #60 only after the complete evidence exists.
 
 The compression reduces the actual retained record from 65 data comments to 17 while preserving exact canonical bytes. Local transport and adoption proof do not establish hosted timing or completion. Original freshness, deadlines, bounds, protections and cleanup assertions stay in force. Snyk remains a no-op and no AWS deployment is part of this work.
 
