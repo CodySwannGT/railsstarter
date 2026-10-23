@@ -28,7 +28,7 @@ jobs:
       checks: write
       issues: read
       pull-requests: write
-    uses: CodySwannGT/lisa/.github/workflows/quality-rails.yml@60186d6e78fa2316fac47897ab11cd2e42b2fc9b # v4.79.2
+    uses: CodySwannGT/lisa/.github/workflows/quality-rails.yml@e55b7d5098098fc149479683441bb7698cd7bcb2 # v4.81.7
     # railsstarter runs on MySQL (config/database.yml uses the mysql2 adapter).
     # Without this the reusable defaults to PostgreSQL and `bin/rails db:prepare`
     # fails. database_name matches the app's DATABASE_NAME default.
